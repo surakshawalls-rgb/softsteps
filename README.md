@@ -1,59 +1,365 @@
-# SoftStepsCarpet
+# Soft Steps Carpet
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.1.
+Premium Carpet & Rug E-Commerce Platform
 
-## Development server
+Soft Steps Carpet is a modern, premium e-commerce platform designed for selling carpets, rugs, and related home furnishing products online.
 
-To start a local development server, run:
+The application is being developed as a single Angular-based codebase that can run across:
 
-```bash
-ng serve
-```
+- Web
+- PWA
+- Android
+- iOS
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The goal is to maintain one frontend codebase while providing a premium web experience and native mobile capabilities without maintaining separate Android and iOS applications.
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Project Repository
 
-```bash
-ng generate component component-name
-```
+GitHub:
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+https://github.com/surakshawalls-rgb/softsteps
 
-```bash
-ng generate --help
-```
+---
 
-## Building
+# 1. Application Overview
 
-To build the project run:
+Soft Steps Carpet will provide a complete digital storefront for customers to:
 
-```bash
-ng build
-```
+- Browse carpets and rugs
+- Explore categories and collections
+- Search products
+- View detailed product information
+- Select product variants and sizes
+- Add products to cart
+- Manage wishlist
+- Checkout
+- Manage delivery addresses
+- Make payments
+- Track orders
+- Submit enquiries
+- Submit wholesale enquiries
+- Manage customer profiles
+- Receive notifications
+- Review purchased products
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The platform will also include an administrative system for managing products, inventory, orders, customers, enquiries, and other business operations.
 
-## Running unit tests
+---
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+# 2. Main Application Areas
 
-```bash
-ng test
-```
+## Customer Storefront
 
-## Running end-to-end tests
+The public storefront will contain:
 
-For end-to-end (e2e) testing, run:
+- Home
+- Shop
+- Categories
+- Collections
+- Product Details
+- Search
+- Wishlist
+- Cart
+- Checkout
+- Order Tracking
+- Customer Account
+- Enquiries
+- Wholesale Enquiries
 
-```bash
-ng e2e
-```
+---
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Customer Account
 
-## Additional Resources
+Customers will be able to:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Register
+- Login
+- Manage profile
+- Manage addresses
+- View orders
+- View order details
+- Track orders
+- Manage wishlist
+- Manage cart
+- Submit enquiries
+- Review eligible products
+
+---
+
+## Product Management
+
+Products will support:
+
+- Product name
+- Product code / SKU
+- Description
+- Category
+- Collection
+- Images
+- Product variants
+- Sizes
+- Materials
+- Construction information
+- Pricing
+- Inventory
+- Availability
+- Product attributes
+- SEO information
+
+---
+
+## Shopping Cart
+
+The cart will support:
+
+- Guest cart
+- Logged-in customer cart
+- Quantity management
+- Product variants
+- Size selection
+- Cart persistence
+- Cart merge after login
+- Price calculation
+- Order summary
+
+---
+
+## Wishlist
+
+Customers will be able to:
+
+- Add products to wishlist
+- Remove products
+- Move products to cart
+- Maintain wishlist across sessions when logged in
+
+---
+
+## Checkout
+
+Checkout will support:
+
+- Customer information
+- Delivery address
+- Order summary
+- Shipping information
+- Payment selection
+- Order creation
+- Payment verification
+- Order confirmation
+
+---
+
+## Orders
+
+Customers will be able to:
+
+- View orders
+- View order details
+- View order status
+- Track shipment
+- View payment status
+- View purchased products
+- Access order history
+
+---
+
+## Enquiries
+
+The platform will support:
+
+- General enquiries
+- Product enquiries
+- Wholesale enquiries
+- Bulk order enquiries
+- Business/customer communication
+
+---
+
+# 3. Technology Stack
+
+## Frontend
+
+### Angular
+
+The application uses modern Angular with:
+
+- Standalone components
+- Angular Signals where appropriate
+- Reactive Forms
+- Lazy loading
+- Routing
+- Server-Side Rendering
+- Hydration
+- Feature-based architecture
+
+---
+
+## UI & Styling
+
+### Tailwind CSS
+
+Tailwind CSS is the primary styling system.
+
+A custom Soft Steps design system will be built on top of Tailwind to maintain:
+
+- Premium visual identity
+- Consistent spacing
+- Typography
+- Colors
+- Buttons
+- Forms
+- Cards
+- Responsive layouts
+- Product presentation
+
+Ionic UI components are NOT used as the primary visual design system.
+
+---
+
+## Animation
+
+### GSAP
+
+GSAP will be used for premium interactions such as:
+
+- Hero animations
+- Product transitions
+- Scroll-based animations
+- Image transitions
+- Page transitions
+- Micro-interactions
+
+Animations will remain subtle and performance-conscious.
+
+Simple transitions will use CSS.
+
+---
+
+## Angular CDK
+
+Angular CDK will be used where appropriate for:
+
+- Dialogs
+- Overlays
+- Menus
+- Accessibility
+- Drag and drop
+- Advanced UI interactions
+
+---
+
+# 4. Mobile Application Technology
+
+## Ionic + Capacitor
+
+The project uses Ionic and Capacitor to provide native mobile capabilities while maintaining the same Angular application.
+
+Capacitor will be used for:
+
+- Push notifications
+- Camera
+- Image upload
+- Native sharing
+- Deep links
+- Device information
+- Application lifecycle
+- Local storage
+- Native device APIs
+- Android packaging
+- iOS packaging
+
+The goal is:
+
+> One Angular codebase → Web + PWA + Android + iOS
+
+Separate Android and iOS application codebases will not be maintained.
+
+---
+
+# 5. Backend Architecture
+
+## Supabase
+
+Supabase will be the primary backend platform.
+
+Planned Supabase services include:
+
+- PostgreSQL Database
+- Authentication
+- Storage
+- Realtime
+- Row Level Security
+- Edge Functions
+
+The application will not initially use a separate Spring Boot backend.
+
+---
+
+## Database
+
+The PostgreSQL database will contain the core business data, including areas such as:
+
+- Users / Profiles
+- Categories
+- Collections
+- Products
+- Product Images
+- Product Variants
+- Inventory
+- Wishlists
+- Carts
+- Cart Items
+- Addresses
+- Orders
+- Order Items
+- Payments
+- Enquiries
+- Notifications
+- Reviews
+- Coupons
+- Shipping
+
+The final database structure and relationships will be defined before implementing the production data models.
+
+---
+
+# 6. Security
+
+Security will be enforced at the backend/database level.
+
+The application will use:
+
+- Supabase Row Level Security
+- Authentication
+- Role-based access
+- Protected routes
+- Secure server-side operations
+- Edge Functions for sensitive operations
+
+Private credentials must never be exposed in the browser.
+
+The Supabase service-role key, payment secrets, private API keys, and other sensitive credentials must never be committed to GitHub.
+
+---
+
+# 7. Data & Caching Architecture
+
+The application follows the principle:
+
+> CACHE → RENDER → REFRESH → UPDATE
+
+The planned caching architecture is:
+
+```text
+Browser Cache
+      ↓
+Service Worker / PWA Cache
+      ↓
+TanStack Query Cache
+      ↓
+SSR / Transfer Cache
+      ↓
+Supabase
