@@ -1,1 +1,102 @@
-<p>site-header works!</p>
+﻿<header class="sticky top-0 z-50 border-b border-stone-200 bg-white/95 backdrop-blur">
+  <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 lg:px-8">
+
+    <!-- Logo -->
+    <a
+      routerLink="/"
+      class="flex flex-col leading-none"
+    >
+      <span class="text-xl font-semibold tracking-tight text-stone-900">
+        Soft Steps
+      </span>
+
+      <span class="mt-1 text-[10px] uppercase tracking-[0.25em] text-stone-500">
+        Carpets & Rugs
+      </span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden items-center gap-8 lg:flex">
+
+      <a
+        routerLink="/"
+        routerLinkActive="text-amber-700"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="text-sm font-medium text-stone-700 transition hover:text-amber-700"
+      >
+        Home
+      </a>
+
+      <a
+        routerLink="/shop"
+        routerLinkActive="text-amber-700"
+        class="text-sm font-medium text-stone-700 transition hover:text-amber-700"
+      >
+        Shop
+      </a>
+
+      <a
+        routerLink="/categories"
+        routerLinkActive="text-amber-700"
+        class="text-sm font-medium text-stone-700 transition hover:text-amber-700"
+      >
+        Categories
+      </a>
+
+      <a
+        routerLink="/collections"
+        routerLinkActive="text-amber-700"
+        class="text-sm font-medium text-stone-700 transition hover:text-amber-700"
+      >
+        Collections
+      </a>
+
+      <a
+        routerLink="/enquiries"
+        routerLinkActive="text-amber-700"
+        class="text-sm font-medium text-stone-700 transition hover:text-amber-700"
+      >
+        Enquiry
+      </a>
+
+    </nav>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-3">
+
+      <button
+        type="button"
+        class="hidden rounded-full p-2 text-stone-700 transition hover:bg-stone-100 hover:text-amber-700 sm:block"
+        aria-label="Search"
+      >
+        <span class="text-lg">⌕</span>
+      </button>
+
+      <a
+        routerLink="/cart"
+        class="hidden rounded-full p-2 text-stone-700 transition hover:bg-stone-100 hover:text-amber-700 sm:block"
+        aria-label="Shopping cart"
+      >
+        <span class="text-lg">🛒</span>
+      </a>
+
+      <a
+        routerLink="/shop"
+        class="hidden rounded-full bg-stone-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-amber-700 sm:block"
+      >
+        Explore
+      </a>
+
+      <!-- Mobile menu button -->
+      <button
+        type="button"
+        class="rounded-full p-2 text-stone-800 hover:bg-stone-100 lg:hidden"
+        aria-label="Open menu"
+      >
+        ☰
+      </button>
+
+    </div>
+
+  </div>
+</header>

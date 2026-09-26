@@ -1,0 +1,19 @@
+﻿:host {
+  display: block;
+}
+
+.hero-art {
+  perspective: 1000px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-art > div {
+    transition:
+      transform 500ms ease,
+      box-shadow 500ms ease;
+  }
+
+  .hero-art > div:hover {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}

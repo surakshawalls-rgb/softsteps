@@ -1,1 +1,18 @@
-<p>product-image works!</p>
+﻿<div [class]="'relative w-full overflow-hidden bg-stone-100 ' + aspectRatio">
+
+  @if (src) {
+    <img
+      [src]="src"
+      [alt]="alt"
+      class="h-full w-full object-cover transition duration-500 hover:scale-105"
+      loading="lazy"
+    />
+  } @else {
+    <div class="flex h-full w-full items-center justify-center">
+      <span class="text-sm text-stone-400">
+        Image unavailable
+      </span>
+    </div>
+  }
+
+</div>

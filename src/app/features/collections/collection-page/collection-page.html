@@ -1,1 +1,287 @@
-<p>collection-page works!</p>
+﻿@if (!selectedCollection) {
+
+  <section class="bg-stone-950 text-white">
+
+    <div class="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+
+      <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-400">
+        Curated for you
+      </p>
+
+      <h1 class="mt-4 text-4xl font-semibold tracking-tight sm:text-6xl">
+        Collections
+      </h1>
+
+      <p class="mt-6 max-w-2xl text-base leading-8 text-stone-300">
+        Discover curated collections created around different
+        styles, materials and moods.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <section class="bg-stone-50 py-16">
+
+    <div class="mx-auto max-w-7xl px-5 lg:px-8">
+
+      @if (loading) {
+
+        <div class="py-24 text-center">
+
+          <div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-stone-300 border-t-amber-600"></div>
+
+          <p class="mt-5 text-sm text-stone-500">
+            Loading collections...
+          </p>
+
+        </div>
+
+      }
+
+
+      @if (!loading && errorMessage) {
+
+        <div class="py-24 text-center">
+
+          <h2 class="text-xl font-semibold text-stone-900">
+            Unable to load collections
+          </h2>
+
+          <p class="mt-3 text-sm text-stone-500">
+            {{ errorMessage }}
+          </p>
+
+          <button
+            type="button"
+            (click)="retry()"
+            class="mt-6 rounded-full bg-stone-900 px-6 py-3 text-sm font-medium text-white"
+          >
+            Try Again
+          </button>
+
+        </div>
+
+      }
+
+
+      @if (!loading && !errorMessage && collections.length === 0) {
+
+        <div class="py-24 text-center">
+
+          <h2 class="text-2xl font-semibold text-stone-900">
+            Collections coming soon
+          </h2>
+
+          <p class="mt-4 text-sm text-stone-500">
+            Our curated collections will appear here once they are added.
+          </p>
+
+        </div>
+
+      }
+
+
+      @if (!loading && !errorMessage && collections.length > 0) {
+
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+          @for (collection of collections; track collection.id ?? collection.slug) {
+
+            <a
+              [routerLink]="['/collections', collection.slug]"
+              class="group relative min-h-80 overflow-hidden rounded-3xl bg-stone-900"
+            >
+
+              @if (collection.image_url) {
+
+                <img
+                  [src]="collection.image_url"
+                  [alt]="collection.name || 'Carpet collection'"
+                  class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                  loading="lazy"
+                />
+
+                <div class="absolute inset-0 bg-black/30 group-hover:bg-black/40"></div>
+
+              } @else {
+
+                <div class="absolute inset-0 bg-gradient-to-br from-stone-200 via-stone-600 to-stone-950"></div>
+
+              }
+
+              <div class="relative flex min-h-80 items-end p-8">
+
+                <div>
+
+                  <h2 class="text-2xl font-semibold text-white">
+                    {{ collection.name }}
+                  </h2>
+
+                  @if (collection.description) {
+
+                    <p class="mt-2 max-w-sm text-sm leading-6 text-white/75">
+                      {{ collection.description }}
+                    </p>
+
+                  }
+
+                  <span class="mt-5 inline-block text-sm font-medium text-amber-300">
+                    Discover collection →
+                  </span>
+
+                </div>
+
+              </div>
+
+            </a>
+
+          }
+
+        </div>
+
+      }
+
+    </div>
+
+  </section>
+
+}
+
+
+@if (selectedCollection) {
+
+  <section class="bg-stone-950 text-white">
+
+    <div class="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+
+      <a
+        routerLink="/collections"
+        class="text-sm text-stone-400 hover:text-white"
+      >
+        ← All Collections
+      </a>
+
+      <p class="mt-10 text-xs font-semibold uppercase tracking-[0.3em] text-amber-400">
+        Collection
+      </p>
+
+      <h1 class="mt-4 text-4xl font-semibold tracking-tight sm:text-6xl">
+        {{ selectedCollection.name }}
+      </h1>
+
+      @if (selectedCollection.description) {
+
+        <p class="mt-6 max-w-2xl text-base leading-8 text-stone-300">
+          {{ selectedCollection.description }}
+        </p>
+
+      }
+
+    </div>
+
+  </section>
+
+
+  <section class="bg-white py-16">
+
+    <div class="mx-auto max-w-7xl px-5 lg:px-8">
+
+      @if (loading) {
+
+        <div class="py-24 text-center">
+
+          <div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-stone-300 border-t-amber-600"></div>
+
+          <p class="mt-5 text-sm text-stone-500">
+            Loading products...
+          </p>
+
+        </div>
+
+      }
+
+
+      @if (!loading && !errorMessage && products.length === 0) {
+
+        <div class="py-24 text-center">
+
+          <h2 class="text-2xl font-semibold text-stone-900">
+            No products in this collection yet.
+          </h2>
+
+          <p class="mt-4 text-sm text-stone-500">
+            Please check back soon for new products.
+          </p>
+
+          <a
+            routerLink="/shop"
+            class="mt-7 inline-flex rounded-full bg-stone-900 px-6 py-3 text-sm font-medium text-white"
+          >
+            Browse All Products
+          </a>
+
+        </div>
+
+      }
+
+
+      @if (!loading && !errorMessage && products.length > 0) {
+
+        <div class="mb-10">
+
+          <p class="text-sm text-stone-500">
+            {{ products.length }} product{{ products.length === 1 ? '' : 's' }}
+          </p>
+
+        </div>
+
+        <div class="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+
+          @for (product of products; track product.id ?? product.slug) {
+
+            <app-product-card
+              [product]="product"
+            ></app-product-card>
+
+          }
+
+        </div>
+
+      }
+
+    </div>
+
+  </section>
+
+}
+
+
+@if (!loading && errorMessage && selectedCollection) {
+
+  <section class="bg-white py-24">
+
+    <div class="mx-auto max-w-xl px-5 text-center">
+
+      <h2 class="text-xl font-semibold text-stone-900">
+        Unable to load collection
+      </h2>
+
+      <p class="mt-3 text-sm text-stone-500">
+        {{ errorMessage }}
+      </p>
+
+      <button
+        type="button"
+        (click)="retry()"
+        class="mt-6 rounded-full bg-stone-900 px-6 py-3 text-sm font-medium text-white"
+      >
+        Try Again
+      </button>
+
+    </div>
+
+  </section>
+
+}

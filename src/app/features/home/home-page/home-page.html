@@ -1,1 +1,495 @@
-<p>home-page works!</p>
+﻿<!-- ========================================================
+     HERO
+======================================================== -->
+
+<section class="relative overflow-hidden bg-stone-950 text-white">
+
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(245,158,11,0.16),transparent_35%)]"></div>
+
+  <div class="relative mx-auto grid min-h-[680px] max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:px-8">
+
+    <div class="max-w-2xl">
+
+      <p class="text-sm font-medium uppercase tracking-[0.35em] text-amber-400">
+        Soft Steps Carpets & Rugs
+      </p>
+
+      <h1 class="mt-6 text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
+        Luxury
+        <span class="block text-amber-400">
+          Underfoot.
+        </span>
+      </h1>
+
+      <p class="mt-7 max-w-xl text-lg leading-8 text-stone-300">
+        Discover thoughtfully selected carpets and rugs that bring
+        warmth, character and timeless beauty to every space.
+      </p>
+
+      <div class="mt-10 flex flex-col gap-4 sm:flex-row">
+
+        <a
+          routerLink="/shop"
+          class="rounded-full bg-amber-500 px-7 py-3.5 text-center text-sm font-semibold text-stone-950 transition hover:bg-amber-400"
+        >
+          Explore Rugs
+        </a>
+
+        <a
+          routerLink="/collections"
+          class="rounded-full border border-stone-600 px-7 py-3.5 text-center text-sm font-semibold text-white transition hover:border-stone-400 hover:bg-white/5"
+        >
+          View Collections
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="hero-art relative hidden min-h-[500px] lg:block">
+
+      <div class="absolute right-10 top-10 h-80 w-64 rotate-6 rounded-[2rem] bg-gradient-to-br from-amber-200 via-amber-500 to-stone-800 shadow-2xl"></div>
+
+      <div class="absolute right-36 top-28 h-80 w-64 -rotate-6 rounded-[2rem] bg-gradient-to-br from-stone-200 via-stone-500 to-stone-900 shadow-2xl"></div>
+
+      <div class="absolute bottom-10 right-4 h-52 w-80 rotate-3 rounded-[2rem] bg-gradient-to-br from-stone-100 via-amber-700 to-stone-950 shadow-2xl"></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     INTRO
+======================================================== -->
+
+<section class="bg-white">
+
+  <div class="mx-auto max-w-4xl px-5 py-20 text-center lg:px-8">
+
+    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
+      Designed for beautiful spaces
+    </p>
+
+    <h2 class="mt-4 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
+      A softer foundation for every room.
+    </h2>
+
+    <p class="mx-auto mt-6 max-w-2xl text-base leading-8 text-stone-600">
+      From timeless handmade designs to contemporary patterns,
+      Soft Steps brings together carpets and rugs selected for
+      comfort, craftsmanship and character.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     CATEGORIES
+======================================================== -->
+
+@if (!loading && categoryPreview.length > 0) {
+
+  <section class="bg-stone-50 py-20">
+
+    <div class="mx-auto max-w-7xl px-5 lg:px-8">
+
+      <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
+            Explore
+          </p>
+
+          <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900">
+            Shop by category
+          </h2>
+        </div>
+
+        <a
+          routerLink="/categories"
+          class="text-sm font-medium text-stone-700 hover:text-amber-700"
+        >
+          View all categories →
+        </a>
+
+      </div>
+
+
+      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+
+        @for (category of categoryPreview; track category.id ?? category.slug) {
+
+          <a
+            [routerLink]="['/categories', category.slug]"
+            class="group relative flex min-h-64 overflow-hidden rounded-3xl bg-stone-200"
+          >
+
+            @if (category.image_url) {
+
+              <img
+                [src]="category.image_url"
+                [alt]="category.name || 'Carpet category'"
+                class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                loading="lazy"
+              />
+
+              <div class="absolute inset-0 bg-black/30 transition group-hover:bg-black/40"></div>
+
+            } @else {
+
+              <div class="absolute inset-0 bg-gradient-to-br from-stone-200 via-stone-400 to-stone-700"></div>
+
+            }
+
+            <div class="relative mt-auto p-7">
+
+              <h3 class="text-2xl font-semibold text-white">
+                {{ category.name }}
+              </h3>
+
+              <span class="mt-2 inline-block text-sm text-white/80">
+                Explore collection →
+              </span>
+
+            </div>
+
+          </a>
+
+        }
+
+      </div>
+
+    </div>
+
+  </section>
+
+}
+
+
+<!-- ========================================================
+     COLLECTIONS
+======================================================== -->
+
+@if (!loading && collectionPreview.length > 0) {
+
+  <section class="bg-white py-20">
+
+    <div class="mx-auto max-w-7xl px-5 lg:px-8">
+
+      <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
+            Curated
+          </p>
+
+          <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900">
+            Featured collections
+          </h2>
+        </div>
+
+        <a
+          routerLink="/collections"
+          class="text-sm font-medium text-stone-700 hover:text-amber-700"
+        >
+          View all collections →
+        </a>
+
+      </div>
+
+
+      <div class="mt-10 grid gap-6 lg:grid-cols-3">
+
+        @for (collection of collectionPreview; track collection.id ?? collection.slug) {
+
+          <a
+            [routerLink]="['/collections', collection.slug]"
+            class="group relative min-h-80 overflow-hidden rounded-3xl bg-stone-900"
+          >
+
+            @if (collection.image_url) {
+
+              <img
+                [src]="collection.image_url"
+                [alt]="collection.name || 'Carpet collection'"
+                class="absolute inset-0 h-full w-full object-cover opacity-85 transition duration-700 group-hover:scale-105"
+                loading="lazy"
+              />
+
+              <div class="absolute inset-0 bg-black/30"></div>
+
+            } @else {
+
+              <div class="absolute inset-0 bg-gradient-to-br from-stone-300 via-stone-700 to-stone-950"></div>
+
+            }
+
+            <div class="relative flex min-h-80 items-end p-8">
+
+              <div>
+
+                <h3 class="text-2xl font-semibold text-white">
+                  {{ collection.name }}
+                </h3>
+
+                @if (collection.description) {
+                  <p class="mt-2 max-w-sm text-sm leading-6 text-white/75">
+                    {{ collection.description }}
+                  </p>
+                }
+
+                <span class="mt-5 inline-block text-sm font-medium text-amber-300">
+                  Discover collection →
+                </span>
+
+              </div>
+
+            </div>
+
+          </a>
+
+        }
+
+      </div>
+
+    </div>
+
+  </section>
+
+}
+
+
+<!-- ========================================================
+     FEATURED PRODUCTS
+======================================================== -->
+
+@if (!loading && productPreview.length > 0) {
+
+  <section class="bg-stone-50 py-20">
+
+    <div class="mx-auto max-w-7xl px-5 lg:px-8">
+
+      <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
+            Curated selection
+          </p>
+
+          <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900">
+            Featured rugs
+          </h2>
+        </div>
+
+        <a
+          routerLink="/shop"
+          class="text-sm font-medium text-stone-700 hover:text-amber-700"
+        >
+          Shop all rugs →
+        </a>
+
+      </div>
+
+
+      <div class="mt-10 grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+
+        @for (product of productPreview; track product.id ?? product.slug) {
+
+          <app-product-card
+            [product]="product"
+          ></app-product-card>
+
+        }
+
+      </div>
+
+    </div>
+
+  </section>
+
+}
+
+
+<!-- ========================================================
+     WHY SOFT STEPS
+======================================================== -->
+
+<section class="bg-white py-20">
+
+  <div class="mx-auto max-w-7xl px-5 lg:px-8">
+
+    <div class="max-w-2xl">
+
+      <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
+        Why Soft Steps
+      </p>
+
+      <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
+        More than a carpet.
+        <span class="block text-stone-500">
+          It's part of your space.
+        </span>
+      </h2>
+
+    </div>
+
+
+    <div class="mt-12 grid gap-8 md:grid-cols-3">
+
+      <div class="rounded-3xl border border-stone-200 p-8">
+
+        <div class="text-2xl">
+          ◆
+        </div>
+
+        <h3 class="mt-6 text-lg font-semibold text-stone-900">
+          Thoughtful Selection
+        </h3>
+
+        <p class="mt-3 text-sm leading-7 text-stone-600">
+          Designs selected to bring warmth, texture and personality
+          into residential and commercial spaces.
+        </p>
+
+      </div>
+
+
+      <div class="rounded-3xl border border-stone-200 p-8">
+
+        <div class="text-2xl">
+          ✦
+        </div>
+
+        <h3 class="mt-6 text-lg font-semibold text-stone-900">
+          Quality & Craftsmanship
+        </h3>
+
+        <p class="mt-3 text-sm leading-7 text-stone-600">
+          We focus on materials, construction and finishing so every
+          piece feels as good as it looks.
+        </p>
+
+      </div>
+
+
+      <div class="rounded-3xl border border-stone-200 p-8">
+
+        <div class="text-2xl">
+          ◇
+        </div>
+
+        <h3 class="mt-6 text-lg font-semibold text-stone-900">
+          Custom Possibilities
+        </h3>
+
+        <p class="mt-3 text-sm leading-7 text-stone-600">
+          Looking for a specific size, material or design?
+          Talk to us about your requirement.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     CUSTOM ENQUIRY CTA
+======================================================== -->
+
+<section class="bg-stone-950 py-20 text-white">
+
+  <div class="mx-auto max-w-5xl px-5 text-center lg:px-8">
+
+    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-400">
+      Looking for something specific?
+    </p>
+
+    <h2 class="mt-5 text-3xl font-semibold tracking-tight sm:text-5xl">
+      Tell us what you have in mind.
+    </h2>
+
+    <p class="mx-auto mt-6 max-w-2xl text-base leading-8 text-stone-400">
+      Share your preferred size, material, design or quantity.
+      Our team can help you find the right carpet or rug.
+    </p>
+
+    <div class="mt-9">
+
+      <a
+        routerLink="/enquiries"
+        class="inline-flex rounded-full bg-amber-500 px-8 py-3.5 text-sm font-semibold text-stone-950 transition hover:bg-amber-400"
+      >
+        Send an Enquiry
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     LOADING STATE
+======================================================== -->
+
+@if (loading) {
+
+  <section class="bg-stone-50 py-24">
+
+    <div class="mx-auto max-w-7xl px-5 text-center lg:px-8">
+
+      <div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-stone-300 border-t-amber-600"></div>
+
+      <p class="mt-5 text-sm text-stone-500">
+        Loading our collection...
+      </p>
+
+    </div>
+
+  </section>
+
+}
+
+
+<!-- ========================================================
+     ERROR STATE
+======================================================== -->
+
+@if (!loading && errorMessage) {
+
+  <section class="bg-stone-50 py-20">
+
+    <div class="mx-auto max-w-xl px-5 text-center">
+
+      <h2 class="text-xl font-semibold text-stone-900">
+        Something went wrong
+      </h2>
+
+      <p class="mt-3 text-sm leading-6 text-stone-500">
+        {{ errorMessage }}
+      </p>
+
+      <button
+        type="button"
+        (click)="retry()"
+        class="mt-6 rounded-full bg-stone-900 px-6 py-3 text-sm font-medium text-white hover:bg-stone-700"
+      >
+        Try Again
+      </button>
+
+    </div>
+
+  </section>
+
+}

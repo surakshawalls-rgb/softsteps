@@ -1,1 +1,21 @@
-<p>price-display works!</p>
+﻿<div class="flex items-center gap-2">
+
+  @if (hasSale) {
+    <span class="text-base font-semibold text-stone-900">
+      {{ currency }}{{ salePrice | number:'1.0-2' }}
+    </span>
+
+    <span class="text-sm text-stone-400 line-through">
+      {{ currency }}{{ price | number:'1.0-2' }}
+    </span>
+  } @else if (price !== null && price !== undefined) {
+    <span class="text-base font-semibold text-stone-900">
+      {{ currency }}{{ price | number:'1.0-2' }}
+    </span>
+  } @else {
+    <span class="text-sm text-stone-500">
+      Price on enquiry
+    </span>
+  }
+
+</div>

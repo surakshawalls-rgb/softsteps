@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+﻿import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-product-image',
@@ -7,5 +7,9 @@ import { Component } from '@angular/core';
   styleUrl: './product-image.css',
 })
 export class ProductImage {
+
+  @Input() src: string | null = null;
+  @Input() alt = 'Carpet or rug';
+  @Input() aspectRatio = 'aspect-square';
 
 }

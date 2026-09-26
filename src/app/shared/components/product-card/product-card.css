@@ -1,0 +1,13 @@
+﻿:host {
+  display: block;
+}
+
+article {
+  transition:
+    transform 250ms ease,
+    box-shadow 250ms ease;
+}
+
+article:hover {
+  transform: translateY(-3px);
+}
