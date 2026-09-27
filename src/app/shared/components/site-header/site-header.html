@@ -1,84 +1,20 @@
-﻿<header class="sticky top-0 z-50 border-b border-stone-200 bg-white/95 backdrop-blur">
-  <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 lg:px-8">
+﻿<header class="border-b border-stone-200 bg-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-20 items-center justify-between">
 
-    <!-- Logo -->
-    <a
-      routerLink="/"
-      class="flex flex-col leading-none"
-    >
-      <span class="text-xl font-semibold tracking-tight text-stone-900">
-        Soft Steps
-      </span>
-
-      <span class="mt-1 text-[10px] uppercase tracking-[0.25em] text-stone-500">
-        Carpets & Rugs
-      </span>
-    </a>
-
-    <!-- Desktop Navigation -->
-    <nav class="hidden items-center gap-8 lg:flex">
-
-      <a
-        routerLink="/"
-        routerLinkActive="text-amber-700"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="text-sm font-medium text-stone-700 transition hover:text-amber-700"
-      >
-        Home
+      <a routerLink="/" class="flex items-center" (click)="closeMenu()">
+        <div>
+          <div class="text-xl font-bold tracking-wide text-stone-900">Soft Steps</div>
+          <div class="text-xs tracking-[0.25em] text-stone-500">CARPETS & RUGS</div>
+        </div>
       </a>
 
-      <a
-        routerLink="/shop"
-        routerLinkActive="text-amber-700"
-        class="text-sm font-medium text-stone-700 transition hover:text-amber-700"
-      >
-        Shop
-      </a>
-
-      <a
-        routerLink="/categories"
-        routerLinkActive="text-amber-700"
-        class="text-sm font-medium text-stone-700 transition hover:text-amber-700"
-      >
-        Categories
-      </a>
-
-      <a
-        routerLink="/collections"
-        routerLinkActive="text-amber-700"
-        class="text-sm font-medium text-stone-700 transition hover:text-amber-700"
-      >
-        Collections
-      </a>
-
-      <a
-        routerLink="/enquiries"
-        routerLinkActive="text-amber-700"
-        class="text-sm font-medium text-stone-700 transition hover:text-amber-700"
-      >
-        Enquiry
-      </a>
-
-    </nav>
-
-    <!-- Actions -->
-    <div class="flex items-center gap-3">
-
-      <button
-        type="button"
-        class="hidden rounded-full p-2 text-stone-700 transition hover:bg-stone-100 hover:text-amber-700 sm:block"
-        aria-label="Search"
-      >
-        <span class="text-lg">⌕</span>
-      </button>
-
-      <a
-        routerLink="/cart"
-        class="hidden rounded-full p-2 text-stone-700 transition hover:bg-stone-100 hover:text-amber-700 sm:block"
-        aria-label="Shopping cart"
-      >
-        <span class="text-lg">🛒</span>
-      </a>
+      <nav class="hidden items-center gap-8 lg:flex">
+        <a routerLink="/" routerLinkActive="text-amber-700" [routerLinkActiveOptions]="{exact:true}" class="text-sm font-medium text-stone-700 hover:text-amber-700">Home</a>
+        <a routerLink="/shop" routerLinkActive="text-amber-700" class="text-sm font-medium text-stone-700 hover:text-amber-700">Shop</a>
+        <a routerLink="/collections" routerLinkActive="text-amber-700" class="text-sm font-medium text-stone-700 hover:text-amber-700">Collections</a>
+        <a routerLink="/categories" routerLinkActive="text-amber-700" class="text-sm font-medium text-stone-700 hover:text-amber-700">Categories</a>
+      </nav>
 
       <a
         routerLink="/shop"
@@ -87,16 +23,70 @@
         Explore
       </a>
 
-      <!-- Mobile menu button -->
       <button
         type="button"
         class="rounded-full p-2 text-stone-800 hover:bg-stone-100 lg:hidden"
-        aria-label="Open menu"
+        [attr.aria-label]="isMenuOpen ? 'Close menu' : 'Open menu'"
+        [attr.aria-expanded]="isMenuOpen"
+        (click)="toggleMenu()"
       >
-        ☰
+        <span class="text-2xl">{{ isMenuOpen ? '✕' : '☰' }}</span>
       </button>
 
     </div>
+
+    @if (isMenuOpen) {
+      <nav class="border-t border-stone-200 py-4 lg:hidden">
+        <div class="flex flex-col gap-1">
+
+          <a
+            routerLink="/"
+            routerLinkActive="bg-stone-100 text-amber-700"
+            [routerLinkActiveOptions]="{exact:true}"
+            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
+            (click)="closeMenu()"
+          >
+            Home
+          </a>
+
+          <a
+            routerLink="/shop"
+            routerLinkActive="bg-stone-100 text-amber-700"
+            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
+            (click)="closeMenu()"
+          >
+            Shop
+          </a>
+
+          <a
+            routerLink="/collections"
+            routerLinkActive="bg-stone-100 text-amber-700"
+            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
+            (click)="closeMenu()"
+          >
+            Collections
+          </a>
+
+          <a
+            routerLink="/categories"
+            routerLinkActive="bg-stone-100 text-amber-700"
+            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
+            (click)="closeMenu()"
+          >
+            Categories
+          </a>
+
+          <a
+            routerLink="/shop"
+            class="mt-2 rounded-full bg-stone-900 px-5 py-3 text-center text-sm font-medium text-white hover:bg-amber-700"
+            (click)="closeMenu()"
+          >
+            Explore
+          </a>
+
+        </div>
+      </nav>
+    }
 
   </div>
 </header>

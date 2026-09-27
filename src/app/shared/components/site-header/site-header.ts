@@ -8,5 +8,13 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './site-header.css',
 })
 export class SiteHeader {
+  isMenuOpen = false;
 
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu(): void {
+    this.isMenuOpen = false;
+  }
 }
