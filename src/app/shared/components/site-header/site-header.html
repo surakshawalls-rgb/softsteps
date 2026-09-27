@@ -1,27 +1,87 @@
 ﻿<header class="border-b border-stone-200 bg-white">
+
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
     <div class="flex h-20 items-center justify-between">
 
-      <a routerLink="/" class="flex items-center" (click)="closeMenu()">
+      <a
+        routerLink="/"
+        class="flex items-center"
+        (click)="closeMenu()"
+      >
         <div>
-          <div class="text-xl font-bold tracking-wide text-stone-900">Soft Steps</div>
-          <div class="text-xs tracking-[0.25em] text-stone-500">CARPETS & RUGS</div>
+          <div class="text-xl font-bold tracking-wide text-stone-900">
+            Soft Steps
+          </div>
+
+          <div class="text-xs tracking-[0.25em] text-stone-500">
+            CARPETS & RUGS
+          </div>
         </div>
       </a>
 
-      <nav class="hidden items-center gap-8 lg:flex">
-        <a routerLink="/" routerLinkActive="text-amber-700" [routerLinkActiveOptions]="{exact:true}" class="text-sm font-medium text-stone-700 hover:text-amber-700">Home</a>
-        <a routerLink="/shop" routerLinkActive="text-amber-700" class="text-sm font-medium text-stone-700 hover:text-amber-700">Shop</a>
-        <a routerLink="/collections" routerLinkActive="text-amber-700" class="text-sm font-medium text-stone-700 hover:text-amber-700">Collections</a>
-        <a routerLink="/categories" routerLinkActive="text-amber-700" class="text-sm font-medium text-stone-700 hover:text-amber-700">Categories</a>
+
+      <nav class="hidden items-center gap-7 lg:flex">
+
+        <a
+          routerLink="/"
+          routerLinkActive="text-amber-700"
+          [routerLinkActiveOptions]="{exact:true}"
+          class="text-sm font-medium text-stone-700 hover:text-amber-700"
+        >
+          Home
+        </a>
+
+        <a
+          routerLink="/shop"
+          routerLinkActive="text-amber-700"
+          class="text-sm font-medium text-stone-700 hover:text-amber-700"
+        >
+          Shop
+        </a>
+
+        <a
+          routerLink="/collections"
+          routerLinkActive="text-amber-700"
+          class="text-sm font-medium text-stone-700 hover:text-amber-700"
+        >
+          Collections
+        </a>
+
+        <a
+          routerLink="/categories"
+          routerLinkActive="text-amber-700"
+          class="text-sm font-medium text-stone-700 hover:text-amber-700"
+        >
+          Categories
+        </a>
+
+        <a
+          routerLink="/about"
+          routerLinkActive="text-amber-700"
+          class="text-sm font-medium text-stone-700 hover:text-amber-700"
+        >
+          About
+        </a>
+
+        <a
+          routerLink="/contact"
+          routerLinkActive="text-amber-700"
+          class="text-sm font-medium text-stone-700 hover:text-amber-700"
+        >
+          Contact
+        </a>
+
       </nav>
 
+
       <a
-        routerLink="/shop"
+        routerLink="/custom-requirement"
         class="hidden rounded-full bg-stone-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-amber-700 sm:block"
       >
-        Explore
+        Custom Requirement
       </a>
+
 
       <button
         type="button"
@@ -30,13 +90,18 @@
         [attr.aria-expanded]="isMenuOpen"
         (click)="toggleMenu()"
       >
-        <span class="text-2xl">{{ isMenuOpen ? '✕' : '☰' }}</span>
+        <span class="text-2xl">
+          {{ isMenuOpen ? '✕' : '☰' }}
+        </span>
       </button>
 
     </div>
 
+
     @if (isMenuOpen) {
+
       <nav class="border-t border-stone-200 py-4 lg:hidden">
+
         <div class="flex flex-col gap-1">
 
           <a
@@ -77,16 +142,53 @@
           </a>
 
           <a
-            routerLink="/shop"
+            routerLink="/about"
+            routerLinkActive="bg-stone-100 text-amber-700"
+            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
+            (click)="closeMenu()"
+          >
+            About Us
+          </a>
+
+          <a
+            routerLink="/contact"
+            routerLinkActive="bg-stone-100 text-amber-700"
+            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
+            (click)="closeMenu()"
+          >
+            Contact Us
+          </a>
+
+          <a
+            routerLink="/privacy-policy"
+            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
+            (click)="closeMenu()"
+          >
+            Privacy Policy
+          </a>
+
+          <a
+            routerLink="/terms"
+            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
+            (click)="closeMenu()"
+          >
+            Terms & Conditions
+          </a>
+
+          <a
+            routerLink="/custom-requirement"
             class="mt-2 rounded-full bg-stone-900 px-5 py-3 text-center text-sm font-medium text-white hover:bg-amber-700"
             (click)="closeMenu()"
           >
-            Explore
+            Custom Requirement
           </a>
 
         </div>
+
       </nav>
+
     }
 
   </div>
+
 </header>

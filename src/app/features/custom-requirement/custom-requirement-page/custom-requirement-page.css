@@ -1,0 +1,253 @@
+﻿:host {
+  display: block;
+}
+
+.custom-hero {
+  background:
+    linear-gradient(90deg, rgba(18,16,13,.94), rgba(18,16,13,.65)),
+    url('https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?auto=format&fit=crop&w=1800&q=85')
+    center / cover;
+  color: white;
+}
+
+.custom-hero-inner {
+  max-width: 1280px;
+  margin: auto;
+  padding: 115px 32px;
+}
+
+.eyebrow {
+  color: #d3a05b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+}
+
+.eyebrow.dark {
+  color: #a06f34;
+}
+
+.custom-hero h1 {
+  margin: 20px 0;
+  font-family: Georgia, serif;
+  font-size: clamp(48px, 7vw, 86px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -.04em;
+}
+
+.custom-hero p:last-child {
+  max-width: 650px;
+  color: #bcb4aa;
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.custom-section {
+  max-width: 1280px;
+  margin: auto;
+  padding: 100px 32px;
+}
+
+.custom-intro {
+  max-width: 760px;
+  margin-bottom: 55px;
+}
+
+.custom-intro h2 {
+  margin: 18px 0;
+  font-family: Georgia, serif;
+  font-size: clamp(40px, 5vw, 62px);
+  font-weight: 500;
+  line-height: 1.04;
+}
+
+.custom-intro > p:last-child {
+  max-width: 650px;
+  color: #776e65;
+  line-height: 1.8;
+}
+
+.form-card {
+  padding: 45px;
+  border: 1px solid #e4ddd4;
+  background: #fffdf9;
+  box-shadow: 0 25px 80px rgba(30,24,18,.07);
+}
+
+form {
+  display: grid;
+  gap: 25px;
+}
+
+.form-section-title {
+  margin-top: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e9e3db;
+  color: #403931;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  color: #514a42;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd6cd;
+  background: white;
+  color: #29251f;
+  padding: 14px 15px;
+  border-radius: 10px;
+  outline: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #b88746;
+  box-shadow: 0 0 0 3px rgba(184,135,70,.1);
+}
+
+.reference-box {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  padding: 20px;
+  border: 1px dashed #d8d0c6;
+  background: #faf7f2;
+}
+
+.reference-box strong,
+.reference-box span {
+  display: block;
+}
+
+.reference-box strong {
+  color: #403931;
+  font-size: 13px;
+}
+
+.reference-box span {
+  margin-top: 5px;
+  color: #8b8177;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.upload-placeholder {
+  padding: 10px 14px;
+  border: 1px solid #d8d0c6;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+form > button {
+  min-height: 54px;
+  border: 0;
+  border-radius: 999px;
+  background: #171512;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+form > button:hover:not(:disabled) {
+  background: #a06f34;
+}
+
+form > button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.form-note {
+  margin: 0;
+  color: #92897f;
+  font-size: 11px;
+  text-align: center;
+}
+
+.success-state {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.success-icon {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 25px;
+  place-items: center;
+  border-radius: 50%;
+  background: #171512;
+  color: #d3a05b;
+  font-size: 26px;
+}
+
+.success-state h2 {
+  margin: 18px 0;
+  font-family: Georgia, serif;
+  font-size: 45px;
+  font-weight: 500;
+}
+
+.success-state p:last-child {
+  max-width: 600px;
+  margin: auto;
+  color: #776e65;
+  line-height: 1.8;
+}
+
+@media (max-width: 767px) {
+
+  .custom-hero-inner {
+    padding: 80px 22px;
+  }
+
+  .custom-section {
+    padding: 70px 22px;
+  }
+
+  .form-card {
+    padding: 25px 20px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reference-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .upload-placeholder {
+    white-space: normal;
+  }
+}

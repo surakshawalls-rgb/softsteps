@@ -1,0 +1,177 @@
+﻿<div class="catalog-toolbar">
+
+  <div class="toolbar-top">
+
+    <div class="search-wrap">
+
+      <span class="search-icon">⌕</span>
+
+      <input
+        type="search"
+        [(ngModel)]="filter.search"
+        (ngModelChange)="update()"
+        placeholder="Search carpets, rugs, materials..."
+        aria-label="Search products"
+      />
+
+    </div>
+
+    <div class="desktop-sort">
+
+      <label>Sort by</label>
+
+      <select
+        [(ngModel)]="filter.sort"
+        (ngModelChange)="update()"
+        aria-label="Sort products"
+      >
+        @for (option of sortOptions; track option.value) {
+          <option [value]="option.value">
+            {{ option.label }}
+          </option>
+        }
+      </select>
+
+    </div>
+
+    <button
+      type="button"
+      class="mobile-filter-button"
+      (click)="toggleMobileFilters()"
+    >
+      <span>☷</span>
+      Filters
+    </button>
+
+  </div>
+
+
+  <div
+    class="filter-panel"
+    [class.filter-panel-open]="mobileFiltersOpen"
+  >
+
+    <div class="filter-field">
+
+      <label>Category</label>
+
+      <select
+        [(ngModel)]="filter.category"
+        (ngModelChange)="update()"
+      >
+        <option value="">All Categories</option>
+
+        @for (category of categories; track category.slug) {
+          <option [value]="category.slug">
+            {{ category.name }}
+          </option>
+        }
+
+      </select>
+
+    </div>
+
+
+    <div class="filter-field">
+
+      <label>Material</label>
+
+      <select
+        [(ngModel)]="filter.material"
+        (ngModelChange)="update()"
+      >
+        <option value="">All Materials</option>
+
+        @for (material of materials; track material.slug) {
+          <option [value]="material.slug">
+            {{ material.name }}
+          </option>
+        }
+
+      </select>
+
+    </div>
+
+
+    <div class="filter-field price-field">
+
+      <label>Price Range</label>
+
+      <div class="price-inputs">
+
+        <input
+          type="number"
+          [(ngModel)]="filter.minPrice"
+          (ngModelChange)="update()"
+          placeholder="Min"
+          min="0"
+        />
+
+        <span>—</span>
+
+        <input
+          type="number"
+          [(ngModel)]="filter.maxPrice"
+          (ngModelChange)="update()"
+          placeholder="Max"
+          min="0"
+        />
+
+      </div>
+
+    </div>
+
+
+    <div class="mobile-sort">
+
+      <label>Sort by</label>
+
+      <select
+        [(ngModel)]="filter.sort"
+        (ngModelChange)="update()"
+      >
+        @for (option of sortOptions; track option.value) {
+          <option [value]="option.value">
+            {{ option.label }}
+          </option>
+        }
+      </select>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="clear-button"
+      [disabled]="!hasFilters()"
+      (click)="clear()"
+    >
+      Clear filters
+    </button>
+
+  </div>
+
+
+  <div class="toolbar-bottom">
+
+    <p>
+      Showing
+      <strong>{{ resultCount }}</strong>
+      of
+      <strong>{{ totalCount }}</strong>
+      products
+    </p>
+
+    @if (hasFilters()) {
+      <button
+        type="button"
+        class="clear-inline"
+        (click)="clear()"
+      >
+        Clear all
+      </button>
+    }
+
+  </div>
+
+</div>

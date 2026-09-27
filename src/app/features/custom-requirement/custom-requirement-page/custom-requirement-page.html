@@ -1,0 +1,260 @@
+﻿<section class="custom-hero">
+
+  <div class="custom-hero-inner">
+
+    <p class="eyebrow">Custom & Project Requirements</p>
+
+    <h1>
+      Let's create something<br />
+      made for your space.
+    </h1>
+
+    <p>
+      From a single room to a complete hospitality or commercial
+      project, tell us what you have in mind.
+    </p>
+
+  </div>
+
+</section>
+
+
+<section class="custom-section">
+
+  <div class="custom-intro">
+
+    <p class="eyebrow dark">Tell us about your project</p>
+
+    <h2>
+      A carpet or rug<br />
+      designed around you.
+    </h2>
+
+    <p>
+      Share a few details about your requirement. This form is
+      designed to capture the information needed for a future
+      consultation, quotation and customisation workflow.
+    </p>
+
+  </div>
+
+
+  <div class="form-card">
+
+    @if (!submitted) {
+
+      <form (ngSubmit)="submit()" #requirementForm="ngForm">
+
+        <div class="form-section-title">
+          Contact Information
+        </div>
+
+        <div class="form-grid">
+
+          <label>
+            Name *
+            <input
+              type="text"
+              name="name"
+              [(ngModel)]="form.name"
+              required
+              placeholder="Your full name"
+            />
+          </label>
+
+          <label>
+            Phone *
+            <input
+              type="tel"
+              name="phone"
+              [(ngModel)]="form.phone"
+              required
+              placeholder="+91"
+            />
+          </label>
+
+          <label>
+            Email
+            <input
+              type="email"
+              name="email"
+              [(ngModel)]="form.email"
+              placeholder="you@example.com"
+            />
+          </label>
+
+          <label>
+            Project Location
+            <input
+              type="text"
+              name="location"
+              [(ngModel)]="form.location"
+              placeholder="City / State"
+            />
+          </label>
+
+        </div>
+
+
+        <div class="form-section-title">
+          Project Details
+        </div>
+
+        <div class="form-grid">
+
+          <label>
+            Requirement Type *
+            <select
+              name="requirementType"
+              [(ngModel)]="form.requirementType"
+              required
+            >
+              <option value="">Select one</option>
+              <option value="residential">Residential</option>
+              <option value="hospitality">Hotel / Hospitality</option>
+              <option value="office">Office</option>
+              <option value="commercial">Commercial</option>
+              <option value="designer">Interior Designer</option>
+              <option value="custom-rug">Custom Rug</option>
+              <option value="custom-carpet">Custom Carpet</option>
+              <option value="bulk">Bulk / Project Requirement</option>
+            </select>
+          </label>
+
+          <label>
+            Approx. Project Size
+            <input
+              type="text"
+              name="projectSize"
+              [(ngModel)]="form.projectSize"
+              placeholder="e.g. 1,500 sq. ft."
+            />
+          </label>
+
+          <label>
+            Preferred Size
+            <input
+              type="text"
+              name="preferredSize"
+              [(ngModel)]="form.preferredSize"
+              placeholder="e.g. 8 x 10 ft"
+            />
+          </label>
+
+          <label>
+            Preferred Material
+            <select
+              name="material"
+              [(ngModel)]="form.material"
+            >
+              <option value="">Not decided</option>
+              <option value="wool">Wool</option>
+              <option value="cotton">Cotton</option>
+              <option value="jute">Jute</option>
+              <option value="synthetic">Synthetic</option>
+              <option value="blend">Blend</option>
+              <option value="custom">Open to suggestions</option>
+            </select>
+          </label>
+
+          <label>
+            Preferred Colour
+            <input
+              type="text"
+              name="colour"
+              [(ngModel)]="form.colour"
+              placeholder="e.g. Beige, Ivory, Blue"
+            />
+          </label>
+
+          <label>
+            Estimated Budget
+            <select
+              name="budget"
+              [(ngModel)]="form.budget"
+            >
+              <option value="">Prefer to discuss</option>
+              <option value="under-25k">Under ₹25,000</option>
+              <option value="25k-50k">₹25,000 – ₹50,000</option>
+              <option value="50k-1l">₹50,000 – ₹1 Lakh</option>
+              <option value="1l-5l">₹1 Lakh – ₹5 Lakh</option>
+              <option value="5l-plus">₹5 Lakh+</option>
+            </select>
+          </label>
+
+        </div>
+
+
+        <div class="form-section-title">
+          Tell Us More
+        </div>
+
+        <label>
+          Requirement Details *
+          <textarea
+            name="details"
+            [(ngModel)]="form.details"
+            required
+            rows="7"
+            placeholder="Tell us about your space, preferred look, quantity, timeline or anything else that would help us understand the requirement."
+          ></textarea>
+        </label>
+
+
+        <div class="reference-box">
+
+          <div>
+            <strong>Reference Images</strong>
+            <span>
+              Optional — image upload will be connected to
+              Supabase Storage in the next backend phase.
+            </span>
+          </div>
+
+          <span class="upload-placeholder">
+            Upload coming with backend integration
+          </span>
+
+        </div>
+
+
+        <button
+          type="submit"
+          [disabled]="!requirementForm.valid"
+        >
+          Request a Custom Consultation
+        </button>
+
+        <p class="form-note">
+          We use the information you provide only to understand
+          and respond to your requirement.
+        </p>
+
+      </form>
+
+    } @else {
+
+      <div class="success-state">
+
+        <div class="success-icon">✓</div>
+
+        <p class="eyebrow dark">Thank you</p>
+
+        <h2>
+          Your requirement<br />
+          has been noted.
+        </h2>
+
+        <p>
+          The form is ready for the production Supabase workflow.
+          Once connected, your requirement can be stored,
+          managed and followed up from the admin system.
+        </p>
+
+      </div>
+
+    }
+
+  </div>
+
+</section>

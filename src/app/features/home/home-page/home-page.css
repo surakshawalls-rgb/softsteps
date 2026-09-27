@@ -2,18 +2,58 @@
   display: block;
 }
 
-.hero-art {
-  perspective: 1000px;
+:host > section:first-child {
+  position: relative;
+  background:
+    radial-gradient(circle at 75% 25%, rgba(184, 135, 70, 0.18), transparent 32%),
+    radial-gradient(circle at 90% 80%, rgba(255,255,255,0.04), transparent 25%),
+    #171512;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .hero-art > div {
-    transition:
-      transform 500ms ease,
-      box-shadow 500ms ease;
-  }
+:host > section:first-child h1 {
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
 
-  .hero-art > div:hover {
-    transform: translateY(-8px) rotate(2deg);
+:host > section:first-child p {
+  letter-spacing: 0.01em;
+}
+
+:host > section:first-child a.rounded-full {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.20);
+}
+
+:host > section:first-child a.rounded-full:hover {
+  box-shadow: 0 18px 42px rgba(184, 135, 70, 0.22);
+}
+
+:host > section:nth-child(2)::before {
+  content: "";
+  display: block;
+  width: 46px;
+  height: 1px;
+  margin: 0 auto 28px;
+  background: #b88746;
+}
+
+:host a.group {
+  box-shadow: 0 8px 25px rgba(28, 24, 18, 0.07);
+  transition:
+    transform 400ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 400ms ease;
+}
+
+:host a.group:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 22px 48px rgba(28, 24, 18, 0.13);
+}
+
+:host app-product-card {
+  height: 100%;
+}
+
+@media (max-width: 639px) {
+  :host > section:first-child h1 {
+    font-size: 3.4rem;
   }
 }

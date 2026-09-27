@@ -1,3 +1,52 @@
 ﻿:host {
   display: block;
 }
+
+:host > header {
+  position: relative;
+  z-index: 50;
+  background: rgba(255, 253, 249, 0.94);
+  border-bottom: 1px solid rgba(41, 37, 31, 0.08);
+  box-shadow: 0 4px 24px rgba(28, 24, 18, 0.035);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+:host > header > div {
+  max-width: 1400px;
+}
+
+nav a {
+  position: relative;
+  transition: color 220ms ease, opacity 220ms ease;
+}
+
+nav a:not(.rounded-full)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 0;
+  height: 1px;
+  background: #b88746;
+  transform: translateX(-50%);
+  transition: width 220ms ease;
+}
+
+nav a:not(.rounded-full):hover::after {
+  width: 70%;
+}
+
+:host > header a.rounded-full {
+  box-shadow: 0 8px 20px rgba(23, 21, 18, 0.12);
+}
+
+:host > header a.rounded-full:hover {
+  box-shadow: 0 12px 28px rgba(184, 135, 70, 0.20);
+}
+
+@media (max-width: 1023px) {
+  :host > header {
+    box-shadow: 0 3px 18px rgba(28, 24, 18, 0.06);
+  }
+}

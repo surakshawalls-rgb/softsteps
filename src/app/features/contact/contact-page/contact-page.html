@@ -1,0 +1,177 @@
+﻿<section class="contact-hero">
+
+  <div>
+    <p class="eyebrow">Get in touch</p>
+
+    <h1>
+      Let's talk about<br />
+      your space.
+    </h1>
+
+    <p>
+      Whether you're looking for a rug for your home,
+      carpets for a project, or something completely custom,
+      we'd love to hear from you.
+    </p>
+  </div>
+
+</section>
+
+
+<section class="contact-section">
+
+  <div class="contact-grid">
+
+    <div class="contact-details">
+
+      <p class="eyebrow dark">Contact Soft Steps</p>
+
+      <h2>
+        We'd be happy<br />
+        to help.
+      </h2>
+
+      <p class="description">
+        Share your requirement with us and our team can
+        guide you towards the right collection or custom
+        solution.
+      </p>
+
+      <div class="contact-item">
+        <span>Email</span>
+        <a href="mailto:info@softstepscarpet.store">
+          info@softstepscarpet.store
+        </a>
+      </div>
+
+      <div class="contact-item">
+        <span>Website</span>
+        <a
+          href="https://www.softstepscarpet.store"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          www.softstepscarpet.store
+        </a>
+      </div>
+
+      <a
+        routerLink="/custom-requirement"
+        class="custom-link"
+      >
+        Have a project or custom requirement? →
+      </a>
+
+    </div>
+
+
+    <div class="contact-form-card">
+
+      @if (!submitted) {
+
+        <form (ngSubmit)="submit()" #contactForm="ngForm">
+
+          <div class="form-row">
+
+            <label>
+              Name
+              <input
+                type="text"
+                name="name"
+                [(ngModel)]="form.name"
+                required
+                placeholder="Your name"
+              />
+            </label>
+
+            <label>
+              Phone
+              <input
+                type="tel"
+                name="phone"
+                [(ngModel)]="form.phone"
+                placeholder="+91"
+              />
+            </label>
+
+          </div>
+
+          <label>
+            Email
+            <input
+              type="email"
+              name="email"
+              [(ngModel)]="form.email"
+              required
+              placeholder="you@example.com"
+            />
+          </label>
+
+          <label>
+            Subject
+            <select
+              name="subject"
+              [(ngModel)]="form.subject"
+            >
+              <option value="">Select a subject</option>
+              <option value="carpet">Carpet enquiry</option>
+              <option value="rug">Rug enquiry</option>
+              <option value="custom">Custom requirement</option>
+              <option value="project">Project / commercial enquiry</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+
+          <label>
+            Message
+            <textarea
+              name="message"
+              [(ngModel)]="form.message"
+              rows="6"
+              required
+              placeholder="Tell us a little about what you are looking for..."
+            ></textarea>
+          </label>
+
+          <button
+            type="submit"
+            [disabled]="!contactForm.valid"
+          >
+            Send Enquiry
+          </button>
+
+          <p class="form-note">
+            Your enquiry form is ready to be connected to
+            Supabase when the backend workflow is enabled.
+          </p>
+
+        </form>
+
+      } @else {
+
+        <div class="success-state">
+
+          <div class="success-icon">✓</div>
+
+          <p class="eyebrow dark">Thank you</p>
+
+          <h2>
+            We've received<br />
+            your enquiry.
+          </h2>
+
+          <p>
+            Our contact workflow will be connected to the
+            Soft Steps backend as the platform moves to
+            production.
+          </p>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+</section>

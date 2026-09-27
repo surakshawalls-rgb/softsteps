@@ -1,3 +1,39 @@
 ﻿:host {
   display: block;
 }
+
+:host > div {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.75), transparent 35%),
+    linear-gradient(135deg, #f2eee7, #ddd5c8);
+}
+
+:host > div::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.10),
+    transparent 45%,
+    rgba(0,0,0,0.05)
+  );
+}
+
+:host img {
+  position: relative;
+  z-index: 1;
+}
+
+:host > div:hover img {
+  transform: scale(1.035);
+}
+
+:host span {
+  position: relative;
+  z-index: 1;
+  letter-spacing: 0.02em;
+}

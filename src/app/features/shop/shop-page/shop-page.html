@@ -11,8 +11,8 @@
     </h1>
 
     <p class="mt-6 max-w-2xl text-base leading-8 text-stone-300">
-      Explore our selection of carpets and rugs across different
-      materials, styles and collections.
+      Explore carpets and rugs across different materials, styles,
+      textures and price points — curated for beautiful interiors.
     </p>
 
   </div>
@@ -27,13 +27,10 @@
     @if (loading) {
 
       <div class="py-24 text-center">
-
         <div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-stone-300 border-t-amber-600"></div>
-
         <p class="mt-5 text-sm text-stone-500">
           Loading products...
         </p>
-
       </div>
 
     }
@@ -54,7 +51,7 @@
         <button
           type="button"
           (click)="retry()"
-          class="mt-6 rounded-full bg-stone-900 px-6 py-3 text-sm font-medium text-white hover:bg-stone-700"
+          class="mt-6 rounded-full bg-stone-900 px-6 py-3 text-sm font-medium text-white"
         >
           Try Again
         </button>
@@ -64,67 +61,72 @@
     }
 
 
-    @if (!loading && !errorMessage && products.length === 0) {
+    @if (!loading && !errorMessage) {
 
-      <div class="mx-auto max-w-xl py-24 text-center">
+      <div class="mb-10">
 
-        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
-          Collection coming soon
+        <p class="text-xs uppercase tracking-[0.25em] text-stone-400">
+          Our catalog
         </p>
 
-        <h2 class="mt-4 text-2xl font-semibold text-stone-900">
-          Our catalog is being prepared.
+        <h2 class="mt-2 text-2xl font-semibold text-stone-900">
+          Find something made for your space
         </h2>
 
-        <p class="mt-4 text-sm leading-7 text-stone-500">
-          New carpets and rugs will appear here as they are added
-          to the Soft Steps catalog.
-        </p>
-
-        <a
-          routerLink="/"
-          class="mt-7 inline-flex rounded-full bg-stone-900 px-6 py-3 text-sm font-medium text-white hover:bg-stone-700"
-        >
-          Back to Home
-        </a>
-
       </div>
 
-    }
+
+      <app-catalog-toolbar
+        [filter]="filter"
+        [categories]="categories"
+        [materials]="materials"
+        [resultCount]="filteredProducts.length"
+        [totalCount]="products.length"
+        (filterChange)="onFilterChange($event)"
+      ></app-catalog-toolbar>
 
 
-    @if (!loading && !errorMessage && products.length > 0) {
+      @if (filteredProducts.length === 0) {
 
-      <div class="mb-10 flex items-end justify-between">
+        <div class="mx-auto max-w-xl py-24 text-center">
 
-        <div>
-          <p class="text-xs uppercase tracking-[0.25em] text-stone-400">
-            Our catalog
+          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
+            No match found
           </p>
 
-          <h2 class="mt-2 text-2xl font-semibold text-stone-900">
-            All Products
+          <h2 class="mt-4 text-2xl font-semibold text-stone-900">
+            We couldn't find a product matching your filters.
           </h2>
+
+          <p class="mt-4 text-sm leading-7 text-stone-500">
+            Try changing your search, category, material or price range.
+          </p>
+
+          <button
+            type="button"
+            (click)="onFilterChange(catalogFilter.reset())"
+            class="mt-7 rounded-full bg-stone-900 px-6 py-3 text-sm font-medium text-white"
+          >
+            Clear Filters
+          </button>
+
         </div>
 
-        <p class="text-sm text-stone-500">
-          {{ products.length }} product{{ products.length === 1 ? '' : 's' }}
-        </p>
+      } @else {
 
-      </div>
+        <div class="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
 
+          @for (product of filteredProducts; track product.id ?? product.slug) {
 
-      <div class="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+            <app-product-card
+              [product]="product"
+            ></app-product-card>
 
-        @for (product of products; track product.id ?? product.slug) {
+          }
 
-          <app-product-card
-            [product]="product"
-          ></app-product-card>
+        </div>
 
-        }
-
-      </div>
+      }
 
     }
 
