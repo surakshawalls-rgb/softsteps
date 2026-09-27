@@ -3,6 +3,7 @@
 export const serverRoutes: ServerRoute[] = [
   {
     path: '**',
-    renderMode: RenderMode.Server
+    renderMode: RenderMode.Client
   }
 ];
+
