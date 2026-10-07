@@ -20,28 +20,28 @@ export class CollectionPage {
       name: 'Heritage Collection',
       slug: 'heritage',
       description: 'Traditional inspiration interpreted for contemporary homes.',
-      image_url: 'https://images.unsplash.com/photo-1583845112203-454c7f2c2f4b?auto=format&fit=crop&w=1200&q=80'
+      image_url: '/Home%20banner%20img%209-16/3rd_img%283_4%29.png'
     },
     {
       id: 'col-2',
       name: 'Modern Living',
       slug: 'modern-living',
       description: 'Clean textures and modern patterns for everyday living.',
-      image_url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80'
+      image_url: '/Home%20banner%20img%209-16/2nd_img%283_4%29.png'
     },
     {
       id: 'col-3',
       name: 'Luxury Edit',
       slug: 'luxury-edit',
       description: 'Statement pieces selected for elegant interiors.',
-      image_url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80'
+      image_url: '/Home%20banner%20img%209-16/4th_img%283_4%29.png'
     },
     {
       id: 'col-4',
       name: 'Natural Living',
       slug: 'natural-living',
       description: 'Earthy colours, natural textures and relaxed character.',
-      image_url: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80'
+      image_url: '/Home%20banner%20img%209-16/1st_img%283_4%29.png'
     }
   ];
 
@@ -54,7 +54,7 @@ export class CollectionPage {
       material: { name: 'Wool', slug: 'wool' },
       status: 'active',
       variants: [{ price: 8499, sale_price: 7499, size: '5 x 8 ft', color: 'Ivory' }],
-      images: [{ image_url: 'https://images.unsplash.com/photo-1600166898405-da9535204843?auto=format&fit=crop&w=1000&q=80', is_primary: true }]
+      images: [{ image_url: '/Trending%20rugs/ss_trending1_1.jpg', is_primary: true }]
     },
     {
       id: 'collection-product-2',
@@ -64,7 +64,7 @@ export class CollectionPage {
       material: { name: 'Wool Blend', slug: 'wool-blend' },
       status: 'active',
       variants: [{ price: 12999, sale_price: 10999, size: '6 x 9 ft', color: 'Rust' }],
-      images: [{ image_url: 'https://images.unsplash.com/photo-1604578762246-41134e37f9cc?auto=format&fit=crop&w=1000&q=80', is_primary: true }]
+      images: [{ image_url: '/Trending%20rugs/ss_trending4_1.jpg', is_primary: true }]
     },
     {
       id: 'collection-product-3',
@@ -74,7 +74,7 @@ export class CollectionPage {
       material: { name: 'Jute', slug: 'jute' },
       status: 'active',
       variants: [{ price: 4599, size: '4 x 6 ft', color: 'Natural' }],
-      images: [{ image_url: 'https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?auto=format&fit=crop&w=1000&q=80', is_primary: true }]
+      images: [{ image_url: '/Trending%20rugs/ss_trending5_1.jpg', is_primary: true }]
     }
   ];
 
@@ -88,4 +88,3 @@ export class CollectionPage {
     window.location.reload();
   }
 }
-

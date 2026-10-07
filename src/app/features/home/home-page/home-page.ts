@@ -21,42 +21,42 @@ export class HomePage {
       name: 'Modern Rugs',
       slug: 'modern-rugs',
       description: 'Contemporary rugs designed for modern interiors.',
-      image_url: 'https://images.unsplash.com/photo-1600166898405-da9535204843?auto=format&fit=crop&w=900&q=80'
+      image_url: '/Category%20imgs/Modern_rugs.png'
     },
     {
       id: 'cat-2',
       name: 'Traditional Carpets',
       slug: 'traditional-carpets',
       description: 'Classic patterns with timeless character.',
-      image_url: 'https://images.unsplash.com/photo-1604578762246-41134e37f9cc?auto=format&fit=crop&w=900&q=80'
+      image_url: '/Category%20imgs/Traditional_carpets.jpg'
     },
     {
       id: 'cat-3',
       name: 'Handmade Rugs',
       slug: 'handmade-rugs',
       description: 'Crafted with care and distinctive detailing.',
-      image_url: 'https://images.unsplash.com/photo-1575410229391-19b4da01cc94?auto=format&fit=crop&w=900&q=80'
+      image_url: '/Home%20shop%20by%20style/Handknotted_rugs.png'
     },
     {
       id: 'cat-4',
       name: 'Luxury Carpets',
       slug: 'luxury-carpets',
       description: 'Premium carpets for refined spaces.',
-      image_url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=900&q=80'
+      image_url: '/Category%20imgs/Luxury_rugs.jpg'
     },
     {
       id: 'cat-5',
       name: 'Outdoor Rugs',
       slug: 'outdoor-rugs',
       description: 'Durable styles made for versatile spaces.',
-      image_url: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80'
+      image_url: '/Category%20imgs/Outdoor_rugs.png'
     },
     {
       id: 'cat-6',
       name: 'Custom Rugs',
       slug: 'custom-rugs',
       description: 'Create a rug around your space and style.',
-      image_url: 'https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=900&q=80'
+      image_url: '/Category%20imgs/Irregular_rugs.jpg'
     }
   ];
 
@@ -66,21 +66,21 @@ export class HomePage {
       name: 'Heritage Collection',
       slug: 'heritage',
       description: 'Traditional inspiration interpreted for contemporary homes.',
-      image_url: 'https://images.unsplash.com/photo-1583845112203-454c7f2c2f4b?auto=format&fit=crop&w=1200&q=80'
+      image_url: '/Home%20banner%20img%209-16/3rd_img%283_4%29.png'
     },
     {
       id: 'col-2',
       name: 'Modern Living',
       slug: 'modern-living',
       description: 'Clean textures and modern patterns for everyday living.',
-      image_url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80'
+      image_url: '/Home%20banner%20img%209-16/2nd_img%283_4%29.png'
     },
     {
       id: 'col-3',
       name: 'Luxury Edit',
       slug: 'luxury-edit',
       description: 'Statement pieces selected for elegant interiors.',
-      image_url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80'
+      image_url: '/Home%20banner%20img%209-16/4th_img%283_4%29.png'
     }
   ];
 
@@ -108,7 +108,7 @@ export class HomePage {
       images: [
         {
           id: 'i-1',
-          image_url: 'https://images.unsplash.com/photo-1600166898405-da9535204843?auto=format&fit=crop&w=1000&q=80',
+          image_url: '/Trending%20rugs/ss_trending1_1.jpg',
           alt_text: 'Ivory Sand Handloom Rug',
           is_primary: true,
           sort_order: 1
@@ -137,7 +137,7 @@ export class HomePage {
       images: [
         {
           id: 'i-2',
-          image_url: 'https://images.unsplash.com/photo-1575410229391-19b4da01cc94?auto=format&fit=crop&w=1000&q=80',
+          image_url: '/Trending%20rugs/ss_trending2_1.jpg',
           alt_text: 'Terracotta Loom Carpet',
           is_primary: true,
           sort_order: 1
@@ -167,7 +167,7 @@ export class HomePage {
       images: [
         {
           id: 'i-3',
-          image_url: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1000&q=80',
+          image_url: '/Trending%20rugs/ss_trending3_1.jpg',
           alt_text: 'Moss and Stone Modern Rug',
           is_primary: true,
           sort_order: 1
@@ -197,7 +197,7 @@ export class HomePage {
       images: [
         {
           id: 'i-4',
-          image_url: 'https://images.unsplash.com/photo-1604578762246-41134e37f9cc?auto=format&fit=crop&w=1000&q=80',
+          image_url: '/Trending%20rugs/ss_trending4_1.jpg',
           alt_text: 'Royal Heritage Pattern Carpet',
           is_primary: true,
           sort_order: 1
@@ -226,7 +226,7 @@ export class HomePage {
       images: [
         {
           id: 'i-5',
-          image_url: 'https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?auto=format&fit=crop&w=1000&q=80',
+          image_url: '/Trending%20rugs/ss_trending5_1.jpg',
           alt_text: 'Natural Jute Texture Rug',
           is_primary: true,
           sort_order: 1
@@ -256,7 +256,7 @@ export class HomePage {
       images: [
         {
           id: 'i-6',
-          image_url: 'https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=1000&q=80',
+          image_url: '/Trending%20rugs/ss_trending6_1.jpg',
           alt_text: 'Midnight Geometric Rug',
           is_primary: true,
           sort_order: 1
@@ -281,4 +281,3 @@ export class HomePage {
     window.location.reload();
   }
 }
-

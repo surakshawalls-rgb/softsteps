@@ -1,194 +1,53 @@
-﻿<header class="border-b border-stone-200 bg-white">
-
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
-    <div class="flex h-20 items-center justify-between">
-
-      <a
-        routerLink="/"
-        class="flex items-center"
-        (click)="closeMenu()"
-      >
-        <div>
-          <div class="text-xl font-bold tracking-wide text-stone-900">
-            Soft Steps
-          </div>
-
-          <div class="text-xs tracking-[0.25em] text-stone-500">
-            CARPETS & RUGS
-          </div>
-        </div>
-      </a>
-
-
-      <nav class="hidden items-center gap-7 lg:flex">
-
-        <a
-          routerLink="/"
-          routerLinkActive="text-amber-700"
-          [routerLinkActiveOptions]="{exact:true}"
-          class="text-sm font-medium text-stone-700 hover:text-amber-700"
-        >
-          Home
-        </a>
-
-        <a
-          routerLink="/shop"
-          routerLinkActive="text-amber-700"
-          class="text-sm font-medium text-stone-700 hover:text-amber-700"
-        >
-          Shop
-        </a>
-
-        <a
-          routerLink="/collections"
-          routerLinkActive="text-amber-700"
-          class="text-sm font-medium text-stone-700 hover:text-amber-700"
-        >
-          Collections
-        </a>
-
-        <a
-          routerLink="/categories"
-          routerLinkActive="text-amber-700"
-          class="text-sm font-medium text-stone-700 hover:text-amber-700"
-        >
-          Categories
-        </a>
-
-        <a
-          routerLink="/about"
-          routerLinkActive="text-amber-700"
-          class="text-sm font-medium text-stone-700 hover:text-amber-700"
-        >
-          About
-        </a>
-
-        <a
-          routerLink="/contact"
-          routerLinkActive="text-amber-700"
-          class="text-sm font-medium text-stone-700 hover:text-amber-700"
-        >
-          Contact
-        </a>
-
-      </nav>
-
-
-      <a
-        routerLink="/custom-requirement"
-        class="hidden rounded-full bg-stone-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-amber-700 sm:block"
-      >
-        Custom Requirement
-      </a>
-
-
-      <button
-        type="button"
-        class="rounded-full p-2 text-stone-800 hover:bg-stone-100 lg:hidden"
-        [attr.aria-label]="isMenuOpen ? 'Close menu' : 'Open menu'"
-        [attr.aria-expanded]="isMenuOpen"
-        (click)="toggleMenu()"
-      >
-        <span class="text-2xl">
-          {{ isMenuOpen ? '✕' : '☰' }}
-        </span>
-      </button>
-
-    </div>
-
-
-    @if (isMenuOpen) {
-
-      <nav class="border-t border-stone-200 py-4 lg:hidden">
-
-        <div class="flex flex-col gap-1">
-
-          <a
-            routerLink="/"
-            routerLinkActive="bg-stone-100 text-amber-700"
-            [routerLinkActiveOptions]="{exact:true}"
-            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
-            (click)="closeMenu()"
-          >
-            Home
-          </a>
-
-          <a
-            routerLink="/shop"
-            routerLinkActive="bg-stone-100 text-amber-700"
-            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
-            (click)="closeMenu()"
-          >
-            Shop
-          </a>
-
-          <a
-            routerLink="/collections"
-            routerLinkActive="bg-stone-100 text-amber-700"
-            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
-            (click)="closeMenu()"
-          >
-            Collections
-          </a>
-
-          <a
-            routerLink="/categories"
-            routerLinkActive="bg-stone-100 text-amber-700"
-            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
-            (click)="closeMenu()"
-          >
-            Categories
-          </a>
-
-          <a
-            routerLink="/about"
-            routerLinkActive="bg-stone-100 text-amber-700"
-            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
-            (click)="closeMenu()"
-          >
-            About Us
-          </a>
-
-          <a
-            routerLink="/contact"
-            routerLinkActive="bg-stone-100 text-amber-700"
-            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
-            (click)="closeMenu()"
-          >
-            Contact Us
-          </a>
-
-          <a
-            routerLink="/privacy-policy"
-            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
-            (click)="closeMenu()"
-          >
-            Privacy Policy
-          </a>
-
-          <a
-            routerLink="/terms"
-            class="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
-            (click)="closeMenu()"
-          >
-            Terms & Conditions
-          </a>
-
-          <a
-            routerLink="/custom-requirement"
-            class="mt-2 rounded-full bg-stone-900 px-5 py-3 text-center text-sm font-medium text-white hover:bg-amber-700"
-            (click)="closeMenu()"
-          >
-            Custom Requirement
-          </a>
-
-        </div>
-
-      </nav>
-
-    }
-
+<header class="site-header">
+  <div class="announcement-bar">
+    <span>Crafted with care in India <span aria-hidden="true">·</span> Made for spaces worldwide</span>
+    <a href="https://wa.me/917007131072" target="_blank" rel="noopener noreferrer">
+      Start a conversation <span aria-hidden="true">↗</span>
+    </a>
   </div>
 
+  <div class="header-main">
+    <a routerLink="/" class="brand" aria-label="Soft Steps Carpets & Rugs home" (click)="closeMenu()">
+      <span class="brand-mark" aria-hidden="true">SS</span>
+      <span class="brand-copy">
+        <span class="brand-name">Soft Steps</span>
+        <span class="brand-category">CARPETS & RUGS</span>
+      </span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a>
+      <a routerLink="/shop" routerLinkActive="active">Shop Rugs</a>
+      <a routerLink="/collections" routerLinkActive="active">Collections</a>
+      <a routerLink="/categories" routerLinkActive="active">Categories</a>
+      <a routerLink="/about" routerLinkActive="active">Our Story</a>
+      <a routerLink="/contact" routerLinkActive="active">Contact</a>
+    </nav>
+
+    <a routerLink="/custom-requirement" class="header-cta">Custom projects <span aria-hidden="true">↗</span></a>
+
+    <button
+      type="button"
+      class="menu-toggle"
+      [attr.aria-label]="isMenuOpen ? 'Close menu' : 'Open menu'"
+      [attr.aria-expanded]="isMenuOpen"
+      aria-controls="mobile-navigation"
+      (click)="toggleMenu()"
+    >
+      <span aria-hidden="true">{{ isMenuOpen ? '✕' : '☰' }}</span>
+    </button>
+  </div>
+
+  @if (isMenuOpen) {
+    <nav id="mobile-navigation" class="mobile-nav" aria-label="Mobile navigation">
+      <a routerLink="/" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="active" (click)="closeMenu()">Home</a>
+      <a routerLink="/shop" routerLinkActive="active" (click)="closeMenu()">Shop Rugs</a>
+      <a routerLink="/collections" routerLinkActive="active" (click)="closeMenu()">Collections</a>
+      <a routerLink="/categories" routerLinkActive="active" (click)="closeMenu()">Categories</a>
+      <a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">Our Story</a>
+      <a routerLink="/enquiries" routerLinkActive="active" (click)="closeMenu()">Project Enquiry</a>
+      <a routerLink="/contact" routerLinkActive="active" (click)="closeMenu()">Contact Us</a>
+      <a routerLink="/custom-requirement" class="mobile-nav-cta" (click)="closeMenu()">Submit a detailed requirement <span aria-hidden="true">→</span></a>
+    </nav>
+  }
 </header>

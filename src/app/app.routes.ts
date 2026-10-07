@@ -8,6 +8,7 @@ import { ProductPage } from './features/products/product-page/product-page';
 
 import { AboutPage } from './features/about/about-page/about-page';
 import { ContactPage } from './features/contact/contact-page/contact-page';
+import { EnquiryForm } from './features/enquiries/enquiry-form/enquiry-form';
 import { CustomRequirementPage } from './features/custom-requirement/custom-requirement-page/custom-requirement-page';
 import { PrivacyPolicyPage } from './features/privacy-policy/privacy-policy-page/privacy-policy-page';
 import { TermsPage } from './features/terms/terms-page/terms-page';
@@ -78,6 +79,12 @@ export const routes: Routes = [
     path: 'contact-us',
     redirectTo: 'contact',
     pathMatch: 'full'
+  },
+
+  {
+    path: 'enquiries',
+    component: EnquiryForm,
+    title: 'Project Enquiry | Soft Steps Carpets & Rugs'
   },
 
   {

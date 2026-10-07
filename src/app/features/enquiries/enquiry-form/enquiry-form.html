@@ -1,1 +1,88 @@
-<p>enquiry-form works!</p>
+<main class="enquiry-page">
+  <section class="enquiry-heading">
+    <p class="eyebrow">Made for your space</p>
+    <h1>Let’s make room<br /><span>for something special.</span></h1>
+    <p>
+      Tell us about your project. From a single custom rug to a full hospitality
+      installation, we’ll help you find the right way forward.
+    </p>
+    <div class="origin-note"><span></span> Made in India · Global supply</div>
+  </section>
+
+  <section class="enquiry-content">
+    <div class="enquiry-aside">
+      <p class="eyebrow">Project enquiries</p>
+      <h2>Start with the details.</h2>
+      <p>
+        Share what you know so far — space, size, materials, quantities or
+        inspiration. We’ll continue the conversation with you directly.
+      </p>
+      <a href="tel:+917007131072">+91 70071 31072</a>
+      <a href="mailto:info@softstepscarpets.com">info@softstepscarpets.com</a>
+    </div>
+
+    <div class="enquiry-card">
+      @if (!whatsappUrl) {
+        <form (ngSubmit)="prepareEnquiry()" #enquiryForm="ngForm">
+          <div class="form-row">
+            <label>
+              Your name <span>*</span>
+              <input type="text" name="name" [(ngModel)]="form.name" required autocomplete="name" placeholder="Name" />
+            </label>
+            <label>
+              Email address <span>*</span>
+              <input type="email" name="email" [(ngModel)]="form.email" required autocomplete="email" placeholder="you@example.com" />
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label>
+              Phone or WhatsApp
+              <input type="tel" name="phone" [(ngModel)]="form.phone" autocomplete="tel" placeholder="+91" />
+            </label>
+            <label>
+              Project type
+              <select name="projectType" [(ngModel)]="form.projectType">
+                <option value="">Select project type</option>
+                <option value="Home / residential">Home / residential</option>
+                <option value="Hospitality">Hospitality</option>
+                <option value="Interior design">Interior design</option>
+                <option value="Commercial">Commercial</option>
+                <option value="Trade / wholesale">Trade / wholesale</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+          </div>
+
+          <label>
+            Project location
+            <input type="text" name="location" [(ngModel)]="form.location" placeholder="City, country" />
+          </label>
+
+          <label>
+            Tell us about your requirement <span>*</span>
+            <textarea name="details" [(ngModel)]="form.details" required rows="5" placeholder="Approximate sizes, quantity, materials, timeline or anything else that would help us understand your project..."></textarea>
+          </label>
+
+          <button type="submit" [disabled]="!enquiryForm.valid">
+            Continue on WhatsApp <span aria-hidden="true">↗</span>
+          </button>
+          <p class="form-note">
+            Your details will be prepared in a WhatsApp message for you to review and send.
+          </p>
+        </form>
+      } @else {
+        <div class="enquiry-ready">
+          <span class="ready-mark" aria-hidden="true">✓</span>
+          <p class="eyebrow">Your enquiry is ready</p>
+          <h2>Continue the conversation.</h2>
+          <p>Review your details in WhatsApp, then send your message to our team.</p>
+          <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer">
+            Open WhatsApp <span aria-hidden="true">↗</span>
+          </a>
+          <button type="button" class="edit-link" (click)="whatsappUrl = ''">Edit my details</button>
+        </div>
+      }
+    </div>
+  </section>
+</main>

@@ -34,7 +34,7 @@ export class ShopPage {
       status: 'active',
       featured: true,
       variants: [{ price: 8499, sale_price: 7499, size: '5 x 8 ft', color: 'Ivory' }],
-      images: [{ image_url: 'https://images.unsplash.com/photo-1600166898405-da9535204843?auto=format&fit=crop&w=1000&q=80', is_primary: true }]
+      images: [{ image_url: '/Trending%20rugs/ss_trending1_1.jpg', is_primary: true }]
     },
     {
       id: 'shop-2',
@@ -45,7 +45,7 @@ export class ShopPage {
       material: { name: 'Cotton', slug: 'cotton' },
       status: 'active',
       variants: [{ price: 6999, size: '5 x 7 ft', color: 'Terracotta' }],
-      images: [{ image_url: 'https://images.unsplash.com/photo-1575410229391-19b4da01cc94?auto=format&fit=crop&w=1000&q=80', is_primary: true }]
+      images: [{ image_url: '/Trending%20rugs/ss_trending2_1.jpg', is_primary: true }]
     },
     {
       id: 'shop-3',
@@ -57,7 +57,7 @@ export class ShopPage {
       status: 'active',
       featured: true,
       variants: [{ price: 5999, sale_price: 5299, size: '5 x 7 ft', color: 'Moss' }],
-      images: [{ image_url: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1000&q=80', is_primary: true }]
+      images: [{ image_url: '/Trending%20rugs/ss_trending3_1.jpg', is_primary: true }]
     },
     {
       id: 'shop-4',
@@ -69,7 +69,7 @@ export class ShopPage {
       status: 'active',
       featured: true,
       variants: [{ price: 12999, sale_price: 10999, size: '6 x 9 ft', color: 'Rust' }],
-      images: [{ image_url: 'https://images.unsplash.com/photo-1604578762246-41134e37f9cc?auto=format&fit=crop&w=1000&q=80', is_primary: true }]
+      images: [{ image_url: '/Trending%20rugs/ss_trending4_1.jpg', is_primary: true }]
     },
     {
       id: 'shop-5',
@@ -80,7 +80,7 @@ export class ShopPage {
       material: { name: 'Jute', slug: 'jute' },
       status: 'active',
       variants: [{ price: 4599, size: '4 x 6 ft', color: 'Natural' }],
-      images: [{ image_url: 'https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?auto=format&fit=crop&w=1000&q=80', is_primary: true }]
+      images: [{ image_url: '/Trending%20rugs/ss_trending5_1.jpg', is_primary: true }]
     },
     {
       id: 'shop-6',
@@ -91,7 +91,7 @@ export class ShopPage {
       material: { name: 'Viscose Blend', slug: 'viscose-blend' },
       status: 'active',
       variants: [{ price: 9499, sale_price: 8499, size: '6 x 9 ft', color: 'Charcoal' }],
-      images: [{ image_url: 'https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=1000&q=80', is_primary: true }]
+      images: [{ image_url: '/Trending%20rugs/ss_trending6_1.jpg', is_primary: true }]
     },
     {
       id: 'shop-7',
@@ -102,7 +102,7 @@ export class ShopPage {
       material: { name: 'Cotton', slug: 'cotton' },
       status: 'active',
       variants: [{ price: 3299, size: '2.5 x 8 ft', color: 'Sand' }],
-      images: [{ image_url: 'https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1000&q=80', is_primary: true }]
+      images: [{ image_url: '/Trending%20rugs/ss_trending1_2.jpg', is_primary: true }]
     },
     {
       id: 'shop-8',
@@ -113,7 +113,7 @@ export class ShopPage {
       material: { name: 'Wool Blend', slug: 'wool-blend' },
       status: 'active',
       variants: [{ price: 11499, size: '6 x 9 ft', color: 'Blue' }],
-      images: [{ image_url: 'https://images.unsplash.com/photo-1604578762246-41134e37f9cc?auto=format&fit=crop&w=1000&q=80', is_primary: true }]
+      images: [{ image_url: '/Trending%20rugs/ss_trending2_2.jpg', is_primary: true }]
     }
   ];
 
