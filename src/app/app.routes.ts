@@ -18,7 +18,7 @@ export const routes: Routes = [
   {
     path: '',
     component: HomePage,
-    title: 'Soft Steps Carpets & Rugs'
+    title: 'Soft Steps Carpets | Handcrafted Luxury Carpets from India'
   },
 
   {

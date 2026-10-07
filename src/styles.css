@@ -3,6 +3,7 @@
    ========================================================= */
 
 @import "tailwindcss";
+@import "./app/features/home/home-page/home-page.css";
 
 :root {
   --ss-ink: #171512;

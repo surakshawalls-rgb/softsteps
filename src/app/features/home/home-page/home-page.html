@@ -5,18 +5,18 @@
 <section class="home-hero">
   <div class="hero-layout">
     <div class="hero-copy">
-      <p class="hero-eyebrow">Soft Steps Carpets & Rugs</p>
+      <p class="hero-eyebrow">Handcrafted in India · Made for the world</p>
       <h1>
-        Crafted for spaces.<br />
-        <span>Made to last.</span>
+        Handcrafted carpets,<br />
+        <span>made to belong.</span>
       </h1>
       <p class="hero-description">
-        Thoughtfully crafted carpets and rugs, made in India for homes,
-        hospitality, interiors and projects around the world.
+        Discover thoughtfully crafted carpets created by skilled artisans,
+        premium materials and timeless design.
       </p>
       <div class="hero-actions">
-        <a routerLink="/shop" class="hero-primary">Explore rugs <span aria-hidden="true">→</span></a>
-        <a routerLink="/custom-requirement" class="hero-secondary">Create something custom</a>
+        <a routerLink="/shop" class="hero-primary">Explore collection <span aria-hidden="true">→</span></a>
+        <a routerLink="/custom-requirement" class="hero-secondary">Customise your carpet</a>
       </div>
       <div class="hero-note"><span></span> Made in India · Made for spaces worldwide</div>
     </div>
@@ -30,6 +30,10 @@
           src="/Home%20banner%20img%209-16/1st_img%283_4%29.png"
           alt="A carefully crafted rug in a warm, contemporary living room"
           fetchpriority="high"
+          loading="eager"
+          decoding="async"
+          width="1200"
+          height="1500"
         />
       </picture>
       <div class="hero-image-caption">
@@ -51,16 +55,17 @@
   <div class="mx-auto max-w-4xl px-5 py-20 text-center lg:px-8">
 
     <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
-      Designed for beautiful spaces
+      Soft Steps Carpets
     </p>
 
     <h2 class="mt-4 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-      A softer foundation for every room.
+      Crafted in India. Created for the world.
     </h2>
 
     <p class="mx-auto mt-6 max-w-2xl text-base leading-8 text-stone-600">
-      Carpets and rugs crafted with attention to material, texture and detail —
-      made for the everyday and the extraordinary, wherever you are.
+      Rooted in India's rich carpet-making tradition, Soft Steps brings
+      craftsmanship, considered materials and contemporary design together
+      for residential, hospitality and commercial interiors.
     </p>
 
   </div>
@@ -82,11 +87,11 @@
 
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
-            Explore
+            Made by hand
           </p>
 
           <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900">
-            Shop by category
+            Find your kind of craft
           </h2>
         </div>
 
@@ -94,7 +99,7 @@
           routerLink="/categories"
           class="text-sm font-medium text-stone-700 hover:text-amber-700"
         >
-          View all categories →
+          Explore all carpets →
         </a>
 
       </div>
@@ -203,11 +208,11 @@
 
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
-            Curated
+            Explore
           </p>
 
           <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900">
-            Featured collections
+            Shop by collection
           </h2>
         </div>
 
@@ -215,7 +220,7 @@
           routerLink="/collections"
           class="text-sm font-medium text-stone-700 hover:text-amber-700"
         >
-          View all collections →
+          Discover all collections →
         </a>
 
       </div>
@@ -296,11 +301,11 @@
 
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
-            Curated selection
+            Selected for you
           </p>
 
           <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900">
-            Featured rugs
+            Most popular carpets
           </h2>
         </div>
 
@@ -308,19 +313,24 @@
           routerLink="/shop"
           class="text-sm font-medium text-stone-700 hover:text-amber-700"
         >
-          Shop all rugs →
+          View all carpets →
         </a>
 
       </div>
 
 
-      <div class="mt-10 grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+      <div class="carousel-controls" aria-label="Carpet carousel controls">
+        <button type="button" aria-label="Show previous carpets" (click)="scrollCarousel(productsTrack, -1)">←</button>
+        <button type="button" aria-label="Show next carpets" (click)="scrollCarousel(productsTrack, 1)">→</button>
+      </div>
+
+      <div #productsTrack class="product-carousel" role="region" aria-label="Most popular carpets" tabindex="0">
 
         @for (product of productPreview; track product.id ?? product.slug) {
 
-          <app-product-card
-            [product]="product"
-          ></app-product-card>
+          <div class="product-slide">
+            <app-product-card [product]="product"></app-product-card>
+          </div>
 
         }
 
@@ -348,28 +358,28 @@
       </p>
 
       <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-        More than a carpet.
+        Thoughtfully made.
         <span class="block text-stone-500">
-          It's part of your space.
+          Made for the way you live.
         </span>
       </h2>
 
     </div>
 
 
-    <div class="mt-12 grid gap-8 md:grid-cols-3">
+    <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-5">
 
       <div class="rounded-3xl border border-stone-200 p-8">
 
         <div class="value-mark">01</div>
 
         <h3 class="mt-6 text-lg font-semibold text-stone-900">
-          Thoughtful Selection
+          Handcrafted in India
         </h3>
 
         <p class="mt-3 text-sm leading-7 text-stone-600">
-          Designs selected to bring warmth, texture and personality
-          into residential and commercial spaces.
+          Skilled artisans and traditional carpet-making techniques,
+          thoughtfully carried into contemporary spaces.
         </p>
 
       </div>
@@ -380,12 +390,12 @@
         <div class="value-mark">02</div>
 
         <h3 class="mt-6 text-lg font-semibold text-stone-900">
-          Quality & Craftsmanship
+          Premium Materials
         </h3>
 
         <p class="mt-3 text-sm leading-7 text-stone-600">
-          We focus on materials, construction and finishing so every
-          piece feels as good as it looks.
+          New Zealand wool, Indian wool, silk and carefully selected
+          fibres for distinctive texture and character.
         </p>
 
       </div>
@@ -396,14 +406,30 @@
         <div class="value-mark">03</div>
 
         <h3 class="mt-6 text-lg font-semibold text-stone-900">
-          Custom Possibilities
+          Custom Manufacturing
         </h3>
 
         <p class="mt-3 text-sm leading-7 text-stone-600">
-          Looking for a specific size, material or design?
-          Talk to us about your requirement.
+          Develop custom sizes, colours, materials and designs with
+          our manufacturing team.
         </p>
 
+      </div>
+
+      <div class="benefit-card">
+        <div class="value-mark">04</div>
+        <h3 class="mt-6 text-lg font-semibold text-stone-900">Global Export</h3>
+        <p class="mt-3 text-sm leading-7 text-stone-600">
+          Support for international buyers, interior designers and project requirements.
+        </p>
+      </div>
+
+      <div class="benefit-card">
+        <div class="value-mark">05</div>
+        <h3 class="mt-6 text-lg font-semibold text-stone-900">Quality Control</h3>
+        <p class="mt-3 text-sm leading-7 text-stone-600">
+          Careful attention to construction, finishing and inspection at every step.
+        </p>
       </div>
 
     </div>
@@ -412,6 +438,106 @@
 
 </section>
 
+<section class="craftsmanship-section" data-reveal>
+  <div class="craftsmanship-image">
+    <img
+      src="/Home%20banner%20img%209-16/3rd_img%283_4%29.png"
+      alt="Handcrafted carpet detail in a thoughtfully styled interior"
+      loading="lazy"
+      width="1200"
+      height="1500"
+    />
+  </div>
+  <div class="craftsmanship-copy">
+    <p class="section-kicker">Craftsmanship</p>
+    <h2>Every carpet<br /><em>has a story.</em></h2>
+    <p>
+      From selecting premium fibres to finishing every detail by hand,
+      our carpets bring skilled craftsmanship and contemporary design together.
+      Every piece reflects patience, precision and the character of its making.
+    </p>
+    <a routerLink="/about" class="text-link">Explore our craft <span aria-hidden="true">→</span></a>
+  </div>
+</section>
+
+<section class="editorial-section" data-reveal>
+  <div class="editorial-copy">
+    <p class="section-kicker">The art of detail</p>
+    <h2>Every thread shapes a space.</h2>
+    <p>
+      Inspired by India's rich design heritage and reinterpreted for
+      contemporary interiors, each collection brings its own point of view.
+    </p>
+    <a [routerLink]="['/collections', 'heritage']" class="text-link">
+      Discover the Heritage Collection <span aria-hidden="true">→</span>
+    </a>
+  </div>
+  <img
+    src="/Home%20banner%20img%209-16/4th_img%283_4%29.png"
+    alt="A detailed carpet in a considered interior setting"
+    loading="lazy"
+    width="900"
+    height="1200"
+  />
+</section>
+
+<section class="custom-manufacturing-section" data-reveal>
+  <div class="custom-manufacturing-copy">
+    <p class="section-kicker">Made to your specification</p>
+    <h2>Your vision.<br /><em>Our craft.</em></h2>
+    <p>
+      From bespoke dimensions and colour palettes to specialist materials,
+      custom designs and private-label production, our team works with you
+      to develop carpets for your project.
+    </p>
+    <div class="custom-capabilities" aria-label="Custom manufacturing capabilities">
+      <span>Custom size</span><span>Custom colour</span><span>Custom design</span>
+      <span>Special materials</span><span>Bulk production</span><span>Private label</span>
+    </div>
+    <a routerLink="/custom-requirement" class="hero-primary">
+      Discuss a custom project <span aria-hidden="true">→</span>
+    </a>
+  </div>
+  <img
+    src="/Category%20imgs/Luxury_rugs.jpg"
+    alt="Luxury carpet texture illustrating bespoke material and design options"
+    loading="lazy"
+    width="1200"
+    height="900"
+  />
+</section>
+
+<section class="consultation-section" data-reveal>
+  <div class="consultation-heading">
+    <p class="section-kicker">Let's create something considered</p>
+    <h2>Start with a conversation.</h2>
+  </div>
+  <div class="consultation-links">
+    <a href="tel:+917007131072">
+      <span>01</span><strong>Talk to our team</strong><small>+91 70071 31072</small>
+    </a>
+    <a href="mailto:info@softstepscarpets.com?subject=Request%20a%20carpet%20quotation">
+      <span>02</span><strong>Request a quote</strong><small>Share your project requirements</small>
+    </a>
+    <a href="https://wa.me/917007131072" target="_blank" rel="noopener noreferrer">
+      <span>03</span><strong>Custom carpet</strong><small>Discuss your specification</small>
+    </a>
+    <a href="mailto:info@softstepscarpets.com?subject=Video%20consultation">
+      <span>04</span><strong>Video consultation</strong><small>Arrange a time with our team</small>
+    </a>
+  </div>
+</section>
+
+<section class="stay-connected-section" data-reveal>
+  <div>
+    <p class="section-kicker">Stay connected</p>
+    <h2>New collections, thoughtful stories.</h2>
+    <p>For collection updates, design enquiries or project conversations, get in touch with our team.</p>
+  </div>
+  <a href="mailto:info@softstepscarpets.com?subject=Soft%20Steps%20collection%20updates" class="hero-primary">
+    Email Soft Steps <span aria-hidden="true">↗</span>
+  </a>
+</section>
 
 <!-- ========================================================
      CUSTOM ENQUIRY CTA
@@ -504,3 +630,22 @@
   </section>
 
 }
+
+<a
+  class="floating-whatsapp"
+  href="https://wa.me/917007131072"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Chat with Soft Steps Carpets on WhatsApp"
+>
+  <img src="/logo/whatsapp.jpeg" alt="" aria-hidden="true" />
+</a>
+<a
+  class="floating-instagram"
+  href="https://www.instagram.com/softstepscarpets/"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Follow Soft Steps Carpets on Instagram"
+>
+  <img src="/logo/instagram.jpeg" alt="" aria-hidden="true" />
+</a>

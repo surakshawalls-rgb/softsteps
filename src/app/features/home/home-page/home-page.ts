@@ -1,4 +1,5 @@
-﻿import { Component } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ProductCard } from '../../../shared/components/product-card/product-card';
 import { Category } from '../../../shared/models/category.model';
@@ -9,9 +10,12 @@ import { Product } from '../../../shared/models/product.model';
   selector: 'app-home-page',
   imports: [RouterLink, ProductCard],
   templateUrl: './home-page.html',
-  styleUrl: './home-page.css',
 })
-export class HomePage {
+export class HomePage implements AfterViewInit, OnDestroy {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly platformId = inject(PLATFORM_ID);
+  private revealObserver?: IntersectionObserver;
+
   loading = false;
   errorMessage = '';
 
@@ -275,6 +279,44 @@ export class HomePage {
 
   get productPreview(): Product[] {
     return this.featuredProducts.slice(0, 6);
+  }
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    void import('gsap').then(({ gsap }) => {
+      const sections = this.host.nativeElement.querySelectorAll('[data-reveal]');
+      this.revealObserver = new IntersectionObserver(
+        entries => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              gsap.fromTo(
+                entry.target,
+                { opacity: 0, y: 24 },
+                { opacity: 1, y: 0, duration: 0.85, ease: 'power2.out' },
+              );
+              this.revealObserver?.unobserve(entry.target);
+            }
+          }
+        },
+        { threshold: 0.15 },
+      );
+
+      sections.forEach(section => this.revealObserver?.observe(section));
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.revealObserver?.disconnect();
+  }
+
+  scrollCarousel(track: HTMLElement, direction: number): void {
+    track.scrollBy({
+      left: direction * Math.max(track.clientWidth * 0.8, 280),
+      behavior: 'smooth',
+    });
   }
   
   retry(): void {
