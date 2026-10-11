@@ -1,1 +1,86 @@
-<p>product-page works!</p>
+<section class="product-page-shell">
+  <div class="mx-auto max-w-7xl px-5 py-8 lg:px-8 lg:py-12">
+    <a routerLink="/shop" class="back-link">← Back to collection</a>
+
+    @if (loading()) {
+      <div class="state-panel" aria-live="polite">
+        <span class="loading-spinner"></span>
+        <p>Loading product details...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="state-panel">
+        <h1>We couldn't load this product</h1>
+        <p>{{ errorMessage }}</p>
+        <button type="button" class="primary-button" (click)="loadProduct(currentSlug)">Try again</button>
+      </div>
+    } @else if (notFound || !product) {
+      <div class="state-panel">
+        <p class="eyebrow">PRODUCT NOT FOUND</p>
+        <h1>This rug may have moved</h1>
+        <p>The product is unavailable or the link may be incorrect.</p>
+        <a routerLink="/shop" class="primary-button">Explore the collection</a>
+      </div>
+    } @else {
+      <div class="product-layout">
+        <div class="gallery-column">
+          <app-product-gallery [images]="product.images ?? []" [productName]="product.name || 'Soft Steps rug'"></app-product-gallery>
+        </div>
+
+        <div class="product-information">
+          <p class="eyebrow">{{ product.category?.name || 'Soft Steps Carpets & Rugs' }}</p>
+          <h1>{{ product.name }}</h1>
+          @if (product.short_description) {
+            <p class="short-description">{{ product.short_description }}</p>
+          }
+
+          <div class="price-row">
+            <app-price-display [price]="price" [salePrice]="salePrice" [currency]="product.currency === 'USD' ? '$' : product.currency === 'AED' ? 'AED ' : '₹'"></app-price-display>
+          </div>
+          <p class="enquiry-note">Pricing and availability can be confirmed for your required size, material and quantity.</p>
+
+          <div class="detail-divider"></div>
+          <dl class="spec-grid">
+            @if (product.material?.name) {
+              <div><dt>Material</dt><dd>{{ product.material?.name }}</dd></div>
+            }
+            @if (product.construction) {
+              <div><dt>Construction</dt><dd>{{ product.construction }}</dd></div>
+            }
+            @if (product.style) {
+              <div><dt>Style</dt><dd>{{ product.style }}</dd></div>
+            }
+            @if (product.primary_color) {
+              <div><dt>Primary colour</dt><dd>{{ product.primary_color }}</dd></div>
+            }
+            @if (product.shape) {
+              <div><dt>Shape</dt><dd>{{ product.shape }}</dd></div>
+            }
+            @if (pileHeightLabel) {
+              <div><dt>Pile height</dt><dd>{{ pileHeightLabel }}</dd></div>
+            }
+            @if (product.origin_country) {
+              <div><dt>Origin</dt><dd>{{ product.origin_country }}</dd></div>
+            }
+            @if (product.moq) {
+              <div><dt>Minimum order</dt><dd>{{ product.moq }} pieces</dd></div>
+            }
+          </dl>
+
+          <div class="product-actions">
+            <a [routerLink]="inquiryUrl" class="primary-button">Enquire about this rug <span aria-hidden="true">↗</span></a>
+            <p>Made for considered spaces. Ask us about custom sizes, colours and project quantities.</p>
+          </div>
+        </div>
+      </div>
+
+      @if (product.design_story || product.description) {
+        <section class="story-section">
+          <p class="eyebrow">THE DESIGN</p>
+          <h2>Thoughtful design, lasting character</h2>
+          @if (product.design_story) { <p class="story-copy">{{ product.design_story }}</p> }
+          @if (product.description) { <p class="story-copy">{{ product.description }}</p> }
+        </section>
+      }
+    }
+  </div>
+</section>

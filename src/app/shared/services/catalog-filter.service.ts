@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Product } from '../models/product.model';
 import {
   CatalogFilterState,
@@ -10,7 +10,7 @@ import {
 })
 export class CatalogFilterService {
 
-  getPrice(product: Product): number {
+  getPrice(product: Product): number | null {
     const variants = product.variants ?? [];
 
     const activeVariants = variants.filter(
@@ -21,11 +21,11 @@ export class CatalogFilterService {
       .map(variant => variant.sale_price ?? variant.price)
       .filter((price): price is number => typeof price === 'number');
 
-    if (!prices.length) {
-      return 0;
-    }
-
-    return Math.min(...prices);
+    return prices.length
+      ? Math.min(...prices)
+      : typeof product.base_price === 'number'
+        ? product.base_price
+        : null;
   }
 
   filterAndSort(
@@ -45,7 +45,11 @@ export class CatalogFilterService {
           product.short_description,
           product.category?.name,
           product.collection?.name,
-          product.material?.name
+          product.material?.name,
+          product.style,
+          product.primary_color,
+          product.construction,
+          ...(product.tags ?? [])
         ]
           .filter(Boolean)
           .join(' ')
@@ -74,14 +78,14 @@ export class CatalogFilterService {
 
       if (
         filters.minPrice !== null &&
-        price < filters.minPrice
+        (price === null || price < filters.minPrice)
       ) {
         return false;
       }
 
       if (
         filters.maxPrice !== null &&
-        price > filters.maxPrice
+        (price === null || price > filters.maxPrice)
       ) {
         return false;
       }
@@ -109,13 +113,13 @@ export class CatalogFilterService {
 
       case 'price-low':
         result.sort(
-          (a, b) => this.getPrice(a) - this.getPrice(b)
+          (a, b) => this.comparePrices(this.getPrice(a), this.getPrice(b))
         );
         break;
 
       case 'price-high':
         result.sort(
-          (a, b) => this.getPrice(b) - this.getPrice(a)
+          (a, b) => this.comparePrices(this.getPrice(a), this.getPrice(b), true)
         );
         break;
 
@@ -197,7 +201,7 @@ export class CatalogFilterService {
   getPriceRange(products: Product[]) {
     const prices = products
       .map(product => this.getPrice(product))
-      .filter(price => price > 0);
+      .filter((price): price is number => price !== null && price > 0);
 
     if (!prices.length) {
       return {
@@ -214,5 +218,11 @@ export class CatalogFilterService {
 
   reset(): CatalogFilterState {
     return { ...DEFAULT_CATALOG_FILTER };
+  }
+
+  private comparePrices(a: number | null, b: number | null, descending = false): number {
+    if (a === null) return 1;
+    if (b === null) return -1;
+    return descending ? b - a : a - b;
   }
 }

@@ -1,6 +1,6 @@
 ﻿<div [class]="'relative w-full overflow-hidden bg-stone-100 ' + aspectRatio">
 
-  @if (!fallbackFailed) {
+  @if (displaySrc) {
     <img
       [src]="displaySrc"
       [alt]="alt"
@@ -11,7 +11,7 @@
   } @else {
     <div class="flex h-full w-full items-center justify-center">
       <span class="text-sm text-stone-400">
-        Carpet imagery
+        Soft Steps<br />Carpets &amp; Rugs
       </span>
     </div>
   }

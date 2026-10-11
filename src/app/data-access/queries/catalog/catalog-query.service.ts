@@ -1,5 +1,6 @@
 ﻿import { Injectable, inject } from '@angular/core';
 import { SupabaseClientService } from '../../supabase/supabase-client.service';
+import { Product } from '../../../shared/models/product.model';
 
 @Injectable({
   providedIn: 'root'
@@ -102,13 +103,12 @@ export class CatalogQueryService {
   // PRODUCTS
   // ----------------------------------------------------------
 
-  async getProducts() {
+  async getProducts(): Promise<Product[]> {
     const { data, error } = await this.supabase
       .from('products')
       .select(`
         *,
         category:categories(*),
-        collection:collections(*),
         material:materials(*),
         supplier:suppliers(*),
         variants:product_variants(*),
@@ -125,13 +125,12 @@ export class CatalogQueryService {
   }
 
 
-  async getFeaturedProducts() {
+  async getFeaturedProducts(): Promise<Product[]> {
     const { data, error } = await this.supabase
       .from('products')
       .select(`
         *,
         category:categories(*),
-        collection:collections(*),
         material:materials(*),
         variants:product_variants(*),
         images:product_images(*)
@@ -148,13 +147,12 @@ export class CatalogQueryService {
   }
 
 
-  async getProductsByCategorySlug(slug: string) {
+  async getProductsByCategorySlug(slug: string): Promise<Product[]> {
     const { data, error } = await this.supabase
       .from('products')
       .select(`
         *,
         category:categories!inner(*),
-        collection:collections(*),
         material:materials(*),
         variants:product_variants(*),
         images:product_images(*)
@@ -171,36 +169,35 @@ export class CatalogQueryService {
   }
 
 
-  async getProductsByCollectionSlug(slug: string) {
+  async getProductsByCollectionSlug(slug: string): Promise<Product[]> {
+    const collection = await this.getCollectionBySlug(slug);
     const { data, error } = await this.supabase
       .from('products')
       .select(`
         *,
         category:categories(*),
-        collection:collections!inner(*),
         material:materials(*),
         variants:product_variants(*),
         images:product_images(*)
       `)
       .eq('status', 'active')
-      .eq('collection.slug', slug)
+      .eq('collection_id', collection.id)
       .order('created_at', { ascending: false });
 
     if (error) {
       throw error;
     }
 
-    return data;
+    return data.map(product => ({ ...product, collection }));
   }
 
 
-  async getProductBySlug(slug: string) {
+  async getProductBySlug(slug: string): Promise<Product> {
     const { data, error } = await this.supabase
       .from('products')
       .select(`
         *,
         category:categories(*),
-        collection:collections(*),
         material:materials(*),
         supplier:suppliers(*),
         variants:product_variants(*),

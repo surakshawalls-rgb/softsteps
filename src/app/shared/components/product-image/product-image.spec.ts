@@ -32,4 +32,22 @@ describe('ProductImage', () => {
     expect(fixture.componentInstance.displaySrc).toBe('https://example.com/another-carpet.jpg');
     expect(fixture.componentInstance.fallbackFailed).toBe(false);
   });
+
+  it('keeps a usable product image URL instead of substituting the local fallback', async () => {
+    await TestBed.configureTestingModule({
+      imports: [ProductImage],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(ProductImage);
+    fixture.componentRef.setInput(
+      'src',
+      'https://example.supabase.co/storage/Modern_rug1_1.jpg',
+    );
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.displaySrc)
+      .toBe('https://example.supabase.co/storage/Modern_rug1_1.jpg');
+    expect(fixture.nativeElement.querySelector('img').getAttribute('src'))
+      .toBe('https://example.supabase.co/storage/Modern_rug1_1.jpg');
+  });
 });

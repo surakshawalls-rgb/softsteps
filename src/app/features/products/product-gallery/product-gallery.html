@@ -1,1 +1,55 @@
-<p>product-gallery works!</p>
+<div class="gallery-layout">
+  <div class="thumbnail-rail" aria-label="Product images">
+    @for (image of orderedImages; track image.id ?? image.image_url; let i = $index) {
+      @if (image.image_url) {
+        <button
+          type="button"
+          class="thumbnail"
+          [class.thumbnail-active]="activeImage?.image_url === image.image_url"
+          [attr.aria-label]="'View image ' + (i + 1) + ' of ' + productName"
+          [attr.aria-pressed]="activeImage?.image_url === image.image_url"
+          (click)="selectImage(image)"
+        >
+          @if (!failedImageUrls.has(image.image_url)) {
+            <img
+              [src]="image.image_url"
+              [alt]="image.alt_text || productName"
+              loading="lazy"
+              (error)="handleImageError(image.image_url)"
+            />
+          } @else {
+            <span class="thumbnail-fallback" aria-hidden="true">SS</span>
+          }
+        </button>
+      }
+    }
+  </div>
+
+  <div class="main-image">
+    @if (activeImage; as image) {
+      @if (image.image_url && !failedImageUrls.has(image.image_url)) {
+        <img
+          [src]="image.image_url"
+          [alt]="image.alt_text || productName"
+          fetchpriority="high"
+          (error)="handleImageError(image.image_url)"
+        />
+      } @else if (image.image_url) {
+        <div class="image-empty" role="img" [attr.aria-label]="productName + ' image unavailable'">
+          <span>Image unavailable</span>
+        </div>
+      } @else {
+        <div class="image-empty">
+          <span>No product image available</span>
+        </div>
+      }
+    } @else {
+      <div class="image-empty">
+        <span>No product image available</span>
+      </div>
+    }
+    @if (orderedImages.length > 1) {
+      <span class="image-count">{{ orderedImages.indexOf(activeImage!) + 1 }} / {{ orderedImages.length }}</span>
+    }
+  </div>
+</div>

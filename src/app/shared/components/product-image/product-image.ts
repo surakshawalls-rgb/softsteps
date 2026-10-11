@@ -24,7 +24,10 @@ export class ProductImage implements OnChanges {
   }
 
   get displaySrc(): string {
-    return this.imageFailed || !this.src ? this.fallbackSrc : this.src;
+    if (this.src?.trim() && !this.imageFailed) {
+      return this.src.trim();
+    }
+    return this.fallbackFailed ? '' : this.fallbackSrc;
   }
 
   handleImageError(): void {

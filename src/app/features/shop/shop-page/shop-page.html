@@ -24,7 +24,7 @@
 
   <div class="mx-auto max-w-7xl px-5 lg:px-8">
 
-    @if (loading) {
+    @if (loading()) {
 
       <div class="py-24 text-center">
         <div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-stone-300 border-t-amber-600"></div>
@@ -36,7 +36,7 @@
     }
 
 
-    @if (!loading && errorMessage) {
+    @if (!loading() && errorMessage) {
 
       <div class="mx-auto max-w-xl py-24 text-center">
 
@@ -61,7 +61,7 @@
     }
 
 
-    @if (!loading && !errorMessage) {
+    @if (!loading() && !errorMessage) {
 
       <div class="mb-10">
 
