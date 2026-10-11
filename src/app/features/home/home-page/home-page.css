@@ -2,8 +2,13 @@ app-home-page {
   display: block;
 }
 
+/* ROUNDED: hero is now an inset rounded panel */
 .home-hero {
+  position: relative;
+  isolation: isolate;
+  margin: 24px 3% 0;
   overflow: hidden;
+  border-radius: 28px;
   background:
     radial-gradient(ellipse at 4% 95%, rgba(184, 135, 70, 0.13), transparent 34%),
     #1c1a16;
@@ -11,20 +16,46 @@ app-home-page {
 }
 
 .hero-layout {
-  display: grid;
-  width: min(100% - 48px, 1400px);
-  min-height: 660px;
-  margin-inline: auto;
-  padding-block: 64px;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  align-items: center;
-  gap: clamp(42px, 7vw, 112px);
-}
-
-.hero-copy {
   position: relative;
   z-index: 1;
-  padding-block: 24px;
+  display: grid;
+  width: min(100% - 64px, 1400px);
+  min-height: 720px;
+  margin-inline: auto;
+  padding-block: 44px 48px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  column-gap: 40px;
+  row-gap: 24px;
+}
+
+/* Four corners */
+.hero-tl {
+  grid-area: 1 / 1;
+  align-self: start;
+}
+
+.hero-tr {
+  grid-area: 1 / 2;
+  align-self: start;
+  justify-self: end;
+}
+
+.hero-bl,
+.hero-copy {
+  grid-area: 2 / 1;
+  align-self: end;
+  max-width: 640px;
+}
+
+.hero-br {
+  grid-area: 2 / 2;
+  align-self: end;
+  justify-self: end;
+  display: grid;
+  gap: 16px;
+  max-width: 420px;
+  text-align: right;
 }
 
 .hero-eyebrow,
@@ -38,8 +69,8 @@ app-home-page {
 }
 
 .hero-copy h1 {
-  margin: 25px 0 0;
-  font-size: clamp(3.5rem, 6.7vw, 6.5rem);
+  margin: 0;
+  font-size: clamp(2.8rem, 5vw, 4.9rem);
   font-weight: 500;
   letter-spacing: -0.055em;
   line-height: 0.98;
@@ -109,8 +140,9 @@ app-home-page {
 .home-hero .hero-note {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 9px;
-  margin-top: 36px;
+  margin-top: 0;
   color: #a8a196;
   font-size: 0.59rem;
   letter-spacing: 0.13em;
@@ -123,45 +155,209 @@ app-home-page {
   background: #cba66f;
 }
 
-.hero-image {
-  position: relative;
-  min-height: 490px;
+/* ==========================================
+   HERO IMAGE SLIDER (drag / swipe / arrows / dots)
+   Pure template + CSS: no TypeScript needed.
+========================================== */
+
+.hero-slides {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   overflow: hidden;
-  border-radius: 4px;
-  background: #574b3c;
-  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.25);
+  background: #1c1a16;
 }
 
-.hero-image::after {
+/* Dark gradient so the corner text stays readable on any photo */
+.hero-slides::after {
   position: absolute;
-  inset: 35% 0 0;
-  background: linear-gradient(180deg, transparent, rgba(20, 18, 15, 0.58));
+  inset: 0;
+  z-index: 3;
   content: "";
   pointer-events: none;
+  background:
+    linear-gradient(0deg, rgba(18, 16, 13, 0.8), rgba(18, 16, 13, 0.3) 45%, transparent 70%),
+    linear-gradient(180deg, rgba(18, 16, 13, 0.5), transparent 24%),
+    linear-gradient(90deg, rgba(18, 16, 13, 0.45), transparent 55%);
 }
 
-.hero-image img {
+/* The scrolling strip: one image per screen width, snaps into place */
+.hero-track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.hero-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* while the mouse button is held, move freely; it snaps on release */
+.hero-track:active {
+  scroll-snap-type: none;
+  cursor: grabbing;
+}
+
+.hero-track:focus-visible {
+  outline: 2px solid #e2c99f;
+  outline-offset: -4px;
+}
+
+.hero-slide {
+  position: relative;
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.hero-slide img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
 }
 
-.hero-image picture {
+.hero-slide picture {
   display: contents;
 }
 
-.hero-image-caption {
+/* The corner text sits above the slider but lets drags pass through to it;
+   only the real buttons and links stay clickable. */
+.hero-layout {
+  pointer-events: none;
+}
+
+.hero-layout a,
+.hero-layout button {
+  pointer-events: auto;
+}
+
+/* ---- auto-play timer (invisible; ticks every 5 seconds) ---- */
+
+.hero-timer {
   position: absolute;
-  z-index: 1;
-  right: 22px;
-  bottom: 20px;
-  left: 22px;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  animation: heroTick 5s linear infinite;
+}
+
+@keyframes heroTick {
+  from { transform: translateX(0); }
+  to   { transform: translateX(1px); }
+}
+
+/* Pause auto-play while the pointer is over the banner (hovering, dragging) */
+.home-hero:hover .hero-timer {
+  animation-play-state: paused;
+}
+
+/* ---- arrows ---- */
+
+.hero-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  display: grid;
+  width: 50px;
+  height: 50px;
+  place-items: center;
+  border: 1px solid rgba(255, 253, 249, 0.45);
+  border-radius: 50%;
+  background: rgba(18, 16, 13, 0.35);
+  color: #fffdf9;
+  font-size: 1.15rem;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transform: translateY(-50%);
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.hero-arrow:hover {
+  border-color: #e2c99f;
+  background: #e2c99f;
+  color: #211c15;
+}
+
+.hero-arrow:focus-visible,
+.hero-dot:focus-visible {
+  outline: 2px solid #e2c99f;
+  outline-offset: 3px;
+}
+
+.hero-arrow-prev {
+  left: 20px;
+}
+
+.hero-arrow-next {
+  right: 20px;
+}
+
+/* ---- dots ---- */
+
+.hero-dots {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.hero-dot {
+  display: flex;
+  align-items: center;
+  padding: 10px 4px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.hero-dot::before {
+  display: block;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.45);
+  content: "";
+  transition: width 250ms ease, background-color 250ms ease;
+}
+
+.hero-dot:hover::before {
+  background: rgba(255, 253, 249, 0.8);
+}
+
+.hero-dot.is-active::before {
+  width: 28px;
+  background: #d4b27e;
+}
+
+/* ---- counter "01 / 03" ---- */
+
+.hero-count {
+  color: rgba(255, 253, 249, 0.72);
+  white-space: nowrap;
+}
+
+.hero-image-caption {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 18px;
   color: #fffdf9;
   font-size: 0.68rem;
   letter-spacing: 0.06em;
@@ -173,10 +369,6 @@ app-home-page {
 }
 
 .hero-image-stamp {
-  position: absolute;
-  z-index: 1;
-  top: 22px;
-  right: 22px;
   display: grid;
   width: 82px;
   height: 82px;
@@ -199,13 +391,31 @@ app-home-page > section:not(.home-hero) h2 {
   letter-spacing: -0.035em;
 }
 
+/* ROUNDED: categories panel (new rule) */
+.category-section {
+  margin: 24px 3% 0;
+  overflow: hidden;
+  border-radius: 28px;
+}
+
+/* ROUNDED: "shop by style" cards (new rule) */
+.style-card,
+.style-card img {
+  border-radius: 20px;
+}
+
+/* ROUNDED: featured panel */
 .featured-section {
+  margin: 24px 3% 0;
+  overflow: hidden;
+  border-radius: 28px;
   background: #f4f0e9;
 }
 
+/* ROUNDED: benefit cards 5px -> 18px */
 .benefits-section > div > div:last-child > div {
   border-color: rgba(41, 37, 31, 0.09);
-  border-radius: 5px;
+  border-radius: 18px;
   background: #fffdf9;
   box-shadow: 0 9px 30px rgba(28, 24, 18, 0.035);
 }
@@ -217,7 +427,11 @@ app-home-page > section:not(.home-hero) h2 {
   letter-spacing: 0.08em;
 }
 
+/* ROUNDED: final CTA panel */
 .custom-cta-section {
+  margin: 24px 3% 24px;
+  overflow: hidden;
+  border-radius: 28px;
   background:
     radial-gradient(ellipse at 80% 20%, rgba(184, 135, 70, 0.15), transparent 36%),
     #1c1a16;
@@ -233,36 +447,55 @@ app-home-page > section:not(.home-hero) h2 {
 
 @media (max-width: 900px) {
   .hero-layout {
-    min-height: 0;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
-    gap: 36px;
-  }
-
-  .hero-image {
-    min-height: 430px;
+    min-height: 680px;
+    column-gap: 24px;
   }
 }
 
 @media (max-width: 680px) {
   .hero-layout {
     width: min(100% - 36px, 540px);
-    padding-block: 54px 46px;
-    grid-template-columns: 1fr;
-    gap: 34px;
+    min-height: 680px;
+    padding-block: 30px 32px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr auto;
+    row-gap: 22px;
   }
 
+  .hero-tl {
+    grid-area: 1 / 1;
+  }
+
+  .hero-tr {
+    grid-area: 1 / 2;
+  }
+
+  .hero-image-stamp {
+    width: 64px;
+    height: 64px;
+    font-size: 0.45rem;
+  }
+
+  .hero-bl,
   .hero-copy {
-    padding: 0;
+    grid-area: 2 / 1 / 3 / 3;
+    max-width: none;
+  }
+
+  .hero-br {
+    grid-area: 3 / 1 / 4 / 3;
+    justify-self: stretch;
+    max-width: none;
+    text-align: left;
   }
 
   .hero-copy h1 {
-    margin-top: 20px;
-    font-size: clamp(3.25rem, 12vw, 5rem);
+    font-size: clamp(2.5rem, 10.5vw, 3.8rem);
   }
 
   .hero-description {
-    margin-top: 20px;
-    font-size: 0.93rem;
+    margin-top: 16px;
+    font-size: 0.9rem;
   }
 
   .hero-actions {
@@ -276,16 +509,33 @@ app-home-page > section:not(.home-hero) h2 {
   }
 
   .home-hero .hero-note {
-    margin-top: 25px;
+    justify-content: flex-start;
     font-size: 0.53rem;
   }
 
-  .hero-image {
-    min-height: min(112vw, 460px);
+  .hero-image-caption {
+    justify-content: space-between;
   }
 
-  .benefits-section > div > div:last-child > div {
-    padding: 24px;
+  .hero-slides::after {
+    background: linear-gradient(0deg, rgba(18, 16, 13, 0.85), rgba(18, 16, 13, 0.45) 60%, rgba(18, 16, 13, 0.55));
+  }
+
+  /* Phones: tap the dots instead of the side arrows */
+  .hero-arrow {
+    display: none;
+  }
+
+  .hero-dots {
+    justify-content: flex-start;
+  }
+
+  .benefit-media {
+    height: 190px;
+  }
+
+  .benefit-body {
+    padding: 22px 22px 26px;
   }
 
 }
@@ -333,16 +583,52 @@ app-home-page > section:not(.home-hero) h2 {
   color: #fffdf9;
 }
 
+/* ROUNDED: benefit card 18px */
+/* Benefit cards (all five share this layout so they line up) */
 .benefit-card {
-  padding: 28px 22px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
   border: 1px solid var(--ss-border);
+  border-radius: 18px;
   background: #fffdf9;
 }
 
+/* Optional image on top of the card: set it with style="--benefit-image: url('...')" */
+.benefit-media {
+  width: 100%;
+  height: 170px;
+  flex-shrink: 0;
+  background-color: #e7e0d6;
+  background-image: var(--benefit-image, none);
+  background-position: center;
+  background-size: cover;
+  transition: transform 0.6s ease;
+}
+
+.benefit-card:hover .benefit-media {
+  transform: scale(1.04);
+}
+
+/* keeps the zoom inside the image area */
+.benefit-card .benefit-media {
+  transform-origin: center;
+}
+
+.benefit-body {
+  padding: 24px 22px 28px;
+}
+
+/* ROUNDED: craftsmanship + custom manufacturing panels
+   (overflow hidden makes the edge images follow the curve) */
 .craftsmanship-section,
 .custom-manufacturing-section {
   display: grid;
   min-height: 610px;
+  margin: 24px 3% 0;
+  overflow: hidden;
+  border-radius: 28px;
   grid-template-columns: 1.05fr 0.95fr;
   align-items: center;
   background: #f4f0e9;
@@ -442,9 +728,11 @@ app-home-page > section:not(.home-hero) h2 {
   font-size: clamp(2.8rem, 5vw, 4.6rem);
 }
 
+/* ROUNDED: editorial image corners */
 .editorial-section > img {
   max-height: 600px;
   aspect-ratio: 4 / 5;
+  border-radius: 24px;
   background: #e7e0d6;
 }
 
@@ -479,15 +767,21 @@ app-home-page > section:not(.home-hero) h2 {
   margin: 25px 0 30px;
 }
 
+/* ROUNDED: capability tags are pills */
 .custom-capabilities span {
   padding: 9px 12px;
   border: 1px solid rgba(255, 253, 249, 0.18);
+  border-radius: 999px;
   color: #e5d3bb;
   font-size: 0.66rem;
   letter-spacing: 0.04em;
 }
 
+/* ROUNDED: consultation panel */
 .consultation-section {
+  margin: 24px 3% 0;
+  overflow: hidden;
+  border-radius: 28px;
   padding: clamp(68px, 9vw, 118px) max(24px, calc((100% - 1220px) / 2));
   background: #f7f4ee;
 }
@@ -543,11 +837,15 @@ app-home-page > section:not(.home-hero) h2 {
   font-weight: 600;
 }
 
+/* ROUNDED: stay connected panel */
 .stay-connected-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 36px;
+  margin: 24px 3% 0;
+  overflow: hidden;
+  border-radius: 28px;
   padding: 68px max(24px, calc((100% - 1220px) / 2));
   background: #fffdf9;
 }
@@ -711,9 +1009,50 @@ app-home-page > section:not(.home-hero) h2 {
     width: 50px;
     height: 50px;
   }
+
+  /* ROUNDED (mobile): tighter margins and slightly smaller radius */
+  .home-hero,
+  .category-section,
+  .featured-section,
+  .craftsmanship-section,
+  .custom-manufacturing-section,
+  .consultation-section,
+  .stay-connected-section,
+  .custom-cta-section {
+    margin-right: 12px;
+    margin-left: 12px;
+    border-radius: 18px;
+  }
+
+  .custom-cta-section {
+    margin-bottom: 12px;
+  }
+
+  .editorial-section > img {
+    border-radius: 18px;
+  }
+
+  .style-card,
+  .style-card img {
+    border-radius: 16px;
+  }
+
+  .benefits-section > div > div:last-child > div,
+  .benefit-card {
+    border-radius: 14px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero-timer {
+    animation: none;
+  }
+
+  .hero-arrow,
+  .hero-dot::before {
+    transition: none;
+  }
+
   .product-carousel {
     scroll-behavior: auto;
   }

@@ -1,47 +1,150 @@
 ﻿<!-- ========================================================
-     HERO
+     HERO  (3-image draggable slider, text in the four corners)
+     Change the 3 image paths in the slides to your own files.
 ======================================================== -->
 
 <section class="home-hero">
+
+  <!-- Auto-play timer: an invisible element whose CSS animation repeats every 5s.
+       Each repeat moves the slider to the next image; after the last image it
+       slides back to the first. (Template only, no TypeScript.) -->
+  <span
+    class="hero-timer"
+    aria-hidden="true"
+    (animationiteration)="heroTrack.scrollLeft + heroTrack.clientWidth >= heroTrack.scrollWidth - 4 ? heroTrack.scrollTo({ left: 0, behavior: 'smooth' }) : heroTrack.scrollBy({ left: heroTrack.clientWidth, behavior: 'smooth' })"
+  ></span>
+
+  <!-- Draggable banner: drag with the mouse, swipe on a phone, or use the arrows / dots.
+       No TypeScript needed: everything below works from this template alone. -->
+  <div class="hero-slides">
+    <div
+      #heroTrack
+      class="hero-track"
+      role="region"
+      aria-label="Banner images"
+      tabindex="0"
+      (mousemove)="$event.buttons === 1 && heroTrack.scrollBy({ left: -$event.movementX })"
+      (scroll)="heroCount.textContent = heroTrack.scrollLeft < heroTrack.clientWidth * 0.5 ? '01 / 03' : (heroTrack.scrollLeft < heroTrack.clientWidth * 1.5 ? '02 / 03' : '03 / 03'); heroDot1.classList.toggle('is-active', heroTrack.scrollLeft < heroTrack.clientWidth * 0.5); heroDot2.classList.toggle('is-active', heroTrack.scrollLeft >= heroTrack.clientWidth * 0.5 && heroTrack.scrollLeft < heroTrack.clientWidth * 1.5); heroDot3.classList.toggle('is-active', heroTrack.scrollLeft >= heroTrack.clientWidth * 1.5)"
+    >
+
+      <!-- SLIDE 1 -->
+      <div class="hero-slide">
+        <picture>
+          <source
+            media="(max-width: 680px)"
+            srcset="/Home%20banner%20img%209-16/1st_img%289_16%29.jpg"
+          />
+          <img
+            draggable="false"
+            src="/Home%20banner%20img%209-16/1st_img%283_4%29.png"
+            alt="A carefully crafted rug in a warm, contemporary living room"
+            fetchpriority="high"
+            loading="eager"
+            decoding="async"
+            width="1200"
+            height="1500"
+          />
+        </picture>
+      </div>
+
+      <!-- SLIDE 2 -->
+      <div class="hero-slide">
+        <picture>
+          <source
+            media="(max-width: 680px)"
+            srcset="/Home%20banner%20img%209-16/2nd_img%289_16%29.jpg"
+          />
+          <img
+            draggable="false"
+            src="/Home%20banner%20img%209-16/2nd_img%283_4%29.png"
+            alt="A handcrafted carpet styled in a considered interior"
+            loading="eager"
+            decoding="async"
+            width="1200"
+            height="1500"
+          />
+        </picture>
+      </div>
+
+      <!-- SLIDE 3 -->
+      <div class="hero-slide">
+        <picture>
+          <source
+            media="(max-width: 680px)"
+            srcset="/Home%20banner%20img%209-16/3rd_img%289_16%29.jpg"
+          />
+          <img
+            draggable="false"
+            src="/Home%20banner%20img%209-16/3rd_img%283_4%29.png"
+            alt="A detailed carpet bringing warmth to a contemporary space"
+            loading="eager"
+            decoding="async"
+            width="1200"
+            height="1500"
+          />
+        </picture>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Arrows (hidden on phones, where swiping works) -->
+  <button
+    type="button"
+    class="hero-arrow hero-arrow-prev"
+    aria-label="Previous banner image"
+    (click)="heroTrack.scrollLeft <= 4 ? heroTrack.scrollTo({ left: heroTrack.scrollWidth, behavior: 'smooth' }) : heroTrack.scrollBy({ left: -heroTrack.clientWidth, behavior: 'smooth' })"
+  >
+    <span aria-hidden="true">←</span>
+  </button>
+  <button
+    type="button"
+    class="hero-arrow hero-arrow-next"
+    aria-label="Next banner image"
+    (click)="heroTrack.scrollLeft + heroTrack.clientWidth >= heroTrack.scrollWidth - 4 ? heroTrack.scrollTo({ left: 0, behavior: 'smooth' }) : heroTrack.scrollBy({ left: heroTrack.clientWidth, behavior: 'smooth' })"
+  >
+    <span aria-hidden="true">→</span>
+  </button>
+
+  <!-- Text is placed in the four corners so the photos stay visible -->
   <div class="hero-layout">
-    <div class="hero-copy">
+
+    <!-- TOP LEFT -->
+    <div class="hero-corner hero-tl">
       <p class="hero-eyebrow">Handcrafted in India · Made for the world</p>
+    </div>
+
+    <!-- TOP RIGHT -->
+    <div class="hero-corner hero-tr">
+      <div class="hero-image-stamp">CRAFTED<br />WITH CARE</div>
+    </div>
+
+    <!-- BOTTOM LEFT -->
+    <div class="hero-corner hero-copy hero-bl">
       <h1>
-        Handcrafted carpets,<br />
-        <span>made to belong.</span>
+        SOFT STEPS<br />
+        <span>Hand Woven in Carpet City</span>
       </h1>
-      <p class="hero-description">
-        Discover thoughtfully crafted carpets created by skilled artisans,
-        premium materials and timeless design.
-      </p>
       <div class="hero-actions">
         <a routerLink="/shop" class="hero-primary">Explore collection <span aria-hidden="true">→</span></a>
         <a routerLink="/custom-requirement" class="hero-secondary">Customise your carpet</a>
       </div>
-      <div class="hero-note"><span></span> Made in India · Made for spaces worldwide</div>
     </div>
-    <div class="hero-image">
-      <picture>
-        <source
-          media="(max-width: 680px)"
-          srcset="/Home%20banner%20img%209-16/1st_img%289_16%29.jpg"
-        />
-        <img
-          src="/Home%20banner%20img%209-16/1st_img%283_4%29.png"
-          alt="A carefully crafted rug in a warm, contemporary living room"
-          fetchpriority="high"
-          loading="eager"
-          decoding="async"
-          width="1200"
-          height="1500"
-        />
-      </picture>
+
+    <!-- BOTTOM RIGHT -->
+    <div class="hero-corner hero-br">
+      <div class="hero-dots">
+        <button #heroDot1 type="button" class="hero-dot is-active" aria-label="Show banner image 1" (click)="heroTrack.scrollTo({ left: heroTrack.clientWidth * 0, behavior: 'smooth' })"></button>
+        <button #heroDot2 type="button" class="hero-dot" aria-label="Show banner image 2" (click)="heroTrack.scrollTo({ left: heroTrack.clientWidth * 1, behavior: 'smooth' })"></button>
+        <button #heroDot3 type="button" class="hero-dot" aria-label="Show banner image 3" (click)="heroTrack.scrollTo({ left: heroTrack.clientWidth * 2, behavior: 'smooth' })"></button>
+      </div>
+      <div class="hero-note"><span></span> Made in India · Made for spaces worldwide</div>
       <div class="hero-image-caption">
         <span>Thoughtful texture. Lasting comfort.</span>
-        <span>01 / 03</span>
+        <span #heroCount class="hero-count" aria-hidden="true">01 / 03</span>
       </div>
-      <div class="hero-image-stamp">CRAFTED<br />WITH CARE</div>
     </div>
+
   </div>
 </section>
 
@@ -52,13 +155,13 @@
 
 <section class="bg-white brand-intro">
 
-  <div class="mx-auto max-w-4xl px-5 py-20 text-center lg:px-8">
+  <div class="mx-auto max-w-5xl px-5 py-20 text-center lg:px-8">
 
-    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
+    <p class="text-base font-bold uppercase tracking-[0.3em] text-amber-700 sm:text-xl">
       Soft Steps Carpets
     </p>
 
-    <h2 class="mt-4 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
+    <h2 class="mt-5 text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl lg:text-6xl">
       Crafted in India. Created for the world.
     </h2>
 
@@ -367,69 +470,64 @@
     </div>
 
 
+    <!-- Benefit cards. Each card has an optional image at the top:
+         - change the url() in style="--benefit-image: url('...')" to use your own photo
+         - delete the whole <div class="benefit-media"> line to have a card with no image -->
     <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-5">
 
-      <div class="rounded-3xl border border-stone-200 p-8">
-
-        <div class="value-mark">01</div>
-
-        <h3 class="mt-6 text-lg font-semibold text-stone-900">
-          Handcrafted in India
-        </h3>
-
-        <p class="mt-3 text-sm leading-7 text-stone-600">
-          Skilled artisans and traditional carpet-making techniques,
-          thoughtfully carried into contemporary spaces.
-        </p>
-
-      </div>
-
-
-      <div class="rounded-3xl border border-stone-200 p-8">
-
-        <div class="value-mark">02</div>
-
-        <h3 class="mt-6 text-lg font-semibold text-stone-900">
-          Premium Materials
-        </h3>
-
-        <p class="mt-3 text-sm leading-7 text-stone-600">
-          New Zealand wool, Indian wool, silk and carefully selected
-          fibres for distinctive texture and character.
-        </p>
-
-      </div>
-
-
-      <div class="rounded-3xl border border-stone-200 p-8">
-
-        <div class="value-mark">03</div>
-
-        <h3 class="mt-6 text-lg font-semibold text-stone-900">
-          Custom Manufacturing
-        </h3>
-
-        <p class="mt-3 text-sm leading-7 text-stone-600">
-          Develop custom sizes, colours, materials and designs with
-          our manufacturing team.
-        </p>
-
+      <div class="benefit-card">
+        <div class="benefit-media" style="--benefit-image: url('/Home%20shop%20by%20style/Handknotted_rugs.png')" role="img" aria-label="Handcrafted in India"></div>
+        <div class="benefit-body">
+          <div class="value-mark">01</div>
+          <h3 class="mt-4 text-lg font-semibold text-stone-900">Handcrafted in India</h3>
+          <p class="mt-3 text-sm leading-7 text-stone-600">
+            Skilled artisans and traditional carpet-making techniques, thoughtfully carried into contemporary spaces.
+          </p>
+        </div>
       </div>
 
       <div class="benefit-card">
-        <div class="value-mark">04</div>
-        <h3 class="mt-6 text-lg font-semibold text-stone-900">Global Export</h3>
-        <p class="mt-3 text-sm leading-7 text-stone-600">
-          Support for international buyers, interior designers and project requirements.
-        </p>
+        <div class="benefit-media" style="--benefit-image: url('/about_us/Home_subpages_img/Why_soft_steps_home/Premium_material.jpg')" role="img" aria-label="Premium Materials"></div>
+        <div class="benefit-body">
+          <div class="value-mark">02</div>
+          <h3 class="mt-4 text-lg font-semibold text-stone-900">Premium Materials</h3>
+          <p class="mt-3 text-sm leading-7 text-stone-600">
+            New Zealand wool, Indian wool, silk and carefully selected fibres for distinctive texture and character.
+          </p>
+        </div>
       </div>
 
       <div class="benefit-card">
-        <div class="value-mark">05</div>
-        <h3 class="mt-6 text-lg font-semibold text-stone-900">Quality Control</h3>
-        <p class="mt-3 text-sm leading-7 text-stone-600">
-          Careful attention to construction, finishing and inspection at every step.
-        </p>
+        <div class="benefit-media" style="--benefit-image: url('/about_us/Home_subpages_img/Why_soft_steps_home/Custom.jpg')" role="img" aria-label="Custom Manufacturing"></div>
+        <div class="benefit-body">
+          <div class="value-mark">03</div>
+          <h3 class="mt-4 text-lg font-semibold text-stone-900">Custom Manufacturing</h3>
+          <p class="mt-3 text-sm leading-7 text-stone-600">
+            Develop custom sizes, colours, materials and designs with our manufacturing team.
+          </p>
+        </div>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-media" style="--benefit-image: url('/about_us/Home_subpages_img/Why_soft_steps_home/Global.jpg')" role="img" aria-label="Global Export"></div>
+        <div class="benefit-body">
+          <div class="value-mark">04</div>
+          <h3 class="mt-4 text-lg font-semibold text-stone-900">Global Export</h3>
+          <p class="mt-3 text-sm leading-7 text-stone-600">
+            Support for international buyers, interior designers and project requirements.
+          </p>
+        </div>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-media" style="--benefit-image: url('/about_us/Home_subpages_img/Why_soft_steps_home/Quality_cntrl.jpg')" role="img" aria-label="Quality Control"></div>
+        <div class="benefit-body">
+          <div class="value-mark">05</div>
+          <h3 class="mt-4 text-lg font-semibold text-stone-900">Quality Control</h3>
+          <p class="mt-3 text-sm leading-7 text-stone-600">
+            Careful attention to construction, finishing and inspection at every step.
+          </p>
+        </div>
       </div>
 
     </div>
@@ -441,7 +539,7 @@
 <section class="craftsmanship-section" data-reveal>
   <div class="craftsmanship-image">
     <img
-      src="/Home%20banner%20img%209-16/3rd_img%283_4%29.png"
+      src="/about_us/Home_subpages_img/Home_craft_art_specification/Craftsmanship.jpg"
       alt="Handcrafted carpet detail in a thoughtfully styled interior"
       loading="lazy"
       width="1200"
@@ -473,7 +571,7 @@
     </a>
   </div>
   <img
-    src="/Home%20banner%20img%209-16/4th_img%283_4%29.png"
+    src="/about_us/Home_subpages_img/Home_craft_art_specification/Every_thread.jpg"
     alt="A detailed carpet in a considered interior setting"
     loading="lazy"
     width="900"
@@ -499,7 +597,7 @@
     </a>
   </div>
   <img
-    src="/Category%20imgs/Luxury_rugs.jpg"
+    src="/about_us/Home_subpages_img/Home_craft_art_specification/Your_vision.png"
     alt="Luxury carpet texture illustrating bespoke material and design options"
     loading="lazy"
     width="1200"
@@ -639,13 +737,4 @@
   aria-label="Chat with Soft Steps Carpets on WhatsApp"
 >
   <img src="/logo/whatsapp.jpeg" alt="" aria-hidden="true" />
-</a>
-<a
-  class="floating-instagram"
-  href="https://www.instagram.com/softstepscarpets/"
-  target="_blank"
-  rel="noopener noreferrer"
-  aria-label="Follow Soft Steps Carpets on Instagram"
->
-  <img src="/logo/instagram.jpeg" alt="" aria-hidden="true" />
 </a>

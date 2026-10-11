@@ -323,3 +323,4 @@ export class HomePage implements AfterViewInit, OnDestroy {
     window.location.reload();
   }
 }
+
