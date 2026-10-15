@@ -8,6 +8,7 @@ export interface EmailSendRequest {
   body: string;
   senderName?: string;
   senderEmail?: string;
+  attachments?: Array<{ filename: string; contentType: string; contentBase64: string }>;
 }
 
 export interface EmailSendResult {
@@ -30,6 +31,7 @@ export class EmailCommunicationService {
           // The function deliberately fixes the authenticated sender server-side.
           senderName: request.senderName ?? 'Soft Steps Carpets & Rugs',
           senderEmail: request.senderEmail ?? 'info@softstepscarpets.com',
+          attachments: request.attachments ?? [],
         },
       });
 

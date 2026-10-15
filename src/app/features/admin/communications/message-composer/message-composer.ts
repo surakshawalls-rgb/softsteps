@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+
+interface EmailAttachment { filename: string; contentType: string; contentBase64: string; size: number; }
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
@@ -31,6 +33,9 @@ export class MessageComposer implements OnInit {
   successMessage = '';
   errorMessage = '';
   isSubmitting = false;
+  attachments: EmailAttachment[] = [];
+  readonly maxAttachmentBytes = 5 * 1024 * 1024;
+  readonly allowedAttachmentTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 
   constructor(
     private readonly messageTemplateService: MessageTemplateService,
@@ -64,6 +69,58 @@ export class MessageComposer implements OnInit {
     this.syncTemplate();
   }
 
+  async onAttachmentSelection(event: Event): Promise<void> {
+    this.clearMessages();
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    input.value = '';
+
+    for (const file of files) {
+      if (!this.allowedAttachmentTypes.includes(file.type)) {
+        this.errorMessage = `${file.name}: only JPG, PNG, WebP, and PDF files are allowed.`;
+        continue;
+      }
+      if (file.size <= 0 || file.size > this.maxAttachmentBytes) {
+        this.errorMessage = `${file.name}: file must be between 1 byte and 5 MB.`;
+        continue;
+      }
+      if (this.attachments.some(item => item.filename === file.name && item.size === file.size)) {
+        continue;
+      }
+      if (this.attachments.reduce((sum, item) => sum + item.size, 0) + file.size > this.maxAttachmentBytes) {
+        this.errorMessage = 'The total attachment size cannot exceed 5 MB.';
+        break;
+      }
+
+      const contentBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error(`Could not read ${file.name}.`));
+        reader.onload = () => {
+          const result = String(reader.result ?? '');
+          const comma = result.indexOf(',');
+          if (comma < 0) reject(new Error(`Could not encode ${file.name}.`));
+          else resolve(result.slice(comma + 1));
+        };
+        reader.readAsDataURL(file);
+      }).catch(error => {
+        this.errorMessage = error instanceof Error ? error.message : 'Could not read attachment.';
+        return '';
+      });
+
+      if (contentBase64) {
+        this.attachments.push({
+          filename: file.name.replace(/[\\/\r\n"]/g, '_').slice(0, 120),
+          contentType: file.type,
+          contentBase64,
+          size: file.size
+        });
+      }
+    }
+  }
+
+  removeAttachment(index: number): void {
+    this.attachments.splice(index, 1);
+  }
   async sendEmail(): Promise<void> {
     this.clearMessages();
 
