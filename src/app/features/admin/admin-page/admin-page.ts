@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+﻿import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { SupabaseService } from '../../../core/services/supabase.service';
@@ -27,6 +27,7 @@ interface CustomRequirementSubmission {
 export class AdminPage implements OnInit {
   private readonly supabase = inject(SupabaseService);
 
+  private readonly cdr = inject(ChangeDetectorRef);
   readonly templates = MESSAGE_TEMPLATES;
 
   requirements: CustomRequirementSubmission[] = [];
@@ -65,6 +66,7 @@ export class AdminPage implements OnInit {
         'Unable to load submissions. Check the admin database permissions and try again.';
     } finally {
       this.requirementsLoading = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -72,7 +74,7 @@ export class AdminPage implements OnInit {
     const date = new Date(value);
 
     if (Number.isNaN(date.getTime())) {
-      return '—';
+      return 'â€”';
     }
 
     return new Intl.DateTimeFormat('en-IN', {
@@ -96,3 +98,4 @@ export class AdminPage implements OnInit {
       .replace(/\b\w/g, (letter) => letter.toUpperCase());
   }
 }
+
