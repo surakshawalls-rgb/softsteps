@@ -18,6 +18,99 @@
 </section>
 
 
+<!-- ========================================================
+     WHY CONTACT US
+======================================================== -->
+
+<section class="why-contact">
+
+  <div class="why-inner">
+
+    <div class="why-heading">
+
+      <p class="eyebrow dark">Why contact us</p>
+
+      <h2>Direct from our factory to your space.</h2>
+
+      <p class="why-intro">
+        Contact Soft Steps Carpets for direct-from-factory pricing and
+        superior craftsmanship. We manage the entire manufacturing process
+        in-house, from weaving and latexing to cutting and stitching, which
+        removes third-party production costs. As we export directly to B2B
+        and B2C buyers worldwide, without middlemen or intermediaries, the
+        cost savings and strict quality control pass straight to you.
+      </p>
+
+    </div>
+
+    <!-- IMAGE BEHIND EACH CARD: change the url() in each card's style="--why-card-image".
+         Put the image files in your public folder (for example /about_us/why_contact_1.jpg).
+         Delete the whole style="..." attribute on a card if you want that card without an image. -->
+    <div class="why-grid">
+
+      <div
+        class="why-card"
+        style="--why-card-image: url('/contact_us/contact_thread_selection.jpg')"
+      >
+        <span class="why-number">01</span>
+        <h3>Choosing &amp; Shorting Fabrics</h3>
+        <p>
+           We source premium rug fabrics directly from our local hub,
+           working closely with our in-house manufacturing team to craft custom sizes,
+           vibrant colors, and unique designs tailored specifically to your exact requirements.
+        </p>
+      </div>
+
+      <div
+        class="why-card"
+        style="--why-card-image: url('/contact_us/contact_tufting.jpg')"
+      >
+        <span class="why-number">02</span>
+        <h3>In-house Designing &amp; Drafting</h3>
+        <p>
+           Our skilled artisans conceptualize, sketch,
+           and draft intricate carpet patterns directly within our premises,
+           translating your creative vision into precise weaving blueprints before production even begins.
+        </p>
+      </div>
+
+      <div
+        class="why-card"
+        style="--why-card-image: url('/contact_us/contact_us_latexing.jpg')"
+      >
+        <span class="why-number">03</span>
+        <h3>Guidance on the Quality Control</h3>
+        <p>
+          Every carpet receives meticulous finishing touches—including latexing,
+          shearing, carving, and edge stitching—directly in our dedicated unit,
+          ensuring exceptional durability, plush texture, and flawless quality
+        </p>
+      </div>
+
+      <div
+        class="why-card"
+        style="--why-card-image: url('/contact_us/contact_us_finishing.jpg')"
+      >
+        <span class="why-number">04</span>
+        <h3>Final Touches & Packaging</h3>
+        <p>
+          In our dedicated finishing unit, every carpet undergoes meticulous final touches—including
+           trimming excess pile for a smooth surface, applying durable anti-slip backing,
+            and secure packaging—ensuring your rug arrives ready to roll out.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     ENQUIRY
+======================================================== -->
+
 <section class="contact-section">
 
   <div class="contact-grid">
@@ -51,29 +144,19 @@
         </a>
       </div>
 
-      <div class="contact-item">
-        <span>Website</span>
-        <a
-          href="https://www.softstepscarpets.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          www.softstepscarpets.com
-        </a>
+      <div class="contact-item last">
+        <span>Working Days / Hours</span>
+        <p>Mon - Sun / 9:00 AM - 8:00 PM</p>
       </div>
 
-      <a
-        routerLink="/custom-requirement"
-        class="custom-link"
-      >
-        Have a project or custom requirement? →
-      </a>
-      <a
-        routerLink="/enquiries"
-        class="custom-link"
-      >
-        Submit a project enquiry →
-      </a>
+      <!-- IMAGE: change the url() below to your own image path.
+           Put the image file in your public folder, for example /about_us/contact_side_image.jpg -->
+      <div
+        class="contact-side-image"
+        style="--side-image: url('/about_us/contact_side_image.jpg')"
+        role="img"
+        aria-label="Soft Steps carpets"
+      ></div>
 
     </div>
 
@@ -82,46 +165,84 @@
 
       @if (!submitted) {
 
-        <form (ngSubmit)="submit()" #contactForm="ngForm">
+        <!-- IMAGE: change the url() below to your own image path.
+             Put the image file in your public folder, for example /about_us/contact_image.jpg -->
+        <div
+          class="form-image"
+          style="--contact-image: url('/about_us/contact_image.jpg')"
+          role="img"
+          aria-label="Soft Steps carpets"
+        >
+          <div class="form-image-caption">
+            <p class="eyebrow">Send an enquiry</p>
+            <h3>Tell us about your space</h3>
+          </div>
+        </div>
+
+        <form (ngSubmit)="submit(contactForm)" #contactForm="ngForm" novalidate>
+
+          <p class="required-note"><span class="req">*</span> Required fields</p>
 
           <div class="form-row">
 
             <label>
-              Name
+              <span class="label-text">Name <span class="req" aria-hidden="true">*</span></span>
               <input
                 type="text"
                 name="name"
                 [(ngModel)]="form.name"
+                #nameCtrl="ngModel"
                 required
+                autocomplete="name"
                 placeholder="Your name"
+                [class.invalid]="showError(nameCtrl)"
               />
+              @if (showError(nameCtrl)) {
+                <small class="field-error">Please enter your name.</small>
+              }
             </label>
 
             <label>
-              Phone
+              <span class="label-text">Mobile no. <span class="req" aria-hidden="true">*</span></span>
               <input
                 type="tel"
                 name="phone"
                 [(ngModel)]="form.phone"
-                placeholder="+91"
+                #phoneCtrl="ngModel"
+                required
+                pattern="[0-9+() \-]{8,18}"
+                inputmode="tel"
+                autocomplete="tel"
+                placeholder="+91 00000 00000"
+                [class.invalid]="showError(phoneCtrl)"
               />
+              @if (showError(phoneCtrl)) {
+                <small class="field-error">Please enter a valid mobile number.</small>
+              }
             </label>
 
           </div>
 
           <label>
-            Email
+            <span class="label-text">Email address <span class="req" aria-hidden="true">*</span></span>
             <input
               type="email"
               name="email"
               [(ngModel)]="form.email"
+              #emailCtrl="ngModel"
               required
+              email
+              autocomplete="email"
               placeholder="you@example.com"
+              [class.invalid]="showError(emailCtrl)"
             />
+            @if (showError(emailCtrl)) {
+              <small class="field-error">Please enter a valid email address.</small>
+            }
           </label>
 
           <label>
-            Subject
+            <span class="label-text">Subject</span>
             <select
               name="subject"
               [(ngModel)]="form.subject"
@@ -135,27 +256,82 @@
             </select>
           </label>
 
-          <label>
-            Message
+          <div class="field">
+            <label for="message" class="label-text">Message</label>
+
             <textarea
+              id="message"
               name="message"
               [(ngModel)]="form.message"
               rows="6"
-              required
               placeholder="Tell us a little about what you are looking for..."
             ></textarea>
-          </label>
 
-          <button
-            type="submit"
-            [disabled]="!contactForm.valid"
-          >
+            <!-- Attach files: click to choose, or drag and drop -->
+            <input
+              #fileInput
+              type="file"
+              multiple
+              hidden
+              [accept]="acceptAttr"
+              (change)="onFilesSelected($event)"
+            />
+
+            <button
+              type="button"
+              class="attach"
+              [class.dragging]="dragging"
+              (click)="fileInput.click()"
+              (dragover)="onDragOver($event)"
+              (dragleave)="dragging = false"
+              (drop)="onDrop($event)"
+            >
+              <span class="attach-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+              </span>
+              <span class="attach-text">
+                <strong>Attach files</strong>
+                <small>
+                  Click to choose or drag and drop. Photos, PDF, Word or Excel,
+                  up to {{ maxFiles }} files, {{ maxFileSizeMb }} MB each.
+                </small>
+              </span>
+            </button>
+
+            @if (fileError) {
+              <small class="field-error" role="alert">{{ fileError }}</small>
+            }
+
+            @if (files.length > 0) {
+              <ul class="file-list" aria-label="Attached files">
+                @for (file of files; track $index) {
+                  <li>
+                    <span class="file-info">
+                      <span class="file-name">{{ file.name }}</span>
+                      <span class="file-size">{{ formatSize(file.size) }}</span>
+                    </span>
+                    <button
+                      type="button"
+                      class="file-remove"
+                      [attr.aria-label]="'Remove ' + file.name"
+                      (click)="removeFile($index)"
+                    >
+                      ×
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+
+          <button type="submit" class="submit-button">
             Send Enquiry
           </button>
 
           <p class="form-note">
-            Your enquiry form is ready to be connected to
-            Supabase when the backend workflow is enabled.
+            We use your details only to respond to your enquiry.
           </p>
 
         </form>
@@ -174,10 +350,12 @@
           </h2>
 
           <p>
-            Our contact workflow will be connected to the
-            Soft Steps backend as the platform moves to
-            production.
+            Our team will review your requirement and get back to you.
           </p>
+
+          <button type="button" class="submit-button again-button" (click)="reset()">
+            Send another enquiry
+          </button>
 
         </div>
 
@@ -186,5 +364,4 @@
     </div>
 
   </div>
-
 </section>

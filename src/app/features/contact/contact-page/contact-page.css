@@ -2,10 +2,16 @@
   display: block;
 }
 
+/* ==========================================
+   HERO
+========================================== */
+
 .contact-hero {
-  background: #171512;
+  background:
+    radial-gradient(ellipse at 85% 20%, rgba(211, 160, 91, 0.14), transparent 45%),
+    #171512;
   color: white;
-  padding: 110px 32px;
+  padding: 100px 32px 96px;
 }
 
 .contact-hero > div {
@@ -28,19 +34,227 @@
 .contact-hero h1 {
   margin: 20px 0 0;
   font-family: Georgia, serif;
-  font-size: clamp(48px, 7vw, 86px);
+  font-size: clamp(42px, 6vw, 72px);
   font-weight: 500;
-  line-height: 1;
-  letter-spacing: -.04em;
+  line-height: 1.04;
+  letter-spacing: -.035em;
+}
+
+.contact-hero h1::after {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 2px;
+  margin-top: 28px;
+  background: linear-gradient(90deg, #b78a4a, #f2d7a0, #b78a4a);
 }
 
 .contact-hero p:last-child {
-  max-width: 620px;
-  margin-top: 30px;
-  color: #aaa39a;
+  max-width: 600px;
+  margin-top: 28px;
+  color: #b4aca2;
   font-size: 17px;
   line-height: 1.8;
 }
+
+/* ==========================================
+   WHY CONTACT US
+========================================== */
+
+.why-contact {
+  padding: 96px 32px;
+  background: #f4efe6;
+}
+
+.why-inner {
+  max-width: 1280px;
+  margin: auto;
+}
+
+.why-heading {
+  max-width: 760px;
+  margin: 0 auto 56px;
+  text-align: center;
+}
+
+.why-heading h2 {
+  margin: 16px 0 0;
+  font-family: Georgia, serif;
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -.02em;
+  color: #171512;
+}
+
+.why-intro {
+  margin: 22px auto 0;
+  color: #6f675d;
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* ---------- card ---------- */
+
+.why-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 430px;
+  padding: 24px 24px 28px;
+  border: 1px solid #e8e1d6;
+  border-radius: 20px;
+  background: #171512;
+  container-type: inline-size; /* lets the title size itself to the card width */
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+/* Photo (set in the HTML with --why-card-image) */
+.why-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: var(--why-card-image, none);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: saturate(1.05) brightness(1);
+  transition: transform 600ms ease, filter 350ms ease;
+}
+
+/* Dark gradient at the bottom so the white text is always readable.
+   Lower the numbers to show more photo, raise them to show less. */
+.why-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgba(23, 21, 18, .10) 0%,
+    rgba(23, 21, 18, .08) 30%,
+    rgba(23, 21, 18, .62) 58%,
+    rgba(23, 21, 18, .92) 100%
+  );
+}
+
+.why-card:hover::before,
+.why-card:focus-within::before {
+  transform: scale(1.06);
+  filter: saturate(1.05) brightness(.78);
+}
+
+.why-card:hover,
+.why-card:focus-within {
+  transform: translateY(-4px);
+  border-color: #d3a05b;
+  box-shadow: 0 24px 44px -26px rgba(32, 26, 20, .55);
+}
+
+/* ---------- number badge ---------- */
+
+.why-number {
+  align-self: flex-start;
+  display: inline-block;
+  padding: 7px 14px;
+  border: 1px solid rgba(255, 255, 255, .55);
+  border-radius: 999px;
+  background: rgba(23, 21, 18, .38);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #fffdf9;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  letter-spacing: .14em;
+}
+
+/* ---------- title (always one line) ---------- */
+
+/* margin-top:auto pushes the title block to the bottom of the card.
+   The font size follows the card width so the longest title still fits on one line. */
+.why-card h3 {
+  margin: auto 0 0;
+  color: #fffdf9;
+  font-family: Georgia, serif;
+  font-size: 18px; /* fallback for older browsers */
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@container (min-width: 1px) {
+  .why-card h3 {
+    font-size: clamp(13px, 4.8cqw, 20px);
+  }
+}
+
+/* Gold accent line above the title, grows on hover */
+.why-card h3::before {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 2px;
+  margin-bottom: 14px;
+  background: linear-gradient(90deg, #b78a4a, #f2d7a0);
+  transition: width 350ms ease;
+}
+
+.why-card:hover h3::before,
+.why-card:focus-within h3::before {
+  width: 64px;
+}
+
+/* ---------- description: hidden until hover / keyboard focus ---------- */
+
+.why-card p {
+  margin: 0;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(10px);
+  color: #eee7da;
+  font-size: 14px;
+  line-height: 1.75;
+  transition:
+    max-height 350ms ease,
+    opacity 250ms ease,
+    transform 350ms ease,
+    margin-top 350ms ease;
+}
+
+.why-card:hover p,
+.why-card:focus-within p {
+  max-height: 320px;
+  margin-top: 10px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Touch screens have no hover, so always show the text there */
+@media (hover: none) {
+  .why-card p {
+    max-height: none;
+    margin-top: 10px;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================================
+   ENQUIRY SECTION
+========================================== */
 
 .contact-section {
   max-width: 1280px;
@@ -51,27 +265,34 @@
 .contact-grid {
   display: grid;
   grid-template-columns: .85fr 1.15fr;
-  gap: 90px;
+  gap: 80px;
   align-items: start;
 }
 
 .contact-details h2 {
   margin: 18px 0 0;
   font-family: Georgia, serif;
-  font-size: clamp(40px, 5vw, 62px);
+  font-size: clamp(38px, 4.6vw, 58px);
   font-weight: 500;
-  line-height: 1.03;
+  line-height: 1.05;
+  letter-spacing: -.025em;
 }
 
 .description {
-  max-width: 500px;
-  margin: 28px 0 45px;
+  max-width: 480px;
+  margin: 26px 0 40px;
   color: #766e65;
-  line-height: 1.8;
+  font-size: 15px;
+  line-height: 1.85;
 }
 
 .contact-item {
-  margin-top: 25px;
+  padding: 18px 0;
+  border-top: 1px solid #e5dfd7;
+}
+
+.contact-item.last {
+  border-bottom: 1px solid #e5dfd7;
 }
 
 .contact-item span {
@@ -86,39 +307,113 @@
 
 .contact-item a {
   color: #2e2924;
+  font-size: 16px;
   text-decoration: none;
+  transition: color 180ms ease;
 }
 
-.custom-link {
-  display: inline-block;
-  margin-top: 45px;
+.contact-item a:hover {
   color: #a06f34;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
 }
+
+.contact-item p {
+  margin: 0;
+  color: #2e2924;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Image under the contact details.
+   To change the picture, edit the url() in the HTML (--side-image). */
+.contact-side-image {
+  margin-top: 36px;
+  aspect-ratio: 5 / 4;
+  border-radius: 20px;
+  background-color: #e7e0d6;
+  background-image: var(--side-image, none);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow: 0 26px 50px -30px rgba(32, 26, 20, .45);
+}
+
+/* ==========================================
+   FORM CARD
+========================================== */
 
 .contact-form-card {
-  padding: 40px;
+  overflow: hidden;
   border: 1px solid #e5dfd7;
+  border-radius: 24px;
   background: #fffdf9;
-  box-shadow: 0 25px 70px rgba(32, 26, 20, .08);
+  box-shadow: 0 30px 70px -30px rgba(32, 26, 20, .25);
+}
+
+/* Image at the top of the form. Change the url() in the HTML to use your own photo. */
+.form-image {
+  display: flex;
+  align-items: flex-end;
+  min-height: 190px;
+  padding: 26px 40px;
+  background-color: #2a2620;
+  background-image:
+    linear-gradient(0deg, rgba(23, 21, 18, .82), rgba(23, 21, 18, .12) 70%),
+    var(--contact-image, none);
+  background-position: center;
+  background-size: cover;
+}
+
+.form-image-caption .eyebrow {
+  margin: 0;
+  font-size: 10px;
+}
+
+.form-image-caption h3 {
+  margin: 8px 0 0;
+  color: #fffdf9;
+  font-family: Georgia, serif;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.15;
 }
 
 form {
   display: grid;
   gap: 20px;
+  padding: 32px 40px 36px;
+}
+
+.required-note {
+  margin: 0;
+  color: #8a8177;
+  font-size: 12px;
+}
+
+.req {
+  color: #b3412f;
+  font-weight: 700;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 15px;
+  gap: 16px;
+}
+
+label,
+.field {
+  display: grid;
+  gap: 8px;
 }
 
 label {
-  display: grid;
-  gap: 8px;
+  color: #514a42;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+}
+
+.label-text {
   color: #514a42;
   font-size: 12px;
   font-weight: 700;
@@ -133,12 +428,14 @@ textarea {
   border: 1px solid #ddd6cd;
   background: white;
   color: #29251f;
-  padding: 14px 15px;
-  border-radius: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
   outline: none;
   font: inherit;
   font-size: 14px;
   font-weight: 400;
+  letter-spacing: normal;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
 }
 
 textarea {
@@ -149,38 +446,172 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: #b88746;
-  box-shadow: 0 0 0 3px rgba(184,135,70,.1);
+  box-shadow: 0 0 0 3px rgba(184, 135, 70, .12);
 }
 
-form button {
-  min-height: 52px;
+input.invalid {
+  border-color: #c0503b;
+  box-shadow: 0 0 0 3px rgba(192, 80, 59, .1);
+}
+
+.field-error {
+  color: #b3412f;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: normal;
+}
+
+/* ---------- attach files ---------- */
+
+.attach {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 18px;
+  border: 1.5px dashed #cfc6b8;
+  border-radius: 14px;
+  background: #faf7f1;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+.attach:hover,
+.attach.dragging {
+  border-color: #a06f34;
+  background: #fff7ea;
+}
+
+.attach:focus-visible {
+  outline: 2px solid #b88746;
+  outline-offset: 2px;
+}
+
+.attach-icon {
+  display: grid;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 50%;
+  background: #171512;
+  color: #d3a05b;
+}
+
+.attach-text strong {
+  display: block;
+  color: #29251f;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.attach-text small {
+  display: block;
+  margin-top: 3px;
+  color: #8a8177;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.file-list {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid #e5dfd7;
+  border-radius: 12px;
+  background: white;
+}
+
+.file-info {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.file-name {
+  overflow: hidden;
+  color: #29251f;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-size {
+  flex: none;
+  color: #8a8177;
+  font-size: 12px;
+}
+
+.file-remove {
+  display: grid;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #f1ece3;
+  color: #514a42;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease;
+}
+
+.file-remove:hover {
+  background: #b3412f;
+  color: white;
+}
+
+/* ---------- submit ---------- */
+
+.submit-button {
+  min-height: 54px;
   border: 0;
   border-radius: 999px;
   background: #171512;
   color: white;
   cursor: pointer;
+  font: inherit;
+  font-size: 14px;
   font-weight: 700;
+  letter-spacing: .03em;
+  box-shadow: 0 16px 30px -18px rgba(23, 21, 18, .7);
+  transition: background 180ms ease, transform 180ms ease;
 }
 
-form button:hover:not(:disabled) {
+.submit-button:hover {
+  transform: translateY(-2px);
   background: #a06f34;
-}
-
-form button:disabled {
-  cursor: not-allowed;
-  opacity: .45;
 }
 
 .form-note {
   margin: 0;
   color: #9a9187;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
   text-align: center;
 }
 
+/* ---------- thank you ---------- */
+
 .success-state {
-  padding: 50px 20px;
+  padding: 70px 40px;
   text-align: center;
 }
 
@@ -203,17 +634,57 @@ form button:disabled {
   font-weight: 500;
 }
 
-.success-state p:last-child {
+.success-state p:last-of-type {
   max-width: 450px;
   margin: auto;
   color: #776e65;
   line-height: 1.8;
 }
 
+.again-button {
+  margin-top: 30px;
+  padding: 0 28px;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 1000px) {
+
+  .why-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .contact-grid {
+    gap: 50px;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
 @media (max-width: 767px) {
 
   .contact-hero {
     padding: 80px 22px;
+  }
+
+  .why-contact {
+    padding: 70px 22px;
+  }
+
+  .why-heading {
+    margin-bottom: 40px;
+  }
+
+  .why-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .why-card {
+    min-height: 380px;
   }
 
   .contact-section {
@@ -225,11 +696,36 @@ form button:disabled {
     gap: 55px;
   }
 
-  .contact-form-card {
-    padding: 25px 20px;
+  .form-image {
+    min-height: 160px;
+    padding: 22px 20px;
+  }
+
+  .form-image-caption h3 {
+    font-size: 24px;
+  }
+
+  form {
+    padding: 26px 20px 28px;
   }
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .success-state {
+    padding: 50px 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .why-card,
+  .why-card p,
+  .why-card::before,
+  .why-card h3::before,
+  .submit-button,
+  .attach {
+    transition: none;
   }
 }

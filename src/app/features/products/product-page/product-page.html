@@ -69,16 +69,27 @@
           <div class="product-actions">
             <a [routerLink]="inquiryUrl" class="primary-button">Enquire about this rug <span aria-hidden="true">↗</span></a>
             <p>Made for considered spaces. Ask us about custom sizes, colours and project quantities.</p>
+
+            <ul class="trust-list" aria-label="Why choose Soft Steps">
+              <li>Handcrafted in India</li>
+              <li>Custom sizes &amp; colours</li>
+              <li>Export support worldwide</li>
+            </ul>
           </div>
         </div>
       </div>
 
       @if (product.design_story || product.description) {
         <section class="story-section">
-          <p class="eyebrow">THE DESIGN</p>
-          <h2>Thoughtful design, lasting character</h2>
-          @if (product.design_story) { <p class="story-copy">{{ product.design_story }}</p> }
-          @if (product.description) { <p class="story-copy">{{ product.description }}</p> }
+          <div class="story-heading">
+            <p class="eyebrow">THE DESIGN</p>
+            <h2>Thoughtful design, lasting character</h2>
+          </div>
+
+          <div class="story-body">
+            @if (product.design_story) { <p class="story-lead">{{ product.design_story }}</p> }
+            @if (product.description) { <p class="story-copy">{{ product.description }}</p> }
+          </div>
         </section>
       }
     }

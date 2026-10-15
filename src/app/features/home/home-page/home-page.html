@@ -212,8 +212,14 @@
 
         @for (category of categoryPreview; track category.id ?? category.slug) {
 
+          <!-- "Modern Rugs" and "Traditional Carpets" open the shop with their own filter
+               already applied (/shop?category=<slug>). Every other card goes to its own
+               category page. The shop page matches the slug to its real category option,
+               so "traditional-carpets" and "traditional-rugs" both select Traditional Rugs.
+               Both conditions below must stay identical. -->
           <a
-            [routerLink]="['/categories', category.slug]"
+            [routerLink]="(category.slug === 'modern-rugs' || category.slug === 'traditional-carpets' || category.slug === 'traditional-rugs') ? ['/shop'] : ['/categories', category.slug]"
+            [queryParams]="(category.slug === 'modern-rugs' || category.slug === 'traditional-carpets' || category.slug === 'traditional-rugs') ? { category: category.slug } : null"
             class="group relative flex min-h-64 overflow-hidden rounded-3xl bg-stone-200"
           >
 
@@ -270,7 +276,13 @@
     </p>
   </div>
   <div class="style-grid">
-    <a routerLink="/shop" class="style-card">
+    <!-- Opens the shop with the Hand-knotted category already selected.
+         The value 'hand-knotted' must match your category slug. -->
+    <a
+      routerLink="/shop"
+      [queryParams]="{ category: 'hand-knotted' }"
+      class="style-card"
+    >
       <img
         src="/Home%20shop%20by%20style/Handknotted_rugs.png"
         alt="Hand-knotted rug with detailed, traditional craftsmanship"
