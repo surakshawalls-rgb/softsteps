@@ -52,3 +52,15 @@ keystore.properties
 *.jks
 *.keystore
 
+
+# Local backups and generated files
+*.backup-*
+*.corrupted-*
+__pycache__/
+*.pyc
+src.zip
+src (2).zip
+src (3).zip
+src (4).zip
+src (5).zip
+supabase/.temp/
