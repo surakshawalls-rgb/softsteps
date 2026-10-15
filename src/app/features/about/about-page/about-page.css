@@ -358,6 +358,42 @@
   color: var(--ink);
 }
 
+/* Image + text split layout.
+   To change the picture, edit the url() in the HTML (--why-image). */
+
+.why-top {
+  display: grid;
+  grid-template-columns: 0.9fr 1fr;
+  gap: 6%;
+  align-items: center;
+
+  text-align: left;
+}
+
+/* The whole picture is always shown, nothing is cropped.
+   If your image is not square, change the two numbers in
+   aspect-ratio (width / height of your image file). */
+
+.why-image {
+  aspect-ratio: 1 / 1;
+
+  border-radius: 24px;
+
+  /* Same cream as the section. "multiply" turns the image's white
+     background into this cream, while the black drawing stays black. */
+  background-color: var(--cream);
+  background-image: var(--why-image, none);
+  background-blend-mode: multiply;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.why-top .why-description {
+  max-width: none;
+  margin: 28px 0 0;
+}
+
 
 /* ==========================================
    COMPANY STATISTICS
@@ -479,10 +515,6 @@
   padding: 80px 11%;
 }
 
-.promise-content .section-label {
-  margin-bottom: 45px;
-}
-
 .promise-content h2 {
   margin: 22px 0;
 
@@ -561,10 +593,12 @@
   background: #eee5d7;
 }
 
+/* Header: refined headline + readable paragraph */
+
 .craft-header {
   display: grid;
-  grid-template-columns: 1fr 0.7fr;
-  gap: 10%;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 6%;
 
   align-items: end;
 
@@ -572,16 +606,24 @@
 }
 
 .craft-header h2 {
-  margin: 22px 0 0;
+  margin: 18px 0 0;
 
-  font-size: clamp(42px, 5.2vw, 66px);
-  line-height: 1.08;
-  letter-spacing: -0.045em;
+  font-size: clamp(32px, 3.6vw, 48px);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
 }
 
-.craft-header > p {
-  margin: 0 0 5px;
+.about-page .craft-header > p {
+  max-width: 440px;
+  margin: 0 0 6px;
+  padding-left: 22px;
+
+  border-left: 2px solid var(--gold);
+
   color: var(--muted);
+
+  font-size: 16px;
+  line-height: 1.85;
 }
 
 .craft-grid {
@@ -605,19 +647,24 @@
     transform 0.25s ease;
 }
 
-/* Optional image behind a card: add class "has-image" and set --card-image */
+/* ---- Image-only cards: the WHOLE picture is shown, nothing is cropped ----
+   The card takes the shape of the infographic (aspect-ratio) and the
+   picture is fitted inside it with "contain", so no edge is ever cut off.
+   The card has rounded corners (border-radius) and clips the picture to them.
+   If your image has a different shape, change the two numbers in
+   aspect-ratio (width / height of your image file). */
 
 .craft-card.has-image {
   isolation: isolate;
   overflow: hidden;
 
-  border-top-color: transparent;
-  color: #fff;
+  min-height: 0;
+  aspect-ratio: 475 / 524;
+  padding: 0;
 
-  background-color: #29251e;
-  background-image: var(--card-image, none);
-  background-position: center;
-  background-size: cover;
+  border-top-color: transparent;
+  border-radius: 24px;
+  background: #eee5d7;
 }
 
 .craft-card.has-image::before {
@@ -626,29 +673,34 @@
   inset: 0;
   z-index: -1;
 
-  background: linear-gradient(
-    0deg,
-    rgba(18, 16, 13, 0.72),
-    rgba(18, 16, 13, 0.4)
-  );
+  /* The image is blended onto the card color (#eee5d7, same as the section).
+     brightness lifts the grey image background to pure white first, and
+     "multiply" then turns that white into the card color, so the image and
+     the empty space above and below it match exactly. */
+  background-image: var(--card-image, none);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+
+  /* If the image area still looks darker than the section, raise 1.10
+     (for example 1.12). If it looks lighter, lower it. */
+  filter: brightness(1.1);
+  mix-blend-mode: multiply;
+}
+
+.craft-card.has-image {
+  display: block;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .craft-card.has-image:hover {
-  background-color: #29251e;
-  background-image: var(--card-image, none);
-  background-position: center;
-  background-size: cover;
+  background: #eee5d7;
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(23, 22, 18, 0.14);
 }
 
-.craft-card.has-image .craft-number {
-  color: #e2c28f;
-}
-
-.craft-card.has-image h3,
-.craft-card.has-image p {
-  color: #fff;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
-}
+/* Plain text cards (only used if you remove "has-image" from a card) */
 
 .craft-card:hover {
   background: rgba(255, 255, 255, 0.6);
@@ -693,68 +745,144 @@
 
 
 /* ==========================================
-   06. GROWING TOGETHER
+   06. WHAT IS A CARPET + HANDCRAFTING PROCESS
 ========================================== */
 
-.community-section {
-  display: grid;
-  grid-template-columns: 1fr 0.75fr;
-  align-items: center;
-  gap: 12%;
-
-  padding: 110px 10%;
-
+.carpet-section {
+  padding: 105px 8% 90px;
   background: var(--cream-light);
 }
 
-.community-content h2 {
-  margin: 23px 0;
+/* ---- Intro: heading left, text right ---- */
 
-  font-size: clamp(41px, 5vw, 66px);
-  line-height: 1.08;
-  letter-spacing: -0.045em;
+.carpet-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 8%;
+
+  margin-bottom: 70px;
 }
 
-.community-content p {
+.carpet-intro-heading h2 {
+  max-width: 540px;
+  margin: 20px 0 0;
+
+  font-size: clamp(34px, 3.8vw, 52px);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+}
+
+.carpet-intro-body {
+  max-width: 560px;
+  padding-top: 8px;
+}
+
+.about-page .carpet-intro-body p {
+  margin: 0 0 20px;
+
   color: var(--muted);
+
+  font-size: 15px;
+  line-height: 1.9;
 }
 
-.community-content .community-lead {
+.about-page .carpet-intro-body p:last-child {
+  margin-bottom: 0;
+}
+
+.about-page .carpet-intro-body .carpet-lead {
+  margin-bottom: 28px;
+  padding: 2px 0 2px 24px;
+  border-left: 2px solid var(--gold);
+
   color: var(--ink);
 
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 20px;
-  line-height: 1.7;
+  font-size: 21px;
+  line-height: 1.6;
 }
 
-.community-quote {
-  padding: 40px 0 40px 35px;
-  border-left: 1px solid var(--gold);
+/* ---- Scrolling process strip ---- */
+
+.process-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+
+  border-bottom: 1px solid var(--line);
 }
 
-.quote-mark {
+.process-step {
   display: block;
 
   color: var(--gold);
 
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 85px;
-  line-height: 0.9;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
 }
 
-.community-quote blockquote {
-  margin: 20px 0 35px;
+.process-head h3 {
+  margin: 8px 0 0;
 
-  font-size: clamp(27px, 3.2vw, 42px);
-  line-height: 1.35;
-  letter-spacing: -0.035em;
+  font-size: clamp(24px, 2.6vw, 32px);
+  line-height: 1.2;
 }
 
-.quote-brand {
-  color: #847967;
+/* The one scrolling strip */
+.process-track {
+  overflow-x: auto;
+  overflow-y: hidden;
 
-  font-size: 9px;
-  letter-spacing: 0.15em;
+  border-radius: 20px;
+  background: var(--cream-light);
+
+  cursor: grab;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #bfb29e transparent;
+}
+
+.process-track:active {
+  cursor: grabbing;
+}
+
+.process-track:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+/* Both images side by side in ONE row */
+.process-column {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+
+  width: max-content;
+}
+
+/* Full image, never cropped: fixed width, natural height.
+   max-width: none stops the global "img { max-width: 100% }" from squeezing it. */
+.process-column img {
+  display: block;
+  flex: none;
+
+  width: 1400px;
+  max-width: none;
+  height: auto;
+
+  /* Turns the beige image background into the section color.
+     The filter itself (id="process-bg-fix") is the small <svg> in the HTML. */
+  filter: url(#process-bg-fix);
+
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 
@@ -900,10 +1028,25 @@
     padding: 28px 22px;
   }
 
-  .community-section {
-    gap: 8%;
+  .craft-card.has-image {
+    padding: 0;
+  }
+
+  .carpet-section {
     padding-left: 7%;
     padding-right: 7%;
+  }
+
+  .carpet-intro {
+    gap: 6%;
+  }
+
+  .about-page .carpet-intro-body .carpet-lead {
+    font-size: 19px;
+  }
+
+  .process-column img {
+    width: 1100px;
   }
 
 }
@@ -1021,6 +1164,19 @@
     margin-top: 27px;
   }
 
+  .why-top {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .why-image {
+    border-radius: 18px;
+  }
+
+  .why-top .why-description {
+    margin-top: 22px;
+  }
+
   .why-description p {
     font-size: 13px;
   }
@@ -1057,10 +1213,6 @@
 
   .promise-content {
     padding: 65px 25px 75px;
-  }
-
-  .promise-content .section-label {
-    margin-bottom: 35px;
   }
 
   .promise-content h2 {
@@ -1104,11 +1256,14 @@
   }
 
   .craft-header h2 {
-    font-size: 42px;
+    font-size: 30px;
+    line-height: 1.25;
   }
 
-  .craft-header > p {
-    font-size: 13px;
+  .about-page .craft-header > p {
+    max-width: none;
+    padding-left: 16px;
+    font-size: 14.5px;
   }
 
   .craft-grid {
@@ -1119,6 +1274,11 @@
   .craft-card {
     min-height: auto;
     padding: 27px 23px;
+  }
+
+  .craft-card.has-image {
+    padding: 0;
+    border-radius: 18px;
   }
 
   .craft-card h3 {
@@ -1135,30 +1295,47 @@
     font-size: 8px;
   }
 
-  .community-section {
+  .carpet-section {
+    padding: 70px 24px 60px;
+  }
+
+  .carpet-intro {
     grid-template-columns: 1fr;
-    gap: 35px;
-    padding: 70px 25px;
+    gap: 26px;
+    margin-bottom: 44px;
   }
 
-  .community-content h2 {
-    font-size: 43px;
+  .carpet-intro-heading h2 {
+    max-width: none;
+    font-size: 34px;
   }
 
-  .community-content p {
-    font-size: 13px;
+  .carpet-intro-body {
+    max-width: none;
+    padding-top: 0;
   }
 
-  .community-content .community-lead {
-    font-size: 19px;
+  .about-page .carpet-intro-body p {
+    font-size: 14px;
+    line-height: 1.85;
   }
 
-  .community-quote {
-    padding: 25px 0 25px 24px;
+  .about-page .carpet-intro-body .carpet-lead {
+    margin-bottom: 22px;
+    padding-left: 18px;
+    font-size: 18px;
   }
 
-  .community-quote blockquote {
-    font-size: 32px;
+  .process-track {
+    border-radius: 14px;
+  }
+
+  .process-column {
+    gap: 8px;
+  }
+
+  .process-column img {
+    width: 900px;
   }
 
   .about-cta {
@@ -1205,10 +1382,16 @@
     letter-spacing: 0.05em;
   }
 
-  .promise-content h2,
-  .craft-header h2,
-  .community-content h2 {
-    font-size: 38px;
+  .promise-content h2 {
+    font-size: 36px;
+  }
+
+  .craft-header h2 {
+    font-size: 27px;
+  }
+
+  .carpet-intro-heading h2 {
+    font-size: 31px;
   }
 
   .why-heading h2 {

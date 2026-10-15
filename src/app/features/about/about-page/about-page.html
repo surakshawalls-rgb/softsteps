@@ -29,6 +29,16 @@
 
   <!-- WHY SOFT STEPS -->
   <section class="why-section">
+    <div class="why-top">
+      <!-- IMAGE: change the url() below to your own image path -->
+      <div
+        class="why-image"
+        style="--why-image: url('/about_us/Soft_Steps_Journey.png')"
+        role="img"
+        aria-label="Soft Steps carpets"
+      ></div>
+
+      <div class="why-text">
     <div class="why-heading">
       <span class="eyebrow">Our Philosophy</span>
       <h2>Why Soft Steps?</h2>
@@ -50,6 +60,8 @@
         with our carpets: a thoughtful combination of texture, design, comfort,
         and lasting value.
       </p>
+    </div>
+      </div>
     </div>
 
     <div class="stats-grid">
@@ -83,11 +95,6 @@
     </div>
 
     <div class="promise-content">
-      <div class="section-label">
-        <span>02</span>
-        <span>OUR COMMITMENT</span>
-      </div>
-
       <span class="eyebrow">Suraksha Group &amp; Rural India</span>
       <h2>Real growth lifts<br>the whole village.</h2>
 
@@ -202,33 +209,27 @@
       </p>
     </div>
 
-    <!-- Craft cards: change the url() in each style="--card-image" to use your own image.
-         To show a plain card with no image, delete the "has-image" class on that card. -->
+    <!-- Image-only cards, each links to the custom requirement page.
+         Change the url() in each style="--card-image" to use your own image. -->
     <div class="craft-grid">
-      <article class="craft-card has-image" style="--card-image: url('/about_us/about_banner.webp')">
-        <div class="craft-number">01</div>
-        <h3>Hand-Knotted Carpets</h3>
-        <p>
-          Detailed handmade construction that reflects the skill and heritage
-          associated with traditional carpet-making.
-        </p>
-      </article>
-      <article class="craft-card has-image" style="--card-image: url('/about_us/about_rural_dev.jpeg')">
-        <div class="craft-number">02</div>
-        <h3>Hand-Tufted Carpets</h3>
-        <p>
-          Versatile design possibilities across textures, patterns, colours, and
-          dimensions for contemporary living spaces and interior projects.
-        </p>
-      </article>
-      <article class="craft-card has-image" style="--card-image: url('/about_us/about_banner.webp')">
-        <div class="craft-number">03</div>
-        <h3>Flat-Weave &amp; Durries</h3>
-        <p>
-          Distinctive woven styles that bring pattern, character, and versatility
-          to a variety of interiors.
-        </p>
-      </article>
+      <a
+        routerLink="/custom-requirement"
+        class="craft-card has-image"
+        style="--card-image: url('/about_us/why_knotted.png')"
+        aria-label="Why handknotted carpets are worth it. Share your custom requirement"
+      ></a>
+      <a
+        routerLink="/custom-requirement"
+        class="craft-card has-image"
+        style="--card-image: url('/about_us/why_tufted.png')"
+        aria-label="Why hand-tufted carpets are worth it. Share your custom requirement"
+      ></a>
+      <a
+        routerLink="/custom-requirement"
+        class="craft-card has-image"
+        style="--card-image: url('/about_us/why_looms.png')"
+        aria-label="Why hand-loom carpets are worth it. Share your custom requirement"
+      ></a>
     </div>
 
     <div class="craft-footer">
@@ -238,39 +239,85 @@
     </div>
   </section>
 
-  <!-- GROWING TOGETHER -->
-  <section class="community-section">
-    <div class="community-content">
-      <div class="section-label">
-        <span>03</span>
-        <span>GROWING TOGETHER</span>
+  <!-- WHAT IS A CARPET + HOW IT IS HANDCRAFTED -->
+  <section class="carpet-section">
+
+    <!-- Intro: heading on the left, text on the right -->
+    <div class="carpet-intro">
+      <div class="carpet-intro-heading">
+        <span class="eyebrow">The Making of a Carpet</span>
+        <h2>What is a carpet, and how is it handcrafted?</h2>
       </div>
-      <span class="eyebrow">Beyond the Carpet</span>
-      <h2>Growing our brand.<br>Supporting our community.</h2>
-      <p class="community-lead">
-        We believe our growth should create opportunities beyond our own business.
-      </p>
-      <p>
-        Soft Steps is committed to creating rural employment and supporting local
-        craft and livelihoods. By connecting skilled people with new
-        opportunities, we aim to help our community grow alongside our brand.
-      </p>
-      <p>
-        Our roots in Bhadohi remind us that behind every product is a wider
-        community of people, skills, experience, and aspirations.
-      </p>
-      <p>
-        As we take our family legacy forward, we want to build a business that
-        values both the products we create and the people who make our journey
-        possible.
-      </p>
+
+      <div class="carpet-intro-body">
+        <p class="carpet-lead">
+          A carpet is a woven or knotted textile made to cover and warm a floor,
+          built from fibres such as wool, silk or cotton.
+        </p>
+        <p>
+          A handcrafted carpet is made by skilled artisans, not by machine.
+          Each piece moves from design and fibre selection, to dyeing and
+          spinning, to knotting or tufting on the loom, and finally to washing,
+          trimming and careful inspection.
+        </p>
+        <p>
+          Every step is done with patience, which is why no two handmade
+          carpets are exactly alike.
+        </p>
+      </div>
     </div>
 
-    <div class="community-quote">
-      <span class="quote-mark" aria-hidden="true">“</span>
-      <blockquote>A family legacy, carried forward with care — one step at a time.</blockquote>
-      <span class="quote-brand">SOFT STEPS CARPETS &amp; RUGS</span>
+    <!-- ONE scrolling strip, both images side by side in one row -->
+    <div class="process-block">
+      <!-- Colour fix: turns the beige background inside the two process
+           images into the section background colour (#fbf7ef). Photos are
+           left almost unchanged. Used by .process-column img in the CSS. -->
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <filter id="process-bg-fix" color-interpolation-filters="sRGB">
+          <feComponentTransfer>
+            <feFuncR type="table" tableValues="0.000 0.016 0.032 0.048 0.063 0.079 0.095 0.111 0.127 0.143 0.159 0.175 0.190 0.206 0.222 0.238 0.254 0.270 0.286 0.302 0.317 0.333 0.349 0.365 0.381 0.397 0.413 0.429 0.444 0.460 0.476 0.492 0.508 0.524 0.540 0.556 0.571 0.587 0.603 0.619 0.635 0.651 0.667 0.683 0.698 0.714 0.730 0.746 0.762 0.786 0.820 0.854 0.888 0.922 0.956 0.985 0.987 0.988 0.990 0.992 0.994 0.996 0.998 1.000" />
+            <feFuncG type="table" tableValues="0.000 0.016 0.032 0.048 0.063 0.079 0.095 0.111 0.127 0.143 0.159 0.175 0.190 0.206 0.222 0.238 0.254 0.270 0.286 0.302 0.317 0.333 0.349 0.365 0.381 0.397 0.413 0.429 0.444 0.460 0.476 0.492 0.508 0.524 0.540 0.556 0.571 0.587 0.603 0.619 0.635 0.651 0.667 0.683 0.698 0.714 0.730 0.760 0.797 0.834 0.871 0.908 0.946 0.970 0.973 0.976 0.979 0.982 0.985 0.988 0.991 0.994 0.997 1.000" />
+            <feFuncB type="table" tableValues="0.000 0.016 0.032 0.048 0.063 0.079 0.095 0.111 0.127 0.143 0.159 0.175 0.190 0.206 0.222 0.238 0.254 0.270 0.286 0.302 0.317 0.333 0.349 0.365 0.381 0.397 0.413 0.429 0.444 0.460 0.476 0.492 0.508 0.524 0.540 0.556 0.571 0.587 0.603 0.619 0.635 0.651 0.667 0.683 0.720 0.760 0.800 0.840 0.881 0.921 0.940 0.945 0.949 0.954 0.958 0.963 0.968 0.972 0.977 0.982 0.986 0.991 0.995 1.000" />
+          </feComponentTransfer>
+        </filter>
+      </svg>
+
+      <div class="process-head">
+        <div>
+          <span class="process-step">STEP BY STEP</span>
+          <h3>From fibre to finished carpet</h3>
+        </div>
+      </div>
+
+      <div
+        #processTrack
+        class="process-track"
+        role="region"
+        aria-label="How a carpet is made, from fibre to finished carpet"
+        tabindex="0"
+        (mousemove)="$event.buttons === 1 && processTrack.scrollBy({ left: -$event.movementX })"
+      >
+        <div class="process-column">
+          <img
+            src="/about_us/carpet_making.png"
+            alt="From fibre to yarn: sorting, carding, spooling, spinning and dyeing"
+            width="2696"
+            height="698"
+            loading="lazy"
+            draggable="false"
+          />
+          <img
+            src="/about_us/carpet_making_2.png"
+            alt="From loom to finished carpet: weaving, washing, finishing and trimming"
+            width="2696"
+            height="698"
+            loading="lazy"
+            draggable="false"
+          />
+        </div>
+      </div>
     </div>
+
   </section>
 
   <!-- FINAL CALL TO ACTION -->
