@@ -1,4 +1,4 @@
-﻿<section class="custom-hero">
+<section class="custom-hero">
 
   <div class="custom-hero-inner">
 
@@ -220,14 +220,17 @@
 
         <button
           type="submit"
-          [disabled]="!requirementForm.valid"
+          [disabled]="!requirementForm.valid || isSubmitting"
         >
-          Request a Custom Consultation
+          {{ isSubmitting ? 'Submitting...' : 'Request a Custom Consultation' }}
         </button>
 
+        @if (errorMessage) {
+          <p class="form-error" role="alert">{{ errorMessage }}</p>
+        }
+
         <p class="form-note">
-          We use the information you provide only to understand
-          and respond to your requirement.
+          We use the information you provide only to understand and respond to your requirement.
         </p>
 
       </form>
@@ -246,9 +249,8 @@
         </h2>
 
         <p>
-          The form is ready for the production Supabase workflow.
-          Once connected, your requirement can be stored,
-          managed and followed up from the admin system.
+          Your requirement has been saved successfully.
+          Our team will review your details and contact you.
         </p>
 
       </div>

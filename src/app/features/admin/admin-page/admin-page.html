@@ -71,4 +71,88 @@
       </div>
     </section>
   </div>
-</section>
+
+  <section class="panel wide-panel custom-requirements-table">
+    <div class="panel-header requirements-heading">
+      <div>
+        <p class="eyebrow">Customer enquiries</p>
+        <h2>Custom Requirement Submissions</h2>
+        <p class="requirements-description">
+          Latest customer requests submitted through the public website.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="requirements-refresh"
+        (click)="loadRequirements()"
+        [disabled]="requirementsLoading"
+      >
+        {{ requirementsLoading ? 'Loading...' : 'Refresh' }}
+      </button>
+    </div>
+
+    @if (requirementsLoading) {
+      <div class="requirements-state" role="status">
+        Loading custom requirement submissions...
+      </div>
+    } @else if (requirementsError) {
+      <div class="requirements-state requirements-error" role="alert">
+        <p>{{ requirementsError }}</p>
+        <button type="button" class="requirements-refresh" (click)="loadRequirements()">
+          Try again
+        </button>
+      </div>
+    } @else if (requirements.length === 0) {
+      <div class="requirements-state">
+        <strong>No submissions found</strong>
+        <p>New custom requirements will appear here when customers submit the form.</p>
+      </div>
+    } @else {
+      <div class="requirements-summary">
+        Showing {{ requirementsCount }} latest submission(s), up to 50 records.
+      </div>
+
+      <div class="requirements-table-wrap">
+        <table class="requirements-table">
+          <thead>
+            <tr>
+              <th scope="col">Reference</th>
+              <th scope="col">Customer</th>
+              <th scope="col">Phone</th>
+              <th scope="col">Requirement</th>
+              <th scope="col">Project size</th>
+              <th scope="col">Material</th>
+              <th scope="col">Status</th>
+              <th scope="col">Submitted</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of requirements; track item.id) {
+              <tr>
+                <td class="requirement-reference">#{{ item.reference_number }}</td>
+                <td>
+                  <strong class="requirement-customer">{{ item.name }}</strong>
+                  @if (item.email) {
+                    <span class="requirement-email">{{ item.email }}</span>
+                  }
+                </td>
+                <td class="requirement-phone">{{ item.phone }}</td>
+                <td>{{ formatRequirementType(item.requirement_type) }}</td>
+                <td>{{ item.project_size || '—' }}</td>
+                <td>{{ item.material || '—' }}</td>
+                <td>
+                  <span class="requirement-status">
+                    {{ formatStatus(item.status) }}
+                  </span>
+                </td>
+                <td class="requirement-date">
+                  {{ formatSubmissionDate(item.created_at) }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section></section>
