@@ -1,0 +1,142 @@
+<section class="composer-shell">
+  <header class="composer-header">
+    <div>
+      <p class="eyebrow">New Message</p>
+      <h1>Message composer</h1>
+    </div>
+    <a class="secondary-button" routerLink="/admin">Back to dashboard</a>
+  </header>
+
+  <div class="composer-grid">
+    <section class="panel form-panel">
+      <div class="field-group">
+        <label>Communication channel</label>
+        <div class="segmented-control" role="tablist" aria-label="Communication channel">
+          <button
+            type="button"
+            class="segment"
+            [class.active]="channel === 'email'"
+            (click)="channel = 'email'; onChannelChange()"
+          >
+            Email
+          </button>
+          <button
+            type="button"
+            class="segment"
+            [class.active]="channel === 'whatsapp'"
+            (click)="channel = 'whatsapp'; onChannelChange()"
+          >
+            WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="recipientName">Recipient name</label>
+          <input id="recipientName" type="text" [(ngModel)]="recipientName" (ngModelChange)="syncTemplate()" placeholder="e.g. Rahul Sharma" />
+        </div>
+
+        <div class="field-group">
+          <label for="recipientCompany">Recipient company</label>
+          <input id="recipientCompany" type="text" [(ngModel)]="recipientCompany" (ngModelChange)="syncTemplate()" placeholder="Optional" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        @if (channel === 'email') {
+          <div class="field-group">
+            <label for="recipientEmail">Recipient email address</label>
+            <input id="recipientEmail" type="email" [(ngModel)]="recipientEmail" placeholder="buyer@example.com" />
+          </div>
+        } @else {
+          <div class="field-group">
+            <label for="recipientPhone">Recipient WhatsApp number</label>
+            <input id="recipientPhone" type="tel" [(ngModel)]="recipientPhone" placeholder="+91 98765 43210" />
+          </div>
+        }
+
+        <div class="field-group">
+          <label for="productName">Product or project reference</label>
+          <input id="productName" type="text" [(ngModel)]="productName" (ngModelChange)="syncTemplate()" placeholder="Optional" />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="templateSelect">Template</label>
+        <select id="templateSelect" [(ngModel)]="templateId" (ngModelChange)="onTemplateChange()">
+          @for (template of templates; track template.id) {
+            <option [value]="template.id">{{ template.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label for="messageContext">Optional additional context</label>
+        <textarea id="messageContext" rows="4" [(ngModel)]="messageContext" (ngModelChange)="syncTemplate()" placeholder="Add any project notes, quantities, references, or follow-up details."></textarea>
+      </div>
+
+      @if (channel === 'email') {
+        <div class="field-group">
+          <label for="emailSubject">Email subject</label>
+          <input id="emailSubject" type="text" [(ngModel)]="emailSubject" />
+        </div>
+      }
+
+      <div class="field-group">
+        <label for="messageBody">Editable message body</label>
+        <textarea id="messageBody" rows="12" [(ngModel)]="messageBody"></textarea>
+      </div>
+
+      <div class="action-row">
+        @if (channel === 'email') {
+          <button type="button" class="primary-button" (click)="sendEmail()" [disabled]="isSubmitting">
+            {{ isSubmitting ? 'Sending...' : 'Send email' }}
+          </button>
+        } @else {
+          <button type="button" class="primary-button" (click)="openWhatsApp()">Open WhatsApp</button>
+        }
+      </div>
+
+      @if (successMessage) {
+        <div class="status-message success">{{ successMessage }}</div>
+      }
+
+      @if (errorMessage) {
+        <div class="status-message error">{{ errorMessage }}</div>
+      }
+    </section>
+
+    <aside class="panel preview-panel">
+      <div class="panel-header">
+        <h2>Preview</h2>
+      </div>
+
+      <div class="preview-card">
+        @if (channel === 'email') {
+          <div class="preview-meta">
+            <span>To</span>
+            <strong>{{ recipientEmail || 'buyer@example.com' }}</strong>
+          </div>
+          <div class="preview-meta">
+            <span>From</span>
+            <strong>{{ businessDetails.businessEmail }}</strong>
+          </div>
+          <div class="preview-meta">
+            <span>Subject</span>
+            <strong>{{ emailSubject || 'Untitled email' }}</strong>
+          </div>
+        } @else {
+          <div class="preview-meta">
+            <span>WhatsApp</span>
+            <strong>{{ recipientPhone || '+91 98765 43210' }}</strong>
+          </div>
+        }
+
+        <div class="preview-content">
+          <pre>{{ messageBody || 'Message preview will appear here.' }}</pre>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>

@@ -20,6 +20,46 @@ export const BUSINESS_DETAILS = {
 
 export const MESSAGE_TEMPLATES: MessageTemplate[] = [
   {
+    id: 'buyer-outreach-introduction',
+    name: 'New B2B Buyer Introduction',
+    description: 'Introduce Soft Steps to a new importer, retailer, wholesaler, or design partner.',
+    emailSubject: 'Carpet & Rug Manufacturing Partner | Soft Steps Carpets & Rugs',
+    emailBody: `Dear {{buyerName}},
+
+Greetings from Soft Steps Carpets & Rugs.
+
+We are a carpet and rug manufacturer based in India, working with business buyers and design partners on rug sourcing, custom designs, materials, sizes, colours, and finishing requirements.
+
+We would welcome the opportunity to understand your product range and explore how our manufacturing capabilities could support your business. If you are currently evaluating suppliers or planning a new collection, we would be happy to discuss your requirements and share relevant product options.
+
+Please reply to this email with the styles, materials, sizes, GSM, quantities, or target specifications you are looking for. We can then discuss suitable options and the next steps for samples and a quotation.
+
+You can also visit our website:
+{{website}}
+
+We look forward to hearing from you.
+
+Best regards,
+{{senderName}}
+Soft Steps Carpets & Rugs
+{{senderEmail}}
+{{website}}
+
+If this introduction is not relevant to your business, please reply and let us know.`,
+    whatsappBody: `Hello {{buyerName}}, greetings from Soft Steps Carpets & Rugs.
+
+We are a carpet and rug manufacturer in India and work with business buyers and design partners on custom designs, materials, sizes, colours, and finishing requirements.
+
+We would be happy to learn about your product requirements and explore whether we could support your business. May I share relevant product options or learn what styles you are currently sourcing?
+
+Website: {{website}}
+
+Best regards,
+{{senderName}}
+Soft Steps Carpets & Rugs`,
+    supportedPlaceholders: ['{{buyerName}}', '{{senderName}}', '{{senderEmail}}', '{{website}}'],
+  },
+  {
     id: 'buyer-introduction',
     name: 'Buyer Introduction',
     description: 'A warm introduction to a prospective buyer or partner.',

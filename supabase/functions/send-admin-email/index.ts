@@ -93,14 +93,49 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ success: false, message: "You do not have permission to send admin emails." }, 403);
     }
 
-    let payload: unknown;
     const contentLength = Number(req.headers.get("content-length") ?? "0");
-    if (contentLength > 100_000) {
-      return jsonResponse({ success: false, message: "Email request is too large." }, 413);
+    if (contentLength > 7_500_000) {
+      return jsonResponse({ success: false, message: "Email request is too large. Attachments are limited to 5 MB total." }, 413);
     }
 
+    let requestText: string;
     try {
-      payload = await req.json();
+      const reader = req.body?.getReader();
+      if (!reader) {
+        return jsonResponse({ success: false, message: "Request body is missing." }, 400);
+      }
+
+      const chunks: Uint8Array[] = [];
+      let totalBytes = 0;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        totalBytes += value.byteLength;
+        if (totalBytes > 7_500_000) {
+          await reader.cancel();
+          return jsonResponse({ success: false, message: "Email request is too large. Attachments are limited to 5 MB total." }, 413);
+        }
+
+        chunks.push(value);
+      }
+
+      const bodyBytes = new Uint8Array(totalBytes);
+      let offset = 0;
+      for (const chunk of chunks) {
+        bodyBytes.set(chunk, offset);
+        offset += chunk.byteLength;
+      }
+
+      requestText = new TextDecoder().decode(bodyBytes);
+    } catch {
+      return jsonResponse({ success: false, message: "Unable to read email request body." }, 400);
+    }
+
+    let payload: unknown;
+    try {
+      payload = JSON.parse(requestText);
     } catch {
       return jsonResponse({ success: false, message: "Invalid JSON request." }, 400);
     }
@@ -124,6 +159,53 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ success: false, message: "Message is required and must be 30,000 characters or fewer." }, 400);
     }
 
+    const rawAttachments = input["attachments"] ?? [];
+    if (!Array.isArray(rawAttachments) || rawAttachments.length > 5) {
+      return jsonResponse({ success: false, message: "Attach up to 5 files per email." }, 400);
+    }
+
+    const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
+    const attachments: Array<{ filename: string; content: Uint8Array; contentType: string }> = [];
+    let totalAttachmentBytes = 0;
+
+    for (const item of rawAttachments) {
+      if (!item || typeof item !== "object" || Array.isArray(item)) {
+        return jsonResponse({ success: false, message: "Invalid attachment." }, 400);
+      }
+
+      const file = item as Record<string, unknown>;
+      const filename = typeof file["filename"] === "string"
+        ? file["filename"].replace(/[\\/\r\n"]/g, "_").slice(0, 120)
+        : "";
+      const contentType = typeof file["contentType"] === "string" ? file["contentType"] : "";
+      const contentBase64 = typeof file["contentBase64"] === "string" ? file["contentBase64"] : "";
+
+      if (
+        !filename ||
+        !allowedTypes.has(contentType) ||
+        !contentBase64 ||
+        contentBase64.length % 4 !== 0 ||
+        !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(contentBase64)
+      ) {
+        return jsonResponse({ success: false, message: "An attachment has an invalid name, type, or encoding." }, 400);
+      }
+
+      let binary: string;
+      try {
+        binary = atob(contentBase64);
+      } catch {
+        return jsonResponse({ success: false, message: "An attachment has invalid Base64 data." }, 400);
+      }
+
+      const bytes = Uint8Array.from(binary, character => character.charCodeAt(0));
+      totalAttachmentBytes += bytes.byteLength;
+
+      if (bytes.byteLength === 0 || totalAttachmentBytes > 5 * 1024 * 1024) {
+        return jsonResponse({ success: false, message: "Attachments cannot exceed 5 MB total." }, 413);
+      }
+
+      attachments.push({ filename, content: bytes, contentType });
+    }
     if (!smtpUser || !smtpPassword || !fromEmail) {
       console.error("Hostinger SMTP secrets are missing.");
       return jsonResponse({
@@ -162,6 +244,7 @@ Deno.serve(async (req: Request) => {
       subject: safeSubject,
       text: safeBody,
       html,
+      attachments: attachments.map(file => ({ filename: file.filename, content: file.content, contentType: file.contentType })),
     });
 
     // SMTP acceptance means queued/accepted by the mail server, not guaranteed inbox delivery.

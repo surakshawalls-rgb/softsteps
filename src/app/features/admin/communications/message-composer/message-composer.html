@@ -77,6 +77,25 @@
       </div>
 
       @if (channel === 'email') {
+        <div class="field-group attachment-picker">
+          <label for="emailAttachments">Product images or catalogue (optional)</label>
+          <input id="emailAttachments" type="file"
+            accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
+            multiple (change)="onAttachmentSelection($event)" />
+          <small>JPG, PNG, WebP or PDF. Maximum 5 MB combined per email.</small>
+          @if (attachments.length) {
+            <ul class="attachment-list">
+              @for (file of attachments; track file.filename; let i = $index) {
+                <li>
+                  <span>{{ file.filename }} ({{ (file.size / 1024).toFixed(0) }} KB)</span>
+                  <button type="button" class="secondary-button" (click)="removeAttachment(i)">Remove</button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      }
+      @if (channel === 'email') {
         <div class="field-group">
           <label for="emailSubject">Email subject</label>
           <input id="emailSubject" type="text" [(ngModel)]="emailSubject" />

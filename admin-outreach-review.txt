@@ -1,0 +1,550 @@
+﻿
+===== src\app\features\admin\communications\message-composer\message-composer.ts =====
+
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+
+import { BUSINESS_DETAILS, MESSAGE_TEMPLATES, type CommunicationChannel } from '../../data/message-templates';
+import { EmailCommunicationService } from '../../services/email-communication.service';
+import { MessageTemplateService } from '../../services/message-template.service';
+import { WhatsAppCommunicationService } from '../../services/whatsapp-communication.service';
+
+@Component({
+  selector: 'app-message-composer',
+  standalone: true,
+  imports: [FormsModule, RouterLink],
+  templateUrl: './message-composer.html',
+  styleUrl: './message-composer.css',
+})
+export class MessageComposer implements OnInit {
+  readonly templates = MESSAGE_TEMPLATES;
+  readonly businessDetails = BUSINESS_DETAILS;
+
+  channel: CommunicationChannel = 'email';
+  templateId = MESSAGE_TEMPLATES[0].id;
+  recipientName = '';
+  recipientCompany = '';
+  recipientEmail = '';
+  recipientPhone = '';
+  productName = '';
+  messageContext = '';
+  emailSubject = '';
+  messageBody = '';
+  successMessage = '';
+  errorMessage = '';
+  isSubmitting = false;
+
+  constructor(
+    private readonly messageTemplateService: MessageTemplateService,
+    private readonly emailService: EmailCommunicationService,
+    private readonly whatsappService: WhatsAppCommunicationService,
+  ) {}
+
+  ngOnInit(): void {
+    this.syncTemplate();
+  }
+
+  get selectedTemplate() {
+    return this.templates.find((template) => template.id === this.templateId) ?? this.templates[0];
+  }
+
+  get recipientLabel(): string {
+    return this.channel === 'email' ? 'Recipient email address' : 'Recipient WhatsApp number';
+  }
+
+  get recipientPlaceholder(): string {
+    return this.channel === 'email' ? 'buyer@example.com' : '+91 98765 43210';
+  }
+
+  onChannelChange(): void {
+    this.clearMessages();
+    this.syncTemplate();
+  }
+
+  onTemplateChange(): void {
+    this.clearMessages();
+    this.syncTemplate();
+  }
+
+  async sendEmail(): Promise<void> {
+    this.clearMessages();
+
+    const trimmedEmail = this.recipientEmail.trim();
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
+
+    if (!trimmedEmail || !isValidEmail) {
+      this.errorMessage = 'Please enter a valid recipient email address before sending.';
+      return;
+    }
+
+    const rendered = this.messageTemplateService.renderTemplate(this.selectedTemplate, 'email', {
+      buyerName: this.recipientName,
+      companyName: this.recipientCompany,
+      productName: this.productName,
+      senderName: this.businessDetails.businessName,
+      senderEmail: this.businessDetails.businessEmail,
+      website: this.businessDetails.website,
+    });
+
+    const cleanedBody = this.appendContextToBody(rendered.body, this.messageContext);
+
+    this.isSubmitting = true;
+
+    try {
+      const result = await this.emailService.sendEmail({
+        to: trimmedEmail,
+        subject: this.emailSubject || rendered.subject,
+        body: cleanedBody,
+        senderName: this.businessDetails.businessName,
+        senderEmail: this.businessDetails.businessEmail,
+      });
+
+      if (result.ok) {
+        this.successMessage = result.message;
+      } else {
+        this.errorMessage = result.message;
+      }
+    } finally {
+      this.isSubmitting = false;
+    }
+  }
+
+  openWhatsApp(): void {
+    this.clearMessages();
+
+    const phone = this.recipientPhone.trim();
+
+    if (!phone) {
+      this.errorMessage = 'Please enter the recipient WhatsApp number before opening WhatsApp.';
+      return;
+    }
+
+    try {
+      const url = this.whatsappService.buildWhatsAppUrl(phone, this.messageBody || this.getCurrentMessageBody());
+      window.open(url, '_blank', 'noopener,noreferrer');
+      this.successMessage = 'WhatsApp opened successfully. Please confirm and send the prefilled message from the app.';
+    } catch (error) {
+      this.errorMessage = error instanceof Error ? error.message : 'Unable to open WhatsApp with the provided number.';
+    }
+  }
+
+  syncTemplate(): void {
+    const template = this.selectedTemplate;
+    const rendered = this.messageTemplateService.renderTemplate(template, this.channel, {
+      buyerName: this.recipientName,
+      companyName: this.recipientCompany,
+      productName: this.productName,
+      senderName: this.businessDetails.businessName,
+      senderEmail: this.businessDetails.businessEmail,
+      website: this.businessDetails.website,
+    });
+
+    if (this.channel === 'email') {
+      this.emailSubject = rendered.subject;
+    }
+
+    this.messageBody = this.appendContextToBody(rendered.body, this.messageContext);
+  }
+
+  private appendContextToBody(body: string, extraContext: string): string {
+    const trimmed = extraContext.trim();
+
+    if (!trimmed) {
+      return body;
+    }
+
+    return `${body}\n\nAdditional context:\n${trimmed}`;
+  }
+
+  private getCurrentMessageBody(): string {
+    return this.messageBody || this.appendContextToBody(this.selectedTemplate.whatsappBody, this.messageContext);
+  }
+
+  private clearMessages(): void {
+    this.successMessage = '';
+    this.errorMessage = '';
+  }
+}
+
+===== src\app\features\admin\communications\message-composer\message-composer.html =====
+
+<section class="composer-shell">
+  <header class="composer-header">
+    <div>
+      <p class="eyebrow">New Message</p>
+      <h1>Message composer</h1>
+    </div>
+    <a class="secondary-button" routerLink="/admin">Back to dashboard</a>
+  </header>
+
+  <div class="composer-grid">
+    <section class="panel form-panel">
+      <div class="field-group">
+        <label>Communication channel</label>
+        <div class="segmented-control" role="tablist" aria-label="Communication channel">
+          <button
+            type="button"
+            class="segment"
+            [class.active]="channel === 'email'"
+            (click)="channel = 'email'; onChannelChange()"
+          >
+            Email
+          </button>
+          <button
+            type="button"
+            class="segment"
+            [class.active]="channel === 'whatsapp'"
+            (click)="channel = 'whatsapp'; onChannelChange()"
+          >
+            WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="recipientName">Recipient name</label>
+          <input id="recipientName" type="text" [(ngModel)]="recipientName" (ngModelChange)="syncTemplate()" placeholder="e.g. Rahul Sharma" />
+        </div>
+
+        <div class="field-group">
+          <label for="recipientCompany">Recipient company</label>
+          <input id="recipientCompany" type="text" [(ngModel)]="recipientCompany" (ngModelChange)="syncTemplate()" placeholder="Optional" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        @if (channel === 'email') {
+          <div class="field-group">
+            <label for="recipientEmail">Recipient email address</label>
+            <input id="recipientEmail" type="email" [(ngModel)]="recipientEmail" placeholder="buyer@example.com" />
+          </div>
+        } @else {
+          <div class="field-group">
+            <label for="recipientPhone">Recipient WhatsApp number</label>
+            <input id="recipientPhone" type="tel" [(ngModel)]="recipientPhone" placeholder="+91 98765 43210" />
+          </div>
+        }
+
+        <div class="field-group">
+          <label for="productName">Product or project reference</label>
+          <input id="productName" type="text" [(ngModel)]="productName" (ngModelChange)="syncTemplate()" placeholder="Optional" />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="templateSelect">Template</label>
+        <select id="templateSelect" [(ngModel)]="templateId" (ngModelChange)="onTemplateChange()">
+          @for (template of templates; track template.id) {
+            <option [value]="template.id">{{ template.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label for="messageContext">Optional additional context</label>
+        <textarea id="messageContext" rows="4" [(ngModel)]="messageContext" (ngModelChange)="syncTemplate()" placeholder="Add any project notes, quantities, references, or follow-up details."></textarea>
+      </div>
+
+      @if (channel === 'email') {
+        <div class="field-group">
+          <label for="emailSubject">Email subject</label>
+          <input id="emailSubject" type="text" [(ngModel)]="emailSubject" />
+        </div>
+      }
+
+      <div class="field-group">
+        <label for="messageBody">Editable message body</label>
+        <textarea id="messageBody" rows="12" [(ngModel)]="messageBody"></textarea>
+      </div>
+
+      <div class="action-row">
+        @if (channel === 'email') {
+          <button type="button" class="primary-button" (click)="sendEmail()" [disabled]="isSubmitting">
+            {{ isSubmitting ? 'Sending...' : 'Send email' }}
+          </button>
+        } @else {
+          <button type="button" class="primary-button" (click)="openWhatsApp()">Open WhatsApp</button>
+        }
+      </div>
+
+      @if (successMessage) {
+        <div class="status-message success">{{ successMessage }}</div>
+      }
+
+      @if (errorMessage) {
+        <div class="status-message error">{{ errorMessage }}</div>
+      }
+    </section>
+
+    <aside class="panel preview-panel">
+      <div class="panel-header">
+        <h2>Preview</h2>
+      </div>
+
+      <div class="preview-card">
+        @if (channel === 'email') {
+          <div class="preview-meta">
+            <span>To</span>
+            <strong>{{ recipientEmail || 'buyer@example.com' }}</strong>
+          </div>
+          <div class="preview-meta">
+            <span>From</span>
+            <strong>{{ businessDetails.businessEmail }}</strong>
+          </div>
+          <div class="preview-meta">
+            <span>Subject</span>
+            <strong>{{ emailSubject || 'Untitled email' }}</strong>
+          </div>
+        } @else {
+          <div class="preview-meta">
+            <span>WhatsApp</span>
+            <strong>{{ recipientPhone || '+91 98765 43210' }}</strong>
+          </div>
+        }
+
+        <div class="preview-content">
+          <pre>{{ messageBody || 'Message preview will appear here.' }}</pre>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+===== src\app\features\admin\data\message-templates.ts =====
+
+export type CommunicationChannel = 'email' | 'whatsapp';
+
+export interface MessageTemplate {
+  id: string;
+  name: string;
+  description: string;
+  emailSubject: string;
+  emailBody: string;
+  whatsappBody: string;
+  supportedPlaceholders: string[];
+}
+
+export const BUSINESS_DETAILS = {
+  businessName: 'Soft Steps Carpets & Rugs',
+  businessEmail: 'info@softstepscarpets.com',
+  businessPhone: '+91 70071 31072',
+  website: 'https://www.softstepscarpets.com/',
+  businessType: 'Carpet and rug manufacturer',
+};
+
+export const MESSAGE_TEMPLATES: MessageTemplate[] = [
+  {
+    id: 'buyer-introduction',
+    name: 'Buyer Introduction',
+    description: 'A warm introduction to a prospective buyer or partner.',
+    emailSubject: 'Introducing Soft Steps Carpets & Rugs',
+    emailBody: `Dear {{buyerName}},
+
+Thank you for your interest in Soft Steps Carpets & Rugs.
+
+We are a premium carpet and rug manufacturer focused on handcrafted quality, custom manufacturing, and export-ready solutions for discerning buyers and design partners.
+
+We would be delighted to learn more about your requirements and help you discover the right material, design, and finishing options for your project.
+
+Warm regards,
+{{senderName}}
+{{senderEmail}}
+{{website}}`,
+    whatsappBody: `Hello {{buyerName}}! Thank you for your interest in Soft Steps Carpets & Rugs.
+
+We are a premium carpet and rug manufacturer focused on handcrafted quality, custom manufacturing, and export-ready solutions for discerning buyers.
+
+We would be delighted to learn more about your requirements and guide you with suitable options for your project.
+
+Warm regards,
+{{senderName}}`,
+    supportedPlaceholders: ['{{buyerName}}', '{{senderName}}', '{{senderEmail}}', '{{website}}'],
+  },
+  {
+    id: 'quotation-follow-up',
+    name: 'Quotation Follow-up',
+    description: 'Politely follow up on a previously shared quotation.',
+    emailSubject: 'Following Up on Our Carpet Quotation',
+    emailBody: `Dear {{buyerName}},
+
+I hope you are doing well.
+
+I wanted to follow up on the quotation we recently shared with you. I would appreciate hearing your feedback whenever convenient.
+
+If you have any questions about the product specifications, design preferences, or custom requirements, our team would be happy to assist.
+
+We look forward to hearing from you and would be pleased to explore the best fit for your project.
+
+Warm regards,
+{{senderName}}
+{{senderEmail}}
+{{website}}`,
+    whatsappBody: `Hello {{buyerName}}! I hope you are doing well.
+
+I wanted to follow up on the carpet quotation we recently shared. Have you had a chance to review it?
+
+We would be happy to hear your feedback and discuss any questions or specifications you may have.
+
+Looking forward to hearing from you.
+
+Warm regards,
+{{senderName}}`,
+    supportedPlaceholders: ['{{buyerName}}', '{{senderName}}'],
+  },
+  {
+    id: 'sample-follow-up',
+    name: 'Sample Follow-up',
+    description: 'Follow up after sending or discussing material and sample options.',
+    emailSubject: 'Sample Review and Next Steps',
+    emailBody: `Dear {{buyerName}},
+
+Thank you for your time and interest in our collection.
+
+I wanted to follow up regarding the sample options discussed for your project. We would be glad to continue supporting you with the most suitable material, design, and finishing combinations.
+
+If you have any comments or would like us to share additional options, please let us know and we will be happy to assist.
+
+We value the opportunity to work with you and look forward to the next step.
+
+Warm regards,
+{{senderName}}
+{{senderEmail}}
+{{website}}`,
+    whatsappBody: `Hello {{buyerName}}! Thank you for your time and interest in our collection.
+
+I wanted to follow up regarding the sample options discussed for your project. We would be glad to continue supporting you with the most suitable material, design, and finishing combinations.
+
+If you have any comments or would like us to share more options, please let us know.
+
+Warm regards,
+{{senderName}}`,
+    supportedPlaceholders: ['{{buyerName}}', '{{senderName}}'],
+  },
+  {
+    id: 'product-enquiry-reply',
+    name: 'Product Enquiry Reply',
+    description: 'Respond to a product or range enquiry with a helpful summary.',
+    emailSubject: 'Thank You for Your Enquiry About {{productName}}',
+    emailBody: `Dear {{buyerName}},
+
+Thank you for your enquiry regarding {{productName}}.
+
+We appreciate the opportunity to assist and would be happy to share more information on the design, material, finish, and customization options available for your requirement.
+
+Our team can also help assess suitability based on your project, quantity, and specification needs.
+
+Please feel free to share any additional details, and we will be happy to support you further.
+
+Warm regards,
+{{senderName}}
+{{senderEmail}}
+{{website}}`,
+    whatsappBody: `Hello {{buyerName}}! Thank you for your enquiry regarding {{productName}}.
+
+We would be happy to share more details about the design, material, finish, and customization options available for your requirement.
+
+Please feel free to share any additional details, and our team will be glad to assist.
+
+Warm regards,
+{{senderName}}`,
+    supportedPlaceholders: ['{{buyerName}}', '{{productName}}', '{{senderName}}'],
+  },
+  {
+    id: 'custom-order-discussion',
+    name: 'Custom Order Discussion',
+    description: 'Start a detailed conversation on bespoke manufacturing requirements.',
+    emailSubject: 'Discussing Your Custom Carpet Requirements',
+    emailBody: `Dear {{buyerName}},
+
+Thank you for reaching out to discuss your custom rug or carpet requirement.
+
+We understand the importance of detail in custom manufacturing and would be delighted to understand your preferences, design direction, and project goals.
+
+Please feel free to share your specifications, reference images, quantity requirements, or any other details you would like us to consider. Our team will be glad to guide you through the available options and next steps.
+
+We look forward to discussing your requirement in more detail.
+
+Warm regards,
+{{senderName}}
+{{senderEmail}}
+{{website}}`,
+    whatsappBody: `Hello {{buyerName}}! Thank you for reaching out to discuss your custom carpet requirement.
+
+We would be delighted to understand your preferences, design direction, and project goals.
+
+Please feel free to share your specifications, reference images, quantity requirements, or any other details you would like us to consider.
+
+We look forward to discussing your requirement in more detail.
+
+Warm regards,
+{{senderName}}`,
+    supportedPlaceholders: ['{{buyerName}}', '{{senderName}}'],
+  },
+];
+
+===== src\app\features\admin\services\email-communication.service.ts =====
+
+import { Injectable } from '@angular/core';
+
+import { SupabaseService } from '../../../core/services/supabase.service';
+
+export interface EmailSendRequest {
+  to: string;
+  subject: string;
+  body: string;
+  senderName?: string;
+  senderEmail?: string;
+}
+
+export interface EmailSendResult {
+  ok: boolean;
+  configured: boolean;
+  message: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class EmailCommunicationService {
+  constructor(private readonly supabaseService: SupabaseService) {}
+
+  async sendEmail(request: EmailSendRequest): Promise<EmailSendResult> {
+    try {
+      const { data, error } = await this.supabaseService.client.functions.invoke('send-admin-email', {
+        body: {
+          to: request.to,
+          subject: request.subject,
+          body: request.body,
+          // The function deliberately fixes the authenticated sender server-side.
+          senderName: request.senderName ?? 'Soft Steps Carpets & Rugs',
+          senderEmail: request.senderEmail ?? 'info@softstepscarpets.com',
+        },
+      });
+
+      if (error) {
+        return {
+          ok: false,
+          configured: true,
+          message: error.message ?? 'The email request could not be accepted by the delivery service.',
+        };
+      }
+
+      if (!data?.success) {
+        return {
+          ok: false,
+          configured: data?.configured ?? true,
+          message: data?.message ?? 'The email request could not be completed.',
+        };
+      }
+
+      return {
+        ok: true,
+        configured: true,
+        message: data.message ?? 'Email accepted by the Hostinger mail server.',
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unexpected error while sending email.';
+      return { ok: false, configured: true, message };
+    }
+  }
+}
