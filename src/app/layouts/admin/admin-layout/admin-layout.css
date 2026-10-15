@@ -1,0 +1,114 @@
+.admin-shell {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: calc(100vh - 110px);
+  gap: 1.2rem;
+  width: min(100% - 40px, 1400px);
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 1rem;
+  height: fit-content;
+  padding: 1.25rem 1rem;
+  border: 1px solid rgba(41, 37, 31, 0.08);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 12px 28px rgba(26, 22, 18, 0.04);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(41, 37, 31, 0.06);
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(157, 112, 57, 0.38);
+  border-radius: 50%;
+  color: #936a39;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+}
+
+.sidebar-brand strong {
+  display: block;
+  color: #1f1a17;
+  font-size: 0.88rem;
+}
+
+.sidebar-brand small {
+  color: #7a6f67;
+}
+
+.admin-nav {
+  display: grid;
+  gap: 0.6rem;
+  padding-top: 1rem;
+}
+
+.admin-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 0.8rem;
+  border-radius: 12px;
+  color: #514a41;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-nav a.active,
+.admin-nav a:hover {
+  background: rgba(157, 112, 57, 0.08);
+  color: #9b6d37;
+}
+
+.logout-button {
+  min-height: 42px;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(41, 37, 31, 0.12);
+  border-radius: 12px;
+  background: transparent;
+  color: #514a41;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.logout-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.logout-error {
+  margin: 0;
+  color: #8d2d2d;
+  font-size: 0.8rem;
+}
+
+.admin-content {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .admin-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    position: static;
+  }
+}

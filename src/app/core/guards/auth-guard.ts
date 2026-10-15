@@ -1,5 +1,15 @@
-import { CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 
-export const authGuard: CanActivateFn = (route, state) => {
-  return true;
+import { Auth } from '../auth/auth';
+
+export const authGuard: CanActivateFn = async () => {
+  const auth = inject(Auth);
+  const router = inject(Router);
+
+  if (await auth.isAuthenticated()) {
+    return true;
+  }
+
+  return router.createUrlTree(['/contact']);
 };

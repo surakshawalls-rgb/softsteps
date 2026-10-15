@@ -1,0 +1,74 @@
+<section class="admin-dashboard">
+  <header class="dashboard-header">
+    <div>
+      <p class="eyebrow">Overview</p>
+      <h1>Admin Communication Centre</h1>
+    </div>
+    <a class="primary-button" routerLink="/admin/communications">New message</a>
+  </header>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <span class="stat-label">Communication channels</span>
+      <strong>2</strong>
+      <small>Email + WhatsApp</small>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Templates</span>
+      <strong>5</strong>
+      <small>Professional starter messages</small>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Current focus</span>
+      <strong>Sales</strong>
+      <small>Buyer and export enquiries</small>
+    </article>
+  </div>
+
+  <div class="content-grid">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Email</h2>
+      </div>
+      <p>
+        Send polished email messages from <strong>info@softstepscarpets.com</strong> using verified business templates.
+      </p>
+      <ul class="feature-list">
+        <li>Editable subject and body</li>
+        <li>Business signature included</li>
+        <li>Server-side validation before delivery</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>WhatsApp</h2>
+      </div>
+      <p>
+        Use click-to-chat with the recipient number and a prefilled message. The user confirms and sends it in WhatsApp.
+      </p>
+      <ul class="feature-list">
+        <li>Recipient number validation</li>
+        <li>Editable message preview</li>
+        <li>Direct open-in-app workflow</li>
+      </ul>
+    </section>
+
+    <section class="panel wide-panel">
+      <div class="panel-header">
+        <h2>Message templates</h2>
+      </div>
+      <div class="template-list">
+        @for (template of templates; track template.id) {
+          <div class="template-item">
+            <div>
+              <h3>{{ template.name }}</h3>
+              <p>{{ template.description }}</p>
+            </div>
+            <span>{{ template.supportedPlaceholders.length }} placeholders</span>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+</section>

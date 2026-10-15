@@ -1,0 +1,20 @@
+<section class="access-denied">
+  <div class="access-card">
+    <p class="eyebrow">Restricted access</p>
+    <h1>Administrator access required</h1>
+    @if (membershipVerificationFailed) {
+      <p role="alert">
+        We could not verify administrator membership. Access has been blocked for your security; please try again later or contact the site administrator.
+      </p>
+    } @else {
+      <p>
+        This communication centre is available only to authenticated users listed in the Supabase administrator membership table.
+      </p>
+      <p>If you believe you should have access, contact the site administrator.</p>
+    }
+    <div class="actions">
+      <a class="primary-button" routerLink="/contact">Back to contact</a>
+      <a class="secondary-button" routerLink="/">Back to home</a>
+    </div>
+  </div>
+</section>

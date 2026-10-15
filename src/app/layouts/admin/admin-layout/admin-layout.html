@@ -1,1 +1,27 @@
-<p>admin-layout works!</p>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">SS</span>
+      <div>
+        <strong>Soft Steps</strong>
+        <small>Admin</small>
+      </div>
+    </div>
+
+    <nav class="admin-nav" aria-label="Admin navigation">
+      <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Overview</a>
+      <a routerLink="/admin/communications" routerLinkActive="active">Communications</a>
+      <a routerLink="/" routerLinkActive="active">Public site</a>
+      <button type="button" class="logout-button" (click)="signOut()" [disabled]="isSigningOut">
+        {{ isSigningOut ? 'Signing out...' : 'Sign out' }}
+      </button>
+      @if (signOutError) {
+        <p class="logout-error" role="alert">{{ signOutError }}</p>
+      }
+    </nav>
+  </aside>
+
+  <main class="admin-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

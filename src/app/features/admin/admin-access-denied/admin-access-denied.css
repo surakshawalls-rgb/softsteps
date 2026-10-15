@@ -1,0 +1,75 @@
+.access-denied {
+  display: grid;
+  place-items: center;
+  min-height: 70vh;
+  padding: 3rem 1rem;
+}
+
+.access-card {
+  max-width: 720px;
+  padding: 2rem;
+  border: 1px solid rgba(41, 37, 31, 0.08);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 16px 34px rgba(26, 22, 18, 0.06);
+}
+
+.eyebrow {
+  margin: 0 0 0.7rem;
+  color: #935f2b;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.access-card h1 {
+  margin: 0 0 1rem;
+  color: #1f1a17;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(2.4rem, 5vw, 3.5rem);
+  line-height: 1;
+}
+
+.access-card p,
+.access-card li {
+  color: #514a41;
+  line-height: 1.7;
+}
+
+.access-card ul {
+  padding-left: 1.2rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.primary-button,
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.primary-button {
+  background: #29261f;
+  color: #fffdf9;
+}
+
+.secondary-button {
+  border: 1px solid rgba(41, 37, 31, 0.12);
+  background: transparent;
+  color: #1f1a17;
+}
