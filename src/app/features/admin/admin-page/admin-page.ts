@@ -2,7 +2,6 @@
 import { RouterLink } from '@angular/router';
 
 import { SupabaseService } from '../../../core/services/supabase.service';
-import { MESSAGE_TEMPLATES } from '../data/message-templates';
 
 interface CustomRequirementSubmission {
   id: string;
@@ -26,9 +25,7 @@ interface CustomRequirementSubmission {
 })
 export class AdminPage implements OnInit {
   private readonly supabase = inject(SupabaseService);
-
   private readonly cdr = inject(ChangeDetectorRef);
-  readonly templates = MESSAGE_TEMPLATES;
 
   requirements: CustomRequirementSubmission[] = [];
   requirementsLoading = true;
@@ -74,7 +71,7 @@ export class AdminPage implements OnInit {
     const date = new Date(value);
 
     if (Number.isNaN(date.getTime())) {
-      return 'â€”';
+      return '—';
     }
 
     return new Intl.DateTimeFormat('en-IN', {
@@ -98,4 +95,3 @@ export class AdminPage implements OnInit {
       .replace(/\b\w/g, (letter) => letter.toUpperCase());
   }
 }
-

@@ -15,9 +15,15 @@ export class HomePage implements AfterViewInit, OnDestroy {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly platformId = inject(PLATFORM_ID);
   private revealObserver?: IntersectionObserver;
+  private callMessageTimer?: ReturnType<typeof setTimeout>;
+
+  private readonly callNumberDisplay = '+91 70071 31072';
 
   loading = false;
   errorMessage = '';
+
+  /** Small message shown at the bottom of the screen after clicking "Talk to our team" on a laptop. */
+  callMessage = '';
 
   categories: Category[] = [
     {
@@ -310,6 +316,10 @@ export class HomePage implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.revealObserver?.disconnect();
+
+    if (this.callMessageTimer) {
+      clearTimeout(this.callMessageTimer);
+    }
   }
 
   scrollCarousel(track: HTMLElement, direction: number): void {
@@ -318,9 +328,47 @@ export class HomePage implements AfterViewInit, OnDestroy {
       behavior: 'smooth',
     });
   }
-  
+
+  /**
+   * "Talk to our team" card.
+   * - Phones / tablets: do nothing extra, the tel: link opens the dialer.
+   * - Laptops / desktops: the tel: link still tries to open a calling app,
+   *   and the number is also copied with a small message, in case no app exists.
+   */
+  async callTeam(): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+
+    if (isTouchDevice) {
+      return;
+    }
+
+    let copied = false;
+
+    try {
+      await navigator.clipboard.writeText(this.callNumberDisplay);
+      copied = true;
+    } catch {
+      copied = false;
+    }
+
+    this.callMessage = copied
+      ? `Number copied: ${this.callNumberDisplay}`
+      : `Call us on ${this.callNumberDisplay}`;
+
+    if (this.callMessageTimer) {
+      clearTimeout(this.callMessageTimer);
+    }
+
+    this.callMessageTimer = setTimeout(() => {
+      this.callMessage = '';
+    }, 3000);
+  }
+
   retry(): void {
     window.location.reload();
   }
 }
-

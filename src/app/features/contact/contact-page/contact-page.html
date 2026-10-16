@@ -5,10 +5,12 @@
 
     <h1>
       Let's talk about<br />
-      your space.
+      <em>your space.</em>
     </h1>
 
-    <p>
+    <span class="contact-hero-rule" aria-hidden="true"></span>
+
+    <p class="contact-hero-text">
       Whether you're looking for a rug for your home,
       carpets for a project, or something completely custom,
       we'd love to hear from you.
@@ -149,14 +151,15 @@
         <p>Mon - Sun / 9:00 AM - 8:00 PM</p>
       </div>
 
-      <!-- IMAGE: change the url() below to your own image path.
+      <!-- IMAGE: change the src below to your own image path.
+           The whole picture is shown at its own shape, nothing is cropped.
            Put the image file in your public folder, for example /about_us/contact_side_image.jpg -->
-      <div
+      <img
         class="contact-side-image"
-        style="--side-image: url('/about_us/contact_side_image.jpg')"
-        role="img"
-        aria-label="Soft Steps carpets"
-      ></div>
+        src="/contact_us/contact_unique.jpeg"
+        alt="Soft Steps carpets"
+        loading="lazy"
+      />
 
     </div>
 

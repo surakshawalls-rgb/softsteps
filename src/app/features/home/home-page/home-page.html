@@ -1,20 +1,21 @@
 ﻿<!-- ========================================================
      HERO  (3-image draggable slider, text in the four corners)
-     Change the 3 image paths in the slides to your own files.
+     Endless loop: a copy of slide 1 sits after slide 3. When the
+     slider reaches that copy it jumps back to the real slide 1
+     instantly, so the loop looks continuous.
 ======================================================== -->
 
 <section class="home-hero">
 
-  <!-- Auto-play timer: an invisible element whose CSS animation repeats every 5s.
-       Each repeat moves the slider to the next image; after the last image it
-       slides back to the first. (Template only, no TypeScript.) -->
+  <!-- Auto-play timer: an invisible element whose CSS animation repeats every 2s.
+       Each repeat moves the slider to the next image. -->
   <span
     class="hero-timer"
     aria-hidden="true"
-    (animationiteration)="heroTrack.scrollLeft + heroTrack.clientWidth >= heroTrack.scrollWidth - 4 ? heroTrack.scrollTo({ left: 0, behavior: 'smooth' }) : heroTrack.scrollBy({ left: heroTrack.clientWidth, behavior: 'smooth' })"
+    (animationiteration)="heroTrack.scrollBy({ left: heroTrack.clientWidth, behavior: 'smooth' })"
   ></span>
 
-  <!-- Draggable banner: drag with the mouse, swipe on a phone, or use the arrows / dots.
+  <!-- Draggable banner: drag with the mouse, swipe on a phone, or use the dots.
        No TypeScript needed: everything below works from this template alone. -->
   <div class="hero-slides">
     <div
@@ -24,7 +25,7 @@
       aria-label="Banner images"
       tabindex="0"
       (mousemove)="$event.buttons === 1 && heroTrack.scrollBy({ left: -$event.movementX })"
-      (scroll)="heroCount.textContent = heroTrack.scrollLeft < heroTrack.clientWidth * 0.5 ? '01 / 03' : (heroTrack.scrollLeft < heroTrack.clientWidth * 1.5 ? '02 / 03' : '03 / 03'); heroDot1.classList.toggle('is-active', heroTrack.scrollLeft < heroTrack.clientWidth * 0.5); heroDot2.classList.toggle('is-active', heroTrack.scrollLeft >= heroTrack.clientWidth * 0.5 && heroTrack.scrollLeft < heroTrack.clientWidth * 1.5); heroDot3.classList.toggle('is-active', heroTrack.scrollLeft >= heroTrack.clientWidth * 1.5)"
+      (scroll)="heroTrack.scrollLeft >= heroTrack.clientWidth * 3 - 2 ? heroTrack.scrollTo({ left: 0, behavior: 'instant' }) : null; heroCount.textContent = heroTrack.scrollLeft < heroTrack.clientWidth * 0.5 ? '01 / 03' : (heroTrack.scrollLeft < heroTrack.clientWidth * 1.5 ? '02 / 03' : (heroTrack.scrollLeft < heroTrack.clientWidth * 2.5 ? '03 / 03' : '01 / 03')); heroDot1.classList.toggle('is-active', heroTrack.scrollLeft < heroTrack.clientWidth * 0.5 || heroTrack.scrollLeft >= heroTrack.clientWidth * 2.5); heroDot2.classList.toggle('is-active', heroTrack.scrollLeft >= heroTrack.clientWidth * 0.5 && heroTrack.scrollLeft < heroTrack.clientWidth * 1.5); heroDot3.classList.toggle('is-active', heroTrack.scrollLeft >= heroTrack.clientWidth * 1.5 && heroTrack.scrollLeft < heroTrack.clientWidth * 2.5)"
     >
 
       <!-- SLIDE 1 -->
@@ -85,26 +86,28 @@
         </picture>
       </div>
 
+      <!-- LOOP COPY of slide 1 (hidden from screen readers).
+           Reaching this copy triggers the instant jump back to the real slide 1. -->
+      <div class="hero-slide" aria-hidden="true">
+        <picture>
+          <source
+            media="(max-width: 680px)"
+            srcset="/Home%20banner%20img%209-16/1st_img%289_16%29.jpg"
+          />
+          <img
+            draggable="false"
+            src="/Home%20banner%20img%209-16/1st_img%283_4%29.png"
+            alt=""
+            loading="eager"
+            decoding="async"
+            width="1200"
+            height="1500"
+          />
+        </picture>
+      </div>
+
     </div>
   </div>
-
-  <!-- Arrows (hidden on phones, where swiping works) -->
-  <button
-    type="button"
-    class="hero-arrow hero-arrow-prev"
-    aria-label="Previous banner image"
-    (click)="heroTrack.scrollLeft <= 4 ? heroTrack.scrollTo({ left: heroTrack.scrollWidth, behavior: 'smooth' }) : heroTrack.scrollBy({ left: -heroTrack.clientWidth, behavior: 'smooth' })"
-  >
-    <span aria-hidden="true">←</span>
-  </button>
-  <button
-    type="button"
-    class="hero-arrow hero-arrow-next"
-    aria-label="Next banner image"
-    (click)="heroTrack.scrollLeft + heroTrack.clientWidth >= heroTrack.scrollWidth - 4 ? heroTrack.scrollTo({ left: 0, behavior: 'smooth' }) : heroTrack.scrollBy({ left: heroTrack.clientWidth, behavior: 'smooth' })"
-  >
-    <span aria-hidden="true">→</span>
-  </button>
 
   <!-- Text is placed in the four corners so the photos stay visible -->
   <div class="hero-layout">
@@ -150,22 +153,22 @@
 
 
 <!-- ========================================================
-     INTRO
+     INTRO  (compact)
 ======================================================== -->
 
 <section class="bg-white brand-intro">
 
-  <div class="mx-auto max-w-5xl px-5 py-20 text-center lg:px-8">
+  <div class="mx-auto max-w-5xl px-5 text-center lg:px-8">
 
-    <p class="text-base font-bold uppercase tracking-[0.3em] text-amber-700 sm:text-xl">
+    <p class="text-sm font-bold uppercase tracking-[0.3em] text-amber-700 sm:text-base">
       Soft Steps Carpets
     </p>
 
-    <h2 class="mt-5 text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl lg:text-6xl">
+    <h2 class="mt-3 text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl">
       Crafted in India. Created for the world.
     </h2>
 
-    <p class="mx-auto mt-6 max-w-2xl text-base leading-8 text-stone-600">
+    <p class="mx-auto mt-4 max-w-3xl text-base leading-7 text-stone-600">
       Rooted in India's rich carpet-making tradition, Soft Steps brings
       craftsmanship, considered materials and contemporary design together
       for residential, hospitality and commercial interiors.
@@ -255,11 +258,6 @@
 
       </div>
 
-
-      <div class="carousel-controls" aria-label="Carpet carousel controls">
-        <button type="button" aria-label="Show previous carpets" (click)="scrollCarousel(productsTrack, -1)">←</button>
-        <button type="button" aria-label="Show next carpets" (click)="scrollCarousel(productsTrack, 1)">→</button>
-      </div>
 
       <div #productsTrack class="product-carousel" role="region" aria-label="Most popular carpets" tabindex="0">
 
@@ -445,16 +443,20 @@
     <h2>Start with a conversation.</h2>
   </div>
   <div class="consultation-links">
-    <a href="tel:+917007131072">
+    <a href="tel:+917007131072" (click)="callTeam()">
       <span>01</span><strong>Talk to our team</strong><small>+91 70071 31072</small>
     </a>
-    <a href="mailto:info@softstepscarpets.com?subject=Request%20a%20carpet%20quotation">
+    <a routerLink="/custom-requirement">
       <span>02</span><strong>Request a quote</strong><small>Share your project requirements</small>
     </a>
     <a href="https://wa.me/917007131072" target="_blank" rel="noopener noreferrer">
       <span>03</span><strong>Custom carpet</strong><small>Discuss your specification</small>
     </a>
-    <a href="mailto:info@softstepscarpets.com?subject=Video%20consultation">
+    <a
+      href="https://wa.me/917007131072?text=Hello%20Soft%20Steps%2C%20I%20would%20like%20to%20arrange%20a%20video%20consultation."
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <span>04</span><strong>Video consultation</strong><small>Arrange a time with our team</small>
     </a>
   </div>
@@ -561,6 +563,11 @@
 
   </section>
 
+}
+
+<!-- Small message shown after clicking "Talk to our team" on a laptop -->
+@if (callMessage) {
+  <div class="copy-toast" role="status" aria-live="polite">{{ callMessage }}</div>
 }
 
 <a
