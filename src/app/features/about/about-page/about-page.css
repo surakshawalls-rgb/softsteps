@@ -453,7 +453,13 @@
 
 .promise-section {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: stretch;
+  gap: clamp(32px, 5vw, 72px);
+
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 80px clamp(24px, 5vw, 64px);
 
   background: var(--cream-light);
 }
@@ -461,8 +467,9 @@
 .promise-visual {
   position: relative;
 
-  min-height: 540px;
-  margin: 60px 0 60px 8%;
+  width: 100%;
+  min-height: 520px;
+  margin: 0;
   overflow: hidden;
 
   border-radius: 24px;
@@ -512,33 +519,38 @@
   align-self: center;
 
   max-width: 680px;
-  padding: 80px 11%;
+  padding: 0;
 }
 
 .promise-content h2 {
-  margin: 22px 0;
+  margin: 14px 0 18px;
 
-  font-size: clamp(37px, 4.4vw, 57px);
+  font-size: clamp(30px, 3vw, 40px);
   line-height: 1.12;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.03em;
 }
 
 .promise-content p {
+  margin: 0 0 14px;
+
   color: var(--muted);
+
+  font-size: 14px;
+  line-height: 1.75;
 }
 
 .promise-content .promise-lead {
   color: var(--ink);
 
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 19px;
-  line-height: 1.7;
+  font-size: 18px;
+  line-height: 1.6;
 }
 
 /* Suraksha Group initiatives list */
 
 .promise-content .group-initiatives {
-  margin: 28px 0 26px;
+  margin: 20px 0 18px;
   padding: 0;
   list-style: none;
   border-top: 1px solid var(--gold);
@@ -546,25 +558,25 @@
 
 .promise-content .group-initiatives li {
   display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 22px;
+  grid-template-columns: 160px 1fr;
+  gap: 20px;
   align-items: baseline;
 
-  padding: 16px 0;
+  padding: 11px 0;
   border-bottom: 1px solid var(--line);
 }
 
 .promise-content .group-initiatives .need {
   color: var(--ink);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.4;
 }
 
 .promise-content .group-initiatives .work {
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.75;
+  line-height: 1.6;
 }
 
 .promise-content .group-initiatives .work strong {
@@ -573,13 +585,13 @@
 }
 
 .promise-content .group-signoff {
-  margin-top: 30px;
+  margin-top: 22px;
   padding-left: 18px;
   border-left: 2px solid var(--gold);
 
   color: var(--ink);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 17px;
+  font-size: 16px;
   font-style: italic;
   line-height: 1.6;
 }
@@ -1020,8 +1032,13 @@
     gap: 6%;
   }
 
-  .promise-content {
-    padding: 65px 8%;
+  .promise-section {
+    padding: 60px 24px;
+  }
+
+  .promise-content .group-initiatives li {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
 
   .craft-card {
@@ -1203,24 +1220,26 @@
 
   .promise-section {
     grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 45px 24px 60px;
   }
 
   .promise-visual {
-    min-height: 350px;
-    margin: 40px 24px 0;
+    aspect-ratio: 4 / 3;
+    min-height: 0;
     border-radius: 18px;
   }
 
   .promise-content {
-    padding: 65px 25px 75px;
+    padding: 0;
   }
 
   .promise-content h2 {
-    font-size: 40px;
+    font-size: 34px;
   }
 
   .promise-content p {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .promise-content .promise-lead {
