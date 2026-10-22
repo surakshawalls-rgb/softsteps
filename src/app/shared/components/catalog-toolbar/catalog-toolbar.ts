@@ -27,8 +27,10 @@ export class CatalogToolbar {
     sort: 'featured'
   };
 
-  @Input() categories: { name: string; slug: string }[] = [];
-  @Input() materials: { name: string; slug: string }[] = [];
+  
+  @Input() categories: { id: string; name: string; slug: string }[] = [];
+  @Input() materials: { id: string; name: string; slug: string }[] = [];
+
   @Input() resultCount = 0;
   @Input() totalCount = 0;
 

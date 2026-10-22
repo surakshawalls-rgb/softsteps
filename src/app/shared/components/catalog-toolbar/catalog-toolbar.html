@@ -82,11 +82,13 @@
       >
         <option value="">All Materials</option>
 
-        @for (material of materials; track material.slug) {
-          <option [value]="material.slug">
-            {{ material.name }}
-          </option>
-        }
+        
+      @for (material of materials; track material.id) {
+        <option [value]="material.id">
+          {{ material.name }}
+        </option>
+      }
+
 
       </select>
 

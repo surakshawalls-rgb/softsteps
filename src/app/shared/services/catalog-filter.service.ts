@@ -67,12 +67,20 @@ export class CatalogFilterService {
         return false;
       }
 
-      if (
-        filters.material &&
-        product.material?.slug !== filters.material
-      ) {
+      
+    if (filters.material) {
+      const productWithMaterialId = product as Product & {
+        material_id?: string | null;
+      };
+
+      const productMaterialId =
+        product.material?.id ?? productWithMaterialId.material_id;
+
+      if (productMaterialId !== filters.material) {
         return false;
       }
+    }
+
 
       const price = this.getPrice(product);
 

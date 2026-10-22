@@ -1,3 +1,4 @@
+
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProductCard } from '../../../shared/components/product-card/product-card';
@@ -10,6 +11,12 @@ import {
 import { CatalogFilterService } from '../../../shared/services/catalog-filter.service';
 import { CatalogQueryService } from '../../../data-access/queries/catalog/catalog-query.service';
 
+interface CatalogOption {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 @Component({
   selector: 'app-shop-page',
   imports: [ProductCard, CatalogToolbar],
@@ -21,28 +28,31 @@ export class ShopPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
   readonly loading = signal(true);
+
   errorMessage = '';
   products: Product[] = [];
+  categories: CatalogOption[] = [];
+  materials: CatalogOption[] = [];
 
   filter: CatalogFilterState = {
     ...DEFAULT_CATALOG_FILTER
   };
 
-  // The category asked for in the address, for example /shop?category=traditional-carpets
   private requestedCategory: string | null = null;
 
   constructor(public readonly catalogFilter: CatalogFilterService) {}
 
   ngOnInit(): void {
-    // Opening /shop?category=... selects that category automatically.
-    // If you open /shop with no ?category=, the filter stays on its default.
     this.route.queryParamMap.subscribe(params => {
       this.requestedCategory = params.get('category');
 
-      if (this.requestedCategory) {
+      if (this.products.length && this.requestedCategory) {
         this.applyRequestedCategory();
-      } else {
-        this.filter = { ...this.filter, category: DEFAULT_CATALOG_FILTER.category };
+      } else if (!this.requestedCategory) {
+        this.filter = {
+          ...this.filter,
+          category: DEFAULT_CATALOG_FILTER.category
+        };
       }
     });
 
@@ -54,16 +64,45 @@ export class ShopPage implements OnInit {
     this.errorMessage = '';
 
     try {
-      this.products = await this.catalogQuery.getProducts();
+      // Load each dataset from its own Supabase table/query.
+      const [products, categories, materials] = await Promise.all([
+        this.catalogQuery.getProducts(),
+        this.catalogQuery.getCategories(),
+        this.catalogQuery.getMaterials()
+      ]);
+
+      this.products = products ?? [];
+
+      this.categories = (categories ?? [])
+        .filter(item => item.is_active !== false && item.slug && item.name)
+        .map(item => ({
+          id: item.id,
+          name: item.name,
+          slug: item.slug
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      this.materials = (materials ?? [])
+        .filter(item => item.is_active !== false && item.id && item.name)
+        .map(item => ({
+          id: item.id,
+          name: item.name,
+          slug: item.slug ?? ''
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      console.info('Shop catalogue loaded:', {
+        products: this.products.length,
+        categories: this.categories.length,
+        materials: this.materials.length
+      });
     } catch (error) {
-      console.error('Failed to load products:', error);
+      console.error('Failed to load shop catalogue:', error);
       this.errorMessage = 'Unable to load products. Please try again.';
     } finally {
       this.loading.set(false);
     }
 
-    // The real category options are known only now that the products are loaded,
-    // so match the requested category against them.
     if (this.requestedCategory) {
       this.applyRequestedCategory();
     }
@@ -71,14 +110,6 @@ export class ShopPage implements OnInit {
 
   get filteredProducts(): Product[] {
     return this.catalogFilter.filterAndSort(this.products, this.filter);
-  }
-
-  get categories() {
-    return this.catalogFilter.getCategories(this.products);
-  }
-
-  get materials() {
-    return this.catalogFilter.getMaterials(this.products);
   }
 
   onFilterChange(filter: CatalogFilterState): void {
@@ -93,63 +124,33 @@ export class ShopPage implements OnInit {
     void this.loadProducts();
   }
 
-  // ---- category from the address ----
-
   private applyRequestedCategory(): void {
     if (!this.requestedCategory) {
       return;
     }
 
+    const target = this.normalizeCategory(this.requestedCategory);
+
+    const matchedCategory = this.categories.find(category =>
+      [
+        category.slug,
+        category.name,
+        category.id
+      ].some(value => this.normalizeCategory(value) === target)
+    );
+
     this.filter = {
       ...this.filter,
-      category: this.resolveCategory(this.requestedCategory)
+      category: matchedCategory?.slug ?? this.requestedCategory
     };
   }
 
-  // Finds the shop's own category option that matches the requested one.
-  // "traditional-carpets", "traditional-rugs" and "Traditional Rugs" all match
-  // the same option, because the words rugs / carpets are ignored when comparing.
-  // If nothing matches (or the products are not loaded yet), the requested
-  // value is used unchanged.
-  private resolveCategory(requested: string): string {
-    const target = this.normalizeCategory(requested);
-    const options = this.categories as unknown as Array<string | Record<string, unknown>>;
-
-    for (const option of options) {
-      if (typeof option === 'string') {
-        if (this.normalizeCategory(option) === target) {
-          return option;
-        }
-        continue;
-      }
-
-      const candidates = [
-        option['value'],
-        option['slug'],
-        option['id'],
-        option['name'],
-        option['label']
-      ];
-
-      const matches = candidates.some(
-        candidate => candidate != null && this.normalizeCategory(String(candidate)) === target
-      );
-
-      if (matches) {
-        // The dropdown option value is what the filter compares against.
-        const filterValue = candidates.find(candidate => candidate != null);
-        return String(filterValue);
-      }
-    }
-
-    return requested;
-  }
-
-  private normalizeCategory(text: string): string {
-    return text
+  private normalizeCategory(value: string): string {
+    return value
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, ' ')
       .replace(/\b(rugs?|carpets?)\b/g, ' ')
-      .replace(/\s+/g, '');
+      .replace(/\s+/g, '')
+      .trim();
   }
 }
