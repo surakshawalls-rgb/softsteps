@@ -228,12 +228,15 @@
 
 
 <!-- ========================================================
-     FEATURED PRODUCTS
+     FEATURED PRODUCTS  –  "Selected for you" hanging rug rail
+     Rugs hang from a curved rail. Drag / swipe / scroll to move it,
+     the rug in the middle (or under the mouse) turns to face you,
+     and clicking a rug opens a large quick view.
 ======================================================== -->
 
 @if (!loading && productPreview.length > 0) {
 
-  <section class="bg-stone-50 featured-section py-20">
+  <section class="bg-stone-50 featured-section rug-rail-section py-20">
 
     <div class="mx-auto max-w-7xl px-5 lg:px-8">
 
@@ -258,22 +261,214 @@
 
       </div>
 
+    </div>
 
-      <div #productsTrack class="product-carousel" role="region" aria-label="Most popular carpets" tabindex="0">
+    <div class="rug-rail">
 
-        @for (product of productPreview; track product.id ?? product.slug) {
+      <!-- The curved rail the rugs hang from -->
+      <svg class="rug-rail-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <path class="rail-shadow" d="M0 0 Q50 200 100 0" />
+        <path class="rail-metal" d="M0 0 Q50 200 100 0" />
+        <path class="rail-shine" d="M0 0 Q50 200 100 0" />
+      </svg>
 
-          <div class="product-slide">
-            <app-product-card [product]="product"></app-product-card>
-          </div>
+      <!-- Rugs. The list is repeated 5 times so the rail loops endlessly (copies are hidden from screen readers). -->
+      <div
+        #railTrack
+        class="rug-track"
+        role="region"
+        aria-label="Most popular carpets"
+        tabindex="0"
+        (scroll)="updateRail()"
+        (pointerdown)="startDrag($event, railTrack)"
+        (pointermove)="moveDrag($event, railTrack)"
+        (pointerup)="endDrag(railTrack)"
+        (pointercancel)="endDrag(railTrack)"
+        (pointerleave)="endDrag(railTrack)"
+        (keydown.arrowright)="scrollRail(1)"
+        (keydown.arrowleft)="scrollRail(-1)"
+      >
 
+        @for (copy of railCopies; track copy) {
+          @for (product of productPreview; track $index; let i = $index) {
+
+            @let info = priceInfo(product);
+
+            <div
+              class="rug-item"
+              [style.--i]="copy * 2 + i"
+              [attr.aria-hidden]="copy !== 2 ? 'true' : null"
+            >
+
+              <button
+                type="button"
+                class="rug-hang"
+                [attr.tabindex]="copy !== 2 ? -1 : null"
+                [attr.aria-label]="'Quick view: ' + product.name"
+                (click)="openQuickView(product, i)"
+              >
+                <span class="rug-sway">
+                  <span class="rug-cord" aria-hidden="true"></span>
+
+                  <span class="rug-swing">
+                    <img
+                      [src]="productImage(product)"
+                      [alt]="product.name || 'Carpet or rug'"
+                      draggable="false"
+                      loading="lazy"
+                      decoding="async"
+                    />
+
+                    @if (info.price !== null) {
+                      <span class="rug-tag">{{ formatPrice(info.sale !== null && info.sale < info.price ? info.sale : info.price) }}</span>
+                    }
+                  </span>
+                </span>
+              </button>
+
+              <!-- Name and price: appear under the rug that is facing you -->
+              <div class="rug-meta" aria-hidden="true">
+                @if (product.category?.name) {
+                  <span class="rug-meta-cat">{{ product.category?.name }}</span>
+                }
+                <span class="rug-meta-name">{{ product.name }}</span>
+                @if (info.price !== null) {
+                  <span class="rug-meta-price">
+                    @if (info.sale !== null && info.sale < info.price) {
+                      <strong>{{ formatPrice(info.sale) }}</strong>
+                      <s>{{ formatPrice(info.price) }}</s>
+                    } @else {
+                      <strong>{{ formatPrice(info.price) }}</strong>
+                    }
+                  </span>
+                }
+              </div>
+
+            </div>
+
+          }
         }
 
+      </div>
+
+      <!-- Progress line and hint -->
+      <div class="rug-footer">
+        <div class="rug-progress" aria-hidden="true"><span></span></div>
+
+        <p class="rug-hint" aria-hidden="true">
+          <span class="rug-hint-mouse">Drag to explore &nbsp;·&nbsp; Click a rug to preview</span>
+          <span class="rug-hint-touch">Swipe to explore &nbsp;·&nbsp; Tap a rug to preview</span>
+        </p>
       </div>
 
     </div>
 
   </section>
+
+  <!-- ========================================================
+       QUICK VIEW (opens when a rug is clicked)
+  ======================================================== -->
+
+  @if (quickView; as qv) {
+    @let qInfo = quickViewPrice();
+
+    <div class="qv-backdrop" (click)="closeQuickView()">
+
+      <div
+        class="qv-panel"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-label]="qv.name"
+        (click)="$event.stopPropagation()"
+      >
+
+        <button type="button" class="qv-close" (click)="closeQuickView()">
+          Close <span aria-hidden="true">✕</span>
+        </button>
+
+        <div class="qv-media">
+          <span class="qv-cord" aria-hidden="true"></span>
+          <img [src]="quickViewImages()[quickImageIndex]" [alt]="qv.name || 'Carpet or rug'" draggable="false" />
+
+          @if (quickViewImages().length > 1) {
+            <div class="qv-thumbs">
+              @for (img of quickViewImages(); track $index; let k = $index) {
+                <button
+                  type="button"
+                  [class.is-active]="k === quickImageIndex"
+                  [attr.aria-label]="'Show image ' + (k + 1)"
+                  (click)="quickImageIndex = k"
+                >
+                  <img [src]="img" alt="" draggable="false" />
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="qv-info">
+
+          <p class="qv-count">
+            {{ (quickIndex + 1) < 10 ? '0' : '' }}{{ quickIndex + 1 }} / {{ productPreview.length < 10 ? '0' : '' }}{{ productPreview.length }}
+          </p>
+
+          @if (qv.category?.name) {
+            <p class="qv-cat">{{ qv.category?.name }}</p>
+          }
+
+          <h3 class="qv-name">{{ qv.name }}</h3>
+
+          @if (qInfo.price !== null) {
+            <p class="qv-price">
+              @if (qInfo.sale !== null && qInfo.sale < qInfo.price) {
+                <strong>{{ formatPrice(qInfo.sale) }}</strong>
+                <s>{{ formatPrice(qInfo.price) }}</s>
+              } @else {
+                <strong>{{ formatPrice(qInfo.price) }}</strong>
+              }
+            </p>
+          }
+
+          @if (qv.short_description) {
+            <p class="qv-desc">{{ qv.short_description }}</p>
+          }
+
+          @if (qv.material?.name) {
+            <p class="qv-spec"><span>Material</span> {{ qv.material?.name }}</p>
+          }
+
+          @if (qv.variants && qv.variants.length > 1) {
+            <p class="qv-label">Size</p>
+            <div class="qv-sizes">
+              @for (v of qv.variants; track $index; let k = $index) {
+                <button
+                  type="button"
+                  [class.is-active]="k === quickVariantIndex"
+                  (click)="quickVariantIndex = k"
+                >
+                  {{ v.size || 'Standard' }}
+                </button>
+              }
+            </div>
+          } @else if (qv.variants?.[0]?.size) {
+            <p class="qv-spec"><span>Size</span> {{ qv.variants?.[0]?.size }}</p>
+          }
+
+          <div class="qv-actions">
+            <a [routerLink]="['/products', qv.slug]" class="qv-primary" (click)="closeQuickView()">
+              View product page <span aria-hidden="true">→</span>
+            </a>
+            <a routerLink="/enquiries" class="qv-secondary" (click)="closeQuickView()">
+              Enquire about this rug
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  }
 
 }
 

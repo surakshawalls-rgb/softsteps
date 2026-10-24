@@ -1,14 +1,13 @@
 import { isPlatformBrowser } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, inject, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, OnDestroy, PLATFORM_ID, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ProductCard } from '../../../shared/components/product-card/product-card';
 import { Category } from '../../../shared/models/category.model';
 import { Collection } from '../../../shared/models/collection.model';
-import { Product } from '../../../shared/models/product.model';
+import { Product, ProductVariant } from '../../../shared/models/product.model';
 
 @Component({
   selector: 'app-home-page',
-  imports: [RouterLink, ProductCard],
+  imports: [RouterLink],
   templateUrl: './home-page.html',
 })
 export class HomePage implements AfterViewInit, OnDestroy {
@@ -24,6 +23,269 @@ export class HomePage implements AfterViewInit, OnDestroy {
 
   /** Small message shown at the bottom of the screen after clicking "Talk to our team" on a laptop. */
   callMessage = '';
+
+  /* ---------- "Selected for you" hanging rug rail ---------- */
+
+  /** The rug list is repeated 5 times so the rail can loop endlessly. */
+  readonly railCopies = [0, 1, 2, 3, 4];
+
+  /** Product currently open in the quick view (null = closed). */
+  quickView: Product | null = null;
+  quickIndex = 0;
+  quickVariantIndex = 0;
+  quickImageIndex = 0;
+
+  private railTrack?: HTMLElement;
+  private railFrame = 0;
+  private railReady = false;
+  private dragging = false;
+  private dragMoved = false;
+  private dragStartX = 0;
+  private dragStartScroll = 0;
+
+  /** Runs when the rail appears on the page. */
+  @ViewChild('railTrack')
+  set railTrackRef(ref: ElementRef<HTMLElement> | undefined) {
+    this.railTrack = ref?.nativeElement;
+    this.railReady = false;
+
+    if (this.railTrack && isPlatformBrowser(this.platformId)) {
+      requestAnimationFrame(() => this.initRail());
+    }
+  }
+
+  /** Close the quick view with the Escape key. */
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.closeQuickView();
+  }
+
+  /** Keeps the rail looking right when the window size changes. */
+  @HostListener('window:resize')
+  onResize(): void {
+    this.updateRail();
+  }
+
+  // ----- prices and images -----
+
+  productImage(product: Product): string {
+    const images = (product.images ?? []).filter(
+      image => typeof image.image_url === 'string' && image.image_url.trim().length > 0,
+    );
+    const primary = images.find(image => image.is_primary === true) ?? images[0];
+    return primary?.image_url?.trim() ?? '/Category%20imgs/Luxury_rugs.jpg';
+  }
+
+  /** Same price rules as the product card. */
+  priceInfo(product: Product, variant?: ProductVariant): { price: number | null; sale: number | null } {
+    const v = variant ?? product.variants?.[0];
+
+    const price =
+      v?.price !== undefined && v?.price !== null
+        ? v.price
+        : product.base_price != null && product.compare_at_price != null
+          ? product.compare_at_price
+          : product.base_price ?? null;
+
+    const sale =
+      v?.sale_price !== undefined && v?.sale_price !== null
+        ? v.sale_price
+        : product.compare_at_price != null
+          ? product.base_price ?? null
+          : null;
+
+    return { price, sale };
+  }
+
+  formatPrice(value: number | null): string {
+    return value === null ? '' : '₹' + value.toLocaleString('en-IN');
+  }
+
+  // ----- quick view -----
+
+  openQuickView(product: Product, index: number): void {
+    // a drag should not open the quick view
+    if (this.dragMoved) {
+      this.dragMoved = false;
+      return;
+    }
+
+    this.quickView = product;
+    this.quickIndex = index;
+    this.quickVariantIndex = 0;
+    this.quickImageIndex = 0;
+
+    if (isPlatformBrowser(this.platformId)) {
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  closeQuickView(): void {
+    if (!this.quickView) {
+      return;
+    }
+
+    this.quickView = null;
+
+    if (isPlatformBrowser(this.platformId)) {
+      document.body.style.overflow = '';
+    }
+  }
+
+  quickViewImages(): string[] {
+    const images = (this.quickView?.images ?? [])
+      .filter(image => typeof image.image_url === 'string' && image.image_url.trim().length > 0)
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map(image => image.image_url!.trim());
+
+    return images.length > 0 ? images : [this.quickView ? this.productImage(this.quickView) : ''];
+  }
+
+  quickViewPrice(): { price: number | null; sale: number | null } {
+    if (!this.quickView) {
+      return { price: null, sale: null };
+    }
+
+    return this.priceInfo(this.quickView, this.quickView.variants?.[this.quickVariantIndex]);
+  }
+
+  // ----- rail behaviour -----
+
+  /** Previous / next rug (arrow buttons and arrow keys). */
+  scrollRail(direction: number): void {
+    const track = this.railTrack;
+
+    if (!track) {
+      return;
+    }
+
+    track.scrollBy({ left: direction * this.railPitch(track), behavior: 'smooth' });
+  }
+
+  /** Mouse drag (touch screens scroll natively). */
+  startDrag(event: PointerEvent, track: HTMLElement): void {
+    if (event.pointerType !== 'mouse' || event.button !== 0) {
+      return;
+    }
+
+    this.dragging = true;
+    this.dragMoved = false;
+    this.dragStartX = event.clientX;
+    this.dragStartScroll = track.scrollLeft;
+    track.classList.add('is-dragging');
+  }
+
+  moveDrag(event: PointerEvent, track: HTMLElement): void {
+    if (!this.dragging) {
+      return;
+    }
+
+    const distance = event.clientX - this.dragStartX;
+
+    if (Math.abs(distance) > 5) {
+      this.dragMoved = true;
+    }
+
+    track.scrollLeft = this.dragStartScroll - distance;
+  }
+
+  endDrag(track: HTMLElement): void {
+    if (!this.dragging) {
+      return;
+    }
+
+    this.dragging = false;
+    track.classList.remove('is-dragging');
+
+    // allow the next real click to open the quick view
+    setTimeout(() => (this.dragMoved = false), 0);
+  }
+
+  /** Called on every scroll: repaints the rail on the next frame. */
+  updateRail(): void {
+    if (!this.railTrack || !isPlatformBrowser(this.platformId) || this.railFrame) {
+      return;
+    }
+
+    this.railFrame = requestAnimationFrame(() => {
+      this.railFrame = 0;
+      this.paintRail();
+    });
+  }
+
+  private railPitch(track: HTMLElement): number {
+    const items = track.querySelectorAll<HTMLElement>('.rug-item');
+    return items.length > 1 ? items[1].offsetLeft - items[0].offsetLeft : 200;
+  }
+
+  private initRail(): void {
+    const track = this.railTrack;
+
+    if (!track || this.railReady) {
+      return;
+    }
+
+    this.railReady = true;
+
+    // start in the middle copy so you can drag both ways
+    const pitch = this.railPitch(track);
+    const count = this.productPreview.length;
+    track.style.scrollSnapType = 'none';
+    track.scrollLeft = pitch * count * 2 + pitch * Math.floor((count - 1) / 2);
+    this.paintRail();
+    requestAnimationFrame(() => (track.style.scrollSnapType = ''));
+  }
+
+  private paintRail(): void {
+    const track = this.railTrack;
+
+    if (!track) {
+      return;
+    }
+
+    const count = this.productPreview.length;
+    const pitch = this.railPitch(track);
+    const setWidth = pitch * count;
+
+    // endless loop: jump by one full set of rugs (looks identical)
+    if (setWidth > 0) {
+      let shift = 0;
+
+      if (track.scrollLeft < setWidth * 1.5) {
+        shift = setWidth;
+      } else if (track.scrollLeft > setWidth * 2.5) {
+        shift = -setWidth;
+      }
+
+      if (shift !== 0) {
+        track.scrollLeft += shift;
+        this.dragStartScroll += shift;
+      }
+    }
+
+    const rail = track.parentElement as HTMLElement;
+    const sag = parseFloat(getComputedStyle(rail).getPropertyValue('--sag')) || 56;
+    const box = track.getBoundingClientRect();
+    const half = box.width / 2;
+    const centre = box.left + half;
+
+    track.querySelectorAll<HTMLElement>('.rug-item').forEach(item => {
+      const rect = item.getBoundingClientRect();
+      const d = (rect.left + rect.width / 2 - centre) / half;      // -1 (left edge) … 1 (right edge)
+      const t = Math.min(1, Math.abs(d));
+      const near = Math.max(0, 1 - Math.abs(d) * 4.5);              // 1 = in the middle
+
+      item.style.setProperty('--y', `${(sag * (1 - t * t)).toFixed(1)}px`); // follows the curve of the rail
+      item.style.setProperty('--near', near.toFixed(3));
+      item.style.setProperty('--dir', d < 0 ? '-1' : '1');
+      item.style.zIndex = String(Math.round(near * 10));
+    });
+
+    if (setWidth > 0) {
+      const progress = (((track.scrollLeft % setWidth) + setWidth) % setWidth) / setWidth;
+      rail.style.setProperty('--progress', progress.toFixed(3));
+    }
+  }
 
   categories: Category[] = [
     {

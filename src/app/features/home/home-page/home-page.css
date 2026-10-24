@@ -1148,3 +1148,468 @@ app-home-page > section:not(.home-hero) h2 {
     animation: none;
   }
 }
+
+/* =========================================================
+   SELECTED FOR YOU  –  hanging rug rail
+   (add this to the END of home-page.css)
+========================================================= */
+
+.rug-rail {
+  --sag: 56px;           /* how much the rail dips in the middle */
+  --w: 190px;            /* width of one hanging rug */
+  --gap: 4px;
+  --cord: 34px;          /* length of the hanging cord */
+  --rug-h: calc(var(--w) * 1.25);
+  --turn: 62deg;         /* how far side rugs are turned away */
+  position: relative;
+  margin-top: 30px;
+}
+
+/* ---- the curved rail ---- */
+.rug-rail-line {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  z-index: 0;
+  width: 100%;
+  height: var(--sag);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.rug-rail-line path {
+  fill: none;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.rail-shadow { stroke: rgba(41, 34, 26, 0.22); stroke-width: 8px; filter: blur(4px); }
+.rail-metal  { stroke: #968c7d; stroke-width: 5px; }
+.rail-shine  { stroke: #ece6dc; stroke-width: 1.5px; }
+
+/* ---- scrolling track ---- */
+.rug-track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: var(--gap);
+  padding: 14px calc(50% - var(--w) / 2) calc(var(--sag) + var(--rug-h) * 0.4 + 120px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  outline: none;
+}
+
+.rug-track::-webkit-scrollbar { display: none; }
+
+.rug-track.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  user-select: none;
+}
+
+.rug-track:focus-visible {
+  outline: 2px solid rgba(180, 120, 40, 0.55);
+  outline-offset: -2px;
+  border-radius: 12px;
+}
+
+/* ---- one hanging rug ----
+   --y, --near, --dir are set by the TypeScript while you scroll.
+   --f = how much this rug faces you (0 = edge-on, 1 = facing you) */
+.rug-item {
+  --f: var(--near, 0);
+  position: relative;
+  flex: 0 0 var(--w);
+  width: var(--w);
+  scroll-snap-align: center;
+  transform: translateY(var(--y, 0px));
+}
+
+/* the rug under the mouse takes over from the centre one */
+.rug-item:hover { --f: 1; z-index: 30 !important; }
+
+@media (hover: hover) {
+  .rug-track:has(.rug-item:hover) .rug-item:not(:hover) { --f: 0; }
+}
+
+.rug-hang {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rug-hang:focus-visible { outline: 2px solid #b8802f; outline-offset: 6px; border-radius: 6px; }
+
+/* gentle swing, like cloth on a rail */
+.rug-sway {
+  display: block;
+  transform-origin: 50% 0;
+  animation: rug-sway 6s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i, 0) * -0.9s);
+}
+
+@keyframes rug-sway {
+  from { transform: rotate(-1.3deg); }
+  to   { transform: rotate(1.3deg); }
+}
+
+.rug-cord {
+  display: block;
+  width: 1px;
+  height: var(--cord);
+  margin: 0 auto;
+  background: linear-gradient(#a0968a, #6d655a);
+}
+
+/* turns face-on and grows when focused */
+.rug-swing {
+  position: relative;
+  display: block;
+  transform-origin: 50% 0;
+  transform:
+    perspective(1100px)
+    rotateY(calc((1 - var(--f)) * var(--turn) * var(--dir, 1)))
+    scale(calc(1 + var(--f) * 0.38));
+  transition: transform 0.55s cubic-bezier(0.22, 0.8, 0.26, 1);
+  will-change: transform;
+}
+
+.rug-swing img {
+  display: block;
+  width: 100%;
+  height: var(--rug-h);
+  object-fit: cover;
+  border-radius: 3px;
+  background: #e8e1d6;
+  box-shadow: 0 18px 22px -16px rgba(40, 30, 20, 0.6);
+  -webkit-user-drag: none;
+}
+
+/* wooden hanger clip */
+.rug-swing::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 14%;
+  right: 14%;
+  z-index: 2;
+  height: 9px;
+  border-radius: 5px;
+  background: linear-gradient(#6a563f, #3b2f23);
+}
+
+/* little price tag */
+.rug-tag {
+  position: absolute;
+  top: 14px;
+  right: 9%;
+  z-index: 3;
+  padding: 3px 7px;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  color: var(--ss-ink);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.25;
+  transform: rotate(5deg);
+  transform-origin: 50% 0;
+}
+
+.rug-tag::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 1px;
+  height: 9px;
+  background: #8f8576;
+}
+
+/* name + price under the focused rug */
+.rug-meta {
+  position: absolute;
+  top: calc(var(--cord) + var(--rug-h) + 16px);
+  left: 50%;
+  display: flex;
+  width: 270px;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  opacity: calc(var(--f) * var(--f));
+  transform: translate(-50%, calc(var(--f) * var(--rug-h) * 0.38));
+  transition: opacity 0.3s ease, transform 0.55s cubic-bezier(0.22, 0.8, 0.26, 1);
+  pointer-events: none;
+}
+
+.rug-meta-cat {
+  color: #8d857a;
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.rug-meta-name {
+  color: var(--ss-ink);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.rug-meta-price strong,
+.qv-price strong { color: var(--ss-ink); font-weight: 700; }
+
+.rug-meta-price s,
+.qv-price s { margin-left: 6px; color: #a39a8d; font-size: 0.85em; }
+
+/* ---- footer: progress line + hint ---- */
+.rug-footer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: -14px;
+}
+
+.rug-progress {
+  position: relative;
+  width: min(220px, 52%);
+  height: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(41, 37, 31, 0.12);
+}
+
+.rug-progress span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22%;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--ss-ink);
+  transform: translateX(calc(var(--progress, 0) * 354%));
+}
+
+.rug-hint {
+  margin: 0;
+  color: #8d857a;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.rug-hint-touch { display: none; }
+
+@media (hover: none) {
+  .rug-hint-mouse { display: none; }
+  .rug-hint-touch { display: inline; }
+}
+
+/* =========================================================
+   QUICK VIEW
+========================================================= */
+
+.qv-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: #f4f0e9;
+  animation: qv-fade 0.3s ease both;
+}
+
+.qv-panel {
+  position: relative;
+  display: grid;
+  width: min(1120px, 100%);
+  height: min(720px, 100%);
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 40px;
+  padding: 56px 48px 40px;
+}
+
+.qv-close {
+  position: absolute;
+  top: 22px;
+  right: 28px;
+  z-index: 3;
+  border: 0;
+  background: none;
+  color: var(--ss-ink);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.qv-close:hover { color: #b8802f; }
+
+.qv-media {
+  position: relative;
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.qv-cord {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(#a0968a, #6d655a);
+  flex: none;
+}
+
+.qv-media > img {
+  display: block;
+  width: auto;
+  height: min(560px, calc(100% - 100px));
+  max-width: 100%;
+  aspect-ratio: 4 / 5;
+  flex: 0 1 auto;
+  border-radius: 4px;
+  object-fit: cover;
+  box-shadow: 0 30px 40px -24px rgba(40, 30, 20, 0.55);
+  transform-origin: 50% 0;
+  animation: qv-drop 0.9s cubic-bezier(0.22, 0.8, 0.26, 1) both;
+}
+
+.qv-thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  flex: none;
+}
+
+.qv-thumbs button {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.qv-thumbs button.is-active { border-color: var(--ss-ink); opacity: 1; }
+.qv-thumbs img { width: 100%; height: 100%; object-fit: cover; }
+
+.qv-info { max-width: 380px; }
+
+.qv-count { margin: 0 0 10px; color: #a39a8d; font-size: 11px; letter-spacing: 0.1em; }
+
+.qv-cat {
+  margin: 0 0 8px;
+  color: #b8802f;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.qv-name { margin: 0; color: var(--ss-ink); font-size: 30px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; }
+.qv-price { margin: 12px 0 0; color: var(--ss-ink); font-size: 18px; }
+.qv-desc { margin: 16px 0 0; color: #6b645a; font-size: 14.5px; line-height: 1.6; }
+.qv-spec { margin: 14px 0 0; color: var(--ss-ink); font-size: 13.5px; }
+.qv-spec span { display: inline-block; min-width: 64px; color: #8d857a; }
+.qv-label { margin: 22px 0 8px; color: #8d857a; font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; }
+.qv-sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.qv-sizes button {
+  padding: 8px 14px;
+  border: 1px solid rgba(41, 37, 31, 0.2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ss-ink);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.qv-sizes button.is-active { border-color: var(--ss-ink); background: var(--ss-ink); color: #fffdf9; }
+
+.qv-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; }
+
+.qv-primary,
+.qv-secondary {
+  display: block;
+  padding: 14px 20px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.qv-primary { background: var(--ss-ink); color: #fffdf9; }
+.qv-primary:hover { background: #b8802f; }
+.qv-secondary { border: 1px solid rgba(41, 37, 31, 0.25); color: var(--ss-ink); }
+.qv-secondary:hover { border-color: var(--ss-ink); }
+
+@keyframes qv-fade { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes qv-drop {
+  0%   { opacity: 0; transform: translateY(-30px) rotate(-3deg); }
+  60%  { opacity: 1; transform: translateY(0) rotate(1.2deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(0); }
+}
+
+/* ---- tablets / phones ---- */
+@media (max-width: 900px) {
+  .rug-rail { --w: 170px; --sag: 44px; }
+}
+
+@media (max-width: 680px) {
+  .rug-rail {
+    --w: 150px;
+    --sag: 34px;
+    --cord: 26px;
+    --turn: 58deg;
+  }
+
+  .rug-footer { gap: 12px; margin-top: -6px; }
+  .rug-hint { padding: 0 20px; font-size: 10px; letter-spacing: 0.14em; }
+
+  .qv-panel {
+    height: 100%;
+    grid-template-columns: 1fr;
+    align-content: start;
+    gap: 18px;
+    padding: 54px 20px 28px;
+    overflow-y: auto;
+  }
+
+  .qv-media { height: auto; }
+  .qv-media > img { height: 44vh; }
+  .qv-info { max-width: none; }
+  .qv-name { font-size: 25px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rug-sway,
+  .qv-media > img,
+  .qv-backdrop { animation: none; }
+
+  .rug-swing,
+  .rug-meta { transition: none; }
+}
