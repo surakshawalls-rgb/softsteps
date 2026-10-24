@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Product } from '../models/product.model';
 import {
   CatalogFilterState,
-  DEFAULT_CATALOG_FILTER
+  DEFAULT_CATALOG_FILTER,
+  normalizeFilterValue
 } from '../models/catalog-filter.model';
 
 @Injectable({
@@ -60,27 +61,35 @@ export class CatalogFilterService {
         }
       }
 
+      // Each group is "any of the ticked values"; groups are combined with AND.
       if (
-        filters.category &&
-        product.category?.slug !== filters.category
+        filters.categories.length &&
+        !filters.categories.includes(product.category?.slug ?? '')
       ) {
         return false;
       }
 
-      
-    if (filters.material) {
-      const productWithMaterialId = product as Product & {
-        material_id?: string | null;
-      };
+      if (filters.materials.length) {
+        const productMaterialId = product.material?.id ?? product.material_id;
 
-      const productMaterialId =
-        product.material?.id ?? productWithMaterialId.material_id;
+        if (!productMaterialId || !filters.materials.includes(productMaterialId)) {
+          return false;
+        }
+      }
 
-      if (productMaterialId !== filters.material) {
+      if (
+        filters.styles.length &&
+        !filters.styles.includes(normalizeFilterValue(product.style))
+      ) {
         return false;
       }
-    }
 
+      if (
+        filters.colors.length &&
+        !filters.colors.includes(normalizeFilterValue(product.primary_color))
+      ) {
+        return false;
+      }
 
       const price = this.getPrice(product);
 
@@ -225,7 +234,13 @@ export class CatalogFilterService {
   }
 
   reset(): CatalogFilterState {
-    return { ...DEFAULT_CATALOG_FILTER };
+    return {
+      ...DEFAULT_CATALOG_FILTER,
+      categories: [],
+      materials: [],
+      styles: [],
+      colors: []
+    };
   }
 
   private comparePrices(a: number | null, b: number | null, descending = false): number {

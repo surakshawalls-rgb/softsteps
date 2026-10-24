@@ -80,58 +80,66 @@
 
       <!-- Landing point when a visitor arrives from a category / home page link -->
       <div id="catalog" class="scroll-mt-6">
+
+        <!--
+          Filters sit in a left sidebar; everything inside the tags below
+          (empty state / product grid) is shown to the right of them.
+        -->
         <app-catalog-toolbar
           [filter]="filter"
           [categories]="categories"
           [materials]="materials"
+          [products]="products"
           [resultCount]="filteredProducts.length"
           [totalCount]="products.length"
           (filterChange)="onFilterChange($event)"
-        ></app-catalog-toolbar>
-      </div>
+        >
 
+          @if (filteredProducts.length === 0) {
 
-      @if (filteredProducts.length === 0) {
+            <div class="mx-auto max-w-xl py-20 text-center">
 
-        <div class="mx-auto max-w-xl py-24 text-center">
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
+                No match found
+              </p>
 
-          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
-            No match found
-          </p>
+              <h2 class="mt-4 text-2xl font-semibold text-stone-900">
+                We couldn't find a product matching your filters.
+              </h2>
 
-          <h2 class="mt-4 text-2xl font-semibold text-stone-900">
-            We couldn't find a product matching your filters.
-          </h2>
+              <p class="mt-4 text-sm leading-7 text-stone-500">
+                Try changing your search, category, material or price range.
+              </p>
 
-          <p class="mt-4 text-sm leading-7 text-stone-500">
-            Try changing your search, category, material or price range.
-          </p>
+              <button
+                type="button"
+                (click)="onFilterChange(catalogFilter.reset())"
+                class="mt-7 rounded-full bg-stone-900 px-6 py-3 text-sm font-medium text-white"
+              >
+                Clear Filters
+              </button>
 
-          <button
-            type="button"
-            (click)="onFilterChange(catalogFilter.reset())"
-            class="mt-7 rounded-full bg-stone-900 px-6 py-3 text-sm font-medium text-white"
-          >
-            Clear Filters
-          </button>
+            </div>
 
-        </div>
+          } @else {
 
-      } @else {
+            <div class="mt-8 grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3">
 
-        <div class="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+              @for (product of filteredProducts; track product.id ?? product.slug) {
 
-          @for (product of filteredProducts; track product.id ?? product.slug) {
+                <app-product-card
+                  [product]="product"
+                ></app-product-card>
 
-            <app-product-card
-              [product]="product"
-            ></app-product-card>
+              }
+
+            </div>
 
           }
 
-        </div>
+        </app-catalog-toolbar>
 
-      }
+      </div>
 
     }
 

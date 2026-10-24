@@ -7,8 +7,14 @@
 
 export interface CatalogFilterState {
   search: string;
-  category: string;
-  material: string;
+  /** selected category slugs */
+  categories: string[];
+  /** selected material ids */
+  materials: string[];
+  /** selected styles (normalised, see normalizeFilterValue) */
+  styles: string[];
+  /** selected colours (normalised, see normalizeFilterValue) */
+  colors: string[];
   minPrice: number | null;
   maxPrice: number | null;
   sort: CatalogSort;
@@ -16,9 +22,16 @@ export interface CatalogFilterState {
 
 export const DEFAULT_CATALOG_FILTER: CatalogFilterState = {
   search: '',
-  category: '',
-  material: '',
+  categories: [],
+  materials: [],
+  styles: [],
+  colors: [],
   minPrice: null,
   maxPrice: null,
   sort: 'featured'
 };
+
+/** Lower-cases and trims a value so "Hand Knotted " and "hand knotted" match. */
+export function normalizeFilterValue(value: string | null | undefined): string {
+  return (value ?? '').toString().trim().toLowerCase();
+}

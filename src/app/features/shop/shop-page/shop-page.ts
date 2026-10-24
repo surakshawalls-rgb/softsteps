@@ -1,5 +1,5 @@
-
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProductCard } from '../../../shared/components/product-card/product-card';
 import { CatalogToolbar } from '../../../shared/components/catalog-toolbar/catalog-toolbar';
@@ -26,6 +26,7 @@ interface CatalogOption {
 export class ShopPage implements OnInit {
   private readonly catalogQuery = inject(CatalogQueryService);
   private readonly route = inject(ActivatedRoute);
+  private readonly platformId = inject(PLATFORM_ID);
 
   readonly loading = signal(true);
 
@@ -35,14 +36,28 @@ export class ShopPage implements OnInit {
   materials: CatalogOption[] = [];
 
   filter: CatalogFilterState = {
-    ...DEFAULT_CATALOG_FILTER
+    ...DEFAULT_CATALOG_FILTER,
+    categories: [],
+    materials: [],
+    styles: [],
+    colors: []
   };
 
   private requestedCategory: string | null = null;
 
+  /** true when the visitor came from a category / home link and should land on the filters */
+  private landOnFilters = false;
+
   constructor(public readonly catalogFilter: CatalogFilterService) {}
 
   ngOnInit(): void {
+    this.landOnFilters = this.route.snapshot.fragment === 'catalog' || !!this.route.snapshot.queryParamMap.get('category');
+
+    // Start at the filters straight away (no flash of the big banner while products load)
+    if (this.landOnFilters) {
+      this.scrollToFilters();
+    }
+
     this.route.queryParamMap.subscribe(params => {
       this.requestedCategory = params.get('category');
 
@@ -51,7 +66,7 @@ export class ShopPage implements OnInit {
       } else if (!this.requestedCategory) {
         this.filter = {
           ...this.filter,
-          category: DEFAULT_CATALOG_FILTER.category
+          categories: []
         };
       }
     });
@@ -106,6 +121,23 @@ export class ShopPage implements OnInit {
     if (this.requestedCategory) {
       this.applyRequestedCategory();
     }
+
+    // Products are on screen now: line the filters up at the top of the screen
+    if (this.landOnFilters) {
+      this.scrollToFilters();
+    }
+  }
+
+  /** Scrolls so the filters sit at the top of the screen (skips the banner above them). */
+  private scrollToFilters(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    setTimeout(() => {
+      const target = document.getElementById('catalog') ?? document.getElementById('catalog-section');
+      target?.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }, 60);
   }
 
   get filteredProducts(): Product[] {
@@ -141,7 +173,7 @@ export class ShopPage implements OnInit {
 
     this.filter = {
       ...this.filter,
-      category: matchedCategory?.slug ?? this.requestedCategory
+      categories: [matchedCategory?.slug ?? this.requestedCategory]
     };
   }
 

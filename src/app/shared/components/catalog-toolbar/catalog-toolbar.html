@@ -1,179 +1,399 @@
-﻿<div class="catalog-toolbar">
+﻿<div class="catalog-layout">
 
-  <div class="toolbar-top">
-
-    <div class="search-wrap">
-
-      <span class="search-icon">⌕</span>
-
-      <input
-        type="search"
-        [(ngModel)]="filter.search"
-        (ngModelChange)="update()"
-        placeholder="Search carpets, rugs, materials..."
-        aria-label="Search products"
-      />
-
-    </div>
-
-    <div class="desktop-sort">
-
-      <label>Sort by</label>
-
-      <select
-        [(ngModel)]="filter.sort"
-        (ngModelChange)="update()"
-        aria-label="Sort products"
-      >
-        @for (option of sortOptions; track option.value) {
-          <option [value]="option.value">
-            {{ option.label }}
-          </option>
-        }
-      </select>
-
-    </div>
+  <!-- ============ mobile bar: opens the filter drawer ============ -->
+  <div class="mobile-bar">
 
     <button
       type="button"
       class="mobile-filter-button"
       (click)="toggleMobileFilters()"
+      aria-haspopup="dialog"
     >
-      <span>☷</span>
+      <span aria-hidden="true">☷</span>
       Filters
+      @if (chips.length) {
+        <em class="badge">{{ chips.length }}</em>
+      }
     </button>
+
+    <select
+      class="mobile-sort"
+      [ngModel]="filter.sort"
+      (ngModelChange)="setSort($event)"
+      aria-label="Sort products"
+    >
+      @for (option of sortOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
 
   </div>
 
 
-  <div
-    class="filter-panel"
-    [class.filter-panel-open]="mobileFiltersOpen"
+  <!-- ============ left sidebar (drawer on mobile) ============ -->
+  @if (mobileFiltersOpen) {
+    <div class="drawer-backdrop" (click)="closeMobileFilters()"></div>
+  }
+
+  <aside
+    class="filter-sidebar"
+    [class.is-open]="mobileFiltersOpen"
+    aria-label="Product filters"
   >
 
-    <div class="filter-field">
+    <div class="sidebar-head">
 
-      <label>Category</label>
+      <h3>Filter by</h3>
 
-      <select
-        [(ngModel)]="filter.category"
-        (ngModelChange)="update()"
-      >
-        <option value="">All Categories</option>
-
-        @for (category of categories; track category.slug) {
-          <option [value]="category.slug">
-            {{ category.name }}
-          </option>
-        }
-
-      </select>
-
-    </div>
-
-
-    <div class="filter-field">
-
-      <label>Material</label>
-
-      <select
-        [(ngModel)]="filter.material"
-        (ngModelChange)="update()"
-      >
-        <option value="">All Materials</option>
-
-        
-      @for (material of materials; track material.id) {
-        <option [value]="material.id">
-          {{ material.name }}
-        </option>
+      @if (hasFilters()) {
+        <button type="button" class="clear-all" (click)="clear()">
+          Clear all
+        </button>
       }
 
-
-      </select>
+      <button
+        type="button"
+        class="drawer-close"
+        (click)="closeMobileFilters()"
+        aria-label="Close filters"
+      >
+        ✕
+      </button>
 
     </div>
 
 
-    <div class="filter-field price-field">
+    <div class="search-wrap">
 
-      <label>Price Range</label>
+      <span class="search-icon" aria-hidden="true">⌕</span>
 
-      <div class="price-inputs">
+      <input
+        type="search"
+        [ngModel]="filter.search"
+        (ngModelChange)="setSearch($event)"
+        placeholder="Search rugs, materials..."
+        aria-label="Search products"
+      />
 
-        <input
-          type="number"
-          [(ngModel)]="filter.minPrice"
-          (ngModelChange)="update()"
-          placeholder="Min"
-          min="0"
-        />
+    </div>
 
-        <span>—</span>
 
-        <input
-          type="number"
-          [(ngModel)]="filter.maxPrice"
-          (ngModelChange)="update()"
-          placeholder="Max"
-          min="0"
-        />
+    <!-- CATEGORY -->
+    @if (categoryOptions.length) {
+      <section class="group">
+
+        <button
+          type="button"
+          class="group-head"
+          [attr.aria-expanded]="isOpen('categories')"
+          (click)="toggleGroup('categories')"
+        >
+          <span>Category</span>
+          @if (selectedCount('categories')) {
+            <em class="badge">{{ selectedCount('categories') }}</em>
+          }
+          <i class="chevron" [class.is-open]="isOpen('categories')" aria-hidden="true"></i>
+        </button>
+
+        @if (isOpen('categories')) {
+          <div class="group-body">
+            @for (option of visibleOptions('categories', categoryOptions); track option.value) {
+              <label class="opt" [class.is-empty]="products.length > 0 && option.count === 0 && !isSelected('categories', option.value)">
+                <input
+                  type="checkbox"
+                  [checked]="isSelected('categories', option.value)"
+                  (change)="toggle('categories', option.value)"
+                />
+                <span class="box" aria-hidden="true"></span>
+                <span class="opt-label">{{ option.label }}</span>
+                <span class="opt-count">{{ option.count }}</span>
+              </label>
+            }
+            @if (hiddenCount('categories', categoryOptions) > 0) {
+              <button type="button" class="show-more" (click)="toggleExpanded('categories')">
+                + Show {{ hiddenCount('categories', categoryOptions) }} more
+              </button>
+            } @else if (canCollapse('categories', categoryOptions)) {
+              <button type="button" class="show-more" (click)="toggleExpanded('categories')">
+                − Show less
+              </button>
+            }
+          </div>
+        }
+
+      </section>
+    }
+
+
+    <!-- MATERIAL -->
+    @if (materialOptions.length) {
+      <section class="group">
+
+        <button
+          type="button"
+          class="group-head"
+          [attr.aria-expanded]="isOpen('materials')"
+          (click)="toggleGroup('materials')"
+        >
+          <span>Material</span>
+          @if (selectedCount('materials')) {
+            <em class="badge">{{ selectedCount('materials') }}</em>
+          }
+          <i class="chevron" [class.is-open]="isOpen('materials')" aria-hidden="true"></i>
+        </button>
+
+        @if (isOpen('materials')) {
+          <div class="group-body">
+            @for (option of visibleOptions('materials', materialOptions); track option.value) {
+              <label class="opt" [class.is-empty]="products.length > 0 && option.count === 0 && !isSelected('materials', option.value)">
+                <input
+                  type="checkbox"
+                  [checked]="isSelected('materials', option.value)"
+                  (change)="toggle('materials', option.value)"
+                />
+                <span class="box" aria-hidden="true"></span>
+                <span class="opt-label">{{ option.label }}</span>
+                <span class="opt-count">{{ option.count }}</span>
+              </label>
+            }
+            @if (hiddenCount('materials', materialOptions) > 0) {
+              <button type="button" class="show-more" (click)="toggleExpanded('materials')">
+                + Show {{ hiddenCount('materials', materialOptions) }} more
+              </button>
+            } @else if (canCollapse('materials', materialOptions)) {
+              <button type="button" class="show-more" (click)="toggleExpanded('materials')">
+                − Show less
+              </button>
+            }
+          </div>
+        }
+
+      </section>
+    }
+
+
+    <!-- STYLE (only shown when products have a style) -->
+    @if (styleOptions.length) {
+      <section class="group">
+
+        <button
+          type="button"
+          class="group-head"
+          [attr.aria-expanded]="isOpen('styles')"
+          (click)="toggleGroup('styles')"
+        >
+          <span>Style</span>
+          @if (selectedCount('styles')) {
+            <em class="badge">{{ selectedCount('styles') }}</em>
+          }
+          <i class="chevron" [class.is-open]="isOpen('styles')" aria-hidden="true"></i>
+        </button>
+
+        @if (isOpen('styles')) {
+          <div class="group-body">
+            @for (option of visibleOptions('styles', styleOptions); track option.value) {
+              <label class="opt">
+                <input
+                  type="checkbox"
+                  [checked]="isSelected('styles', option.value)"
+                  (change)="toggle('styles', option.value)"
+                />
+                <span class="box" aria-hidden="true"></span>
+                <span class="opt-label cap">{{ option.label }}</span>
+                <span class="opt-count">{{ option.count }}</span>
+              </label>
+            }
+            @if (hiddenCount('styles', styleOptions) > 0) {
+              <button type="button" class="show-more" (click)="toggleExpanded('styles')">
+                + Show {{ hiddenCount('styles', styleOptions) }} more
+              </button>
+            } @else if (canCollapse('styles', styleOptions)) {
+              <button type="button" class="show-more" (click)="toggleExpanded('styles')">
+                − Show less
+              </button>
+            }
+          </div>
+        }
+
+      </section>
+    }
+
+
+    <!-- COLOUR (only shown when products have a colour) -->
+    @if (colorOptions.length) {
+      <section class="group">
+
+        <button
+          type="button"
+          class="group-head"
+          [attr.aria-expanded]="isOpen('colors')"
+          (click)="toggleGroup('colors')"
+        >
+          <span>Colour</span>
+          @if (selectedCount('colors')) {
+            <em class="badge">{{ selectedCount('colors') }}</em>
+          }
+          <i class="chevron" [class.is-open]="isOpen('colors')" aria-hidden="true"></i>
+        </button>
+
+        @if (isOpen('colors')) {
+          <div class="group-body">
+            @for (option of visibleOptions('colors', colorOptions); track option.value) {
+              <label class="opt">
+                <input
+                  type="checkbox"
+                  [checked]="isSelected('colors', option.value)"
+                  (change)="toggle('colors', option.value)"
+                />
+                <span class="swatch" [style.background]="option.swatch" aria-hidden="true"></span>
+                <span class="opt-label cap">{{ option.label }}</span>
+                <span class="opt-count">{{ option.count }}</span>
+              </label>
+            }
+            @if (hiddenCount('colors', colorOptions) > 0) {
+              <button type="button" class="show-more" (click)="toggleExpanded('colors')">
+                + Show {{ hiddenCount('colors', colorOptions) }} more
+              </button>
+            } @else if (canCollapse('colors', colorOptions)) {
+              <button type="button" class="show-more" (click)="toggleExpanded('colors')">
+                − Show less
+              </button>
+            }
+          </div>
+        }
+
+      </section>
+    }
+
+
+    <!-- PRICE -->
+    <section class="group">
+
+      <button
+        type="button"
+        class="group-head"
+        [attr.aria-expanded]="isOpen('price')"
+        (click)="toggleGroup('price')"
+      >
+        <span>Price</span>
+        @if (selectedCount('price')) {
+          <em class="badge">1</em>
+        }
+        <i class="chevron" [class.is-open]="isOpen('price')" aria-hidden="true"></i>
+      </button>
+
+      @if (isOpen('price')) {
+        <div class="group-body">
+
+          @for (preset of pricePresets; track preset.label) {
+            <label class="opt">
+              <input
+                type="checkbox"
+                [checked]="isPresetActive(preset)"
+                (change)="togglePreset(preset)"
+              />
+              <span class="box" aria-hidden="true"></span>
+              <span class="opt-label">{{ preset.label }}</span>
+            </label>
+          }
+
+          <div class="price-inputs">
+
+            <input
+              type="number"
+              [ngModel]="filter.minPrice"
+              (ngModelChange)="setPrice('min', $event)"
+              placeholder="Min ₹"
+              min="0"
+              aria-label="Minimum price"
+            />
+
+            <span aria-hidden="true">—</span>
+
+            <input
+              type="number"
+              [ngModel]="filter.maxPrice"
+              (ngModelChange)="setPrice('max', $event)"
+              placeholder="Max ₹"
+              min="0"
+              aria-label="Maximum price"
+            />
+
+          </div>
+
+        </div>
+      }
+
+    </section>
+
+
+    <div class="drawer-footer">
+      <button type="button" class="show-results" (click)="closeMobileFilters()">
+        Show {{ resultCount }} products
+      </button>
+    </div>
+
+  </aside>
+
+
+  <!-- ============ right side: results bar + your product grid ============ -->
+  <section class="catalog-main">
+
+    <div class="results-bar">
+
+      <p>
+        Showing
+        <strong>{{ resultCount }}</strong>
+        of
+        <strong>{{ totalCount }}</strong>
+        products
+      </p>
+
+      <div class="desktop-sort">
+
+        <label for="catalog-sort">Sort by</label>
+
+        <select
+          id="catalog-sort"
+          [ngModel]="filter.sort"
+          (ngModelChange)="setSort($event)"
+        >
+          @for (option of sortOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
 
       </div>
 
     </div>
 
 
-    <div class="mobile-sort">
+    @if (chips.length) {
+      <div class="chips" aria-label="Selected filters">
 
-      <label>Sort by</label>
-
-      <select
-        [(ngModel)]="filter.sort"
-        (ngModelChange)="update()"
-      >
-        @for (option of sortOptions; track option.value) {
-          <option [value]="option.value">
-            {{ option.label }}
-          </option>
+        @for (chip of chips; track chip.id) {
+          <button
+            type="button"
+            class="chip"
+            (click)="removeChip(chip)"
+            [attr.aria-label]="'Remove filter ' + chip.label"
+          >
+            <span class="cap">{{ chip.label }}</span>
+            <span aria-hidden="true">✕</span>
+          </button>
         }
-      </select>
 
-    </div>
+        <button type="button" class="chips-clear" (click)="clear()">
+          Clear all
+        </button>
 
-
-    <button
-      type="button"
-      class="clear-button"
-      [disabled]="!hasFilters()"
-      (click)="clear()"
-    >
-      Clear filters
-    </button>
-
-  </div>
-
-
-  <div class="toolbar-bottom">
-
-    <p>
-      Showing
-      <strong>{{ resultCount }}</strong>
-      of
-      <strong>{{ totalCount }}</strong>
-      products
-    </p>
-
-    @if (hasFilters()) {
-      <button
-        type="button"
-        class="clear-inline"
-        (click)="clear()"
-      >
-        Clear all
-      </button>
+      </div>
     }
 
-  </div>
+
+    <!-- the product grid / empty state from the shop page is placed here -->
+    <ng-content></ng-content>
+
+  </section>
 
 </div>
