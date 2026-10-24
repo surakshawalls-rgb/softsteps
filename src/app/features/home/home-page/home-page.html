@@ -129,7 +129,7 @@
         <span>Hand Woven in Carpet City</span>
       </h1>
       <div class="hero-actions">
-        <a routerLink="/shop" class="hero-primary">Explore collection <span aria-hidden="true">→</span></a>
+        <a routerLink="/shop" fragment="catalog" class="hero-primary">Explore collection <span aria-hidden="true">→</span></a>
         <a routerLink="/custom-requirement" class="hero-secondary">Customise your carpet</a>
       </div>
     </div>
@@ -196,6 +196,7 @@
          The value 'hand-knotted' must match your category slug. -->
     <a
       routerLink="/shop"
+      fragment="catalog"
       [queryParams]="{ category: 'hand-knotted' }"
       class="style-card"
     >
@@ -206,7 +207,7 @@
       />
       <span class="style-card-copy"><span>01 / TECHNIQUE</span><strong>Hand-knotted rugs</strong></span>
     </a>
-    <a routerLink="/shop" class="style-card">
+    <a routerLink="/shop" fragment="catalog" class="style-card">
       <img
         src="/Home%20shop%20by%20style/Handtufted_rugs.png"
         alt="Soft, sculpted hand-tufted rug in a calm interior"
@@ -214,7 +215,7 @@
       />
       <span class="style-card-copy"><span>02 / TEXTURE</span><strong>Hand-tufted rugs</strong></span>
     </a>
-    <a routerLink="/shop" class="style-card">
+    <a routerLink="/shop" fragment="catalog" class="style-card">
       <img
         src="/Home%20shop%20by%20style/Summac_durries.jpg"
         alt="Traditional flat-woven durrie with geometric details"
@@ -254,6 +255,7 @@
 
         <a
           routerLink="/shop"
+          fragment="catalog"
           class="text-sm font-medium text-stone-700 hover:text-amber-700"
         >
           View all carpets →
