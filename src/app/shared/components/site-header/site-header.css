@@ -229,3 +229,78 @@
     padding-inline: 2px;
   }
 }
+
+
+/* =========================================================
+   LOGIN LINK (top bar)
+========================================================= */
+
+.announcement-bar {
+  position: relative;
+}
+
+.announcement-bar .login-link {
+  position: absolute;
+  top: 50%;
+  right: max(24px, calc((100% - 1400px) / 2));
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 12px;
+  border: 1px solid rgba(213, 183, 135, 0.38);
+  border-radius: 999px;
+  color: #e6c995;
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+  transform: translateY(-50%);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.announcement-bar .login-link svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.announcement-bar .login-link:hover {
+  border-color: #d5b787;
+  background: rgba(213, 183, 135, 0.14);
+  color: #f6e8cf;
+}
+
+/* small screens: tagline on the left, Login on the right (no overlap) */
+@media (max-width: 760px) {
+  .announcement-bar {
+    justify-content: space-between;
+  }
+
+  .announcement-bar .login-link {
+    position: static;
+    flex: none;
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .announcement-bar .login-link {
+    gap: 5px;
+    padding: 4px 9px;
+    font-size: 0.53rem;
+    letter-spacing: 0.1em;
+  }
+
+  .announcement-bar .login-link svg {
+    width: 10px;
+    height: 10px;
+  }
+}

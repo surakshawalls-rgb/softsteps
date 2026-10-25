@@ -2,24 +2,142 @@
   display: block;
 }
 
+/* =========================================================
+   PAGE + AMBIENT LIGHT
+========================================================= */
+
 .login-page {
+  position: relative;
   display: grid;
   min-height: 100vh;
   place-items: center;
+  overflow: hidden;
   padding: 2rem 1rem;
   background:
     radial-gradient(circle at 15% 15%, rgba(183, 145, 95, 0.15), transparent 32rem),
     linear-gradient(135deg, #f7f4ef, #eee8df);
 }
 
+.login-page::before,
+.login-page::after {
+  position: absolute;
+  border-radius: 50%;
+  content: "";
+  filter: blur(70px);
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.login-page::before {
+  top: -110px;
+  left: -120px;
+  width: 380px;
+  height: 380px;
+  background: #c9954f;
+  animation: drift-a 16s ease-in-out infinite alternate;
+}
+
+.login-page::after {
+  right: -100px;
+  bottom: -100px;
+  width: 330px;
+  height: 330px;
+  background: #a97841;
+  animation: drift-b 19s ease-in-out infinite alternate;
+}
+
+@keyframes drift-a {
+  to {
+    transform: translate(120px, 90px) scale(1.15);
+  }
+}
+
+@keyframes drift-b {
+  to {
+    transform: translate(-110px, -80px) scale(1.12);
+  }
+}
+
+
+/* =========================================================
+   CARD + ENTRANCE
+========================================================= */
+
 .login-card {
+  position: relative;
+  z-index: 1;
   width: min(100%, 460px);
   padding: clamp(1.5rem, 5vw, 2.75rem);
   border: 1px solid rgba(41, 37, 31, 0.09);
   border-radius: 28px;
   background: rgba(255, 253, 249, 0.95);
   box-shadow: 0 24px 70px rgba(40, 32, 22, 0.11);
+  animation: card-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
+
+/* small handle at the top of the card */
+.login-card::before {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  width: 40px;
+  height: 4px;
+  margin-left: -20px;
+  border-radius: 4px;
+  background: rgba(41, 37, 31, 0.12);
+  content: "";
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(34px) scale(0.965);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.brand {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s backwards;
+}
+
+.login-intro .eyebrow {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s backwards;
+}
+
+.login-intro h1 {
+  animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.38s backwards;
+}
+
+.login-intro > p:last-child {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.46s backwards;
+}
+
+.field-group:nth-of-type(1) {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.55s backwards;
+}
+
+.field-group:nth-of-type(2) {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.64s backwards;
+}
+
+.submit-button {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.74s backwards;
+}
+
+.back-link {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.86s backwards;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
 
 .brand {
   display: inline-flex;
@@ -30,6 +148,7 @@
 }
 
 .brand-mark {
+  position: relative;
   display: grid;
   width: 44px;
   height: 44px;
@@ -40,6 +159,32 @@
   font-family: Georgia, "Times New Roman", serif;
   font-size: 0.78rem;
   letter-spacing: 0.07em;
+}
+
+/* slow dashed ring + a dot orbiting the logo mark */
+.brand-mark::before,
+.brand-mark::after {
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.brand-mark::before {
+  border: 1px dashed rgba(157, 112, 57, 0.32);
+  animation: spin 22s linear infinite;
+}
+
+.brand-mark::after {
+  background: radial-gradient(circle at 50% 0, #b88746 0 2.6px, transparent 3.2px);
+  animation: spin 4.5s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .brand-copy {
@@ -85,7 +230,13 @@
   font-size: 0.92rem;
 }
 
+
+/* =========================================================
+   FORM + FIELDS
+========================================================= */
+
 form {
+  position: relative;
   display: grid;
   gap: 1.2rem;
 }
@@ -93,6 +244,10 @@ form {
 .field-group {
   display: grid;
   gap: 0.5rem;
+  transition:
+    opacity 0.45s ease,
+    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.45s ease;
 }
 
 label {
@@ -101,6 +256,11 @@ label {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  transition: color 0.25s ease;
+}
+
+.field-group:focus-within label {
+  color: #935f2b;
 }
 
 input {
@@ -113,11 +273,48 @@ input {
   background: #fff;
   color: #1f1a17;
   font: inherit;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease,
+    background-color 0.25s ease;
 }
 
+/* the active field glows and gently breathes, like the lit-up slot */
 input:focus-visible {
   border-color: #a97841;
-  box-shadow: 0 0 0 3px rgba(169, 120, 65, 0.14);
+  box-shadow:
+    0 0 0 1px rgba(169, 120, 65, 0.55),
+    0 0 0 5px rgba(169, 120, 65, 0.14),
+    0 10px 26px rgba(147, 106, 57, 0.16);
+  transform: translateY(-1px);
+  animation: field-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes field-breathe {
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(169, 120, 65, 0.8),
+      0 0 0 8px rgba(169, 120, 65, 0.08),
+      0 12px 30px rgba(147, 106, 57, 0.22);
+  }
+}
+
+/* the first typed character gives the field a small pop */
+input:not(:placeholder-shown) {
+  animation: typed-pop 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+input:not(:placeholder-shown):focus-visible {
+  animation:
+    typed-pop 0.34s cubic-bezier(0.34, 1.56, 0.64, 1),
+    field-breathe 2.4s ease-in-out 0.34s infinite;
+}
+
+@keyframes typed-pop {
+  45% {
+    transform: scale(1.02);
+  }
 }
 
 input:disabled {
@@ -144,6 +341,11 @@ input:disabled {
   font: inherit;
   font-size: 0.78rem;
   font-weight: 700;
+  transition: color 0.2s ease;
+}
+
+.visibility-button:hover {
+  color: #5f3f1c;
 }
 
 .form-error {
@@ -155,11 +357,39 @@ input:disabled {
   color: #8d2d2d;
   font-size: 0.88rem;
   line-height: 1.5;
+  animation: error-in 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) backwards;
 }
 
+@keyframes error-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  30% {
+    opacity: 1;
+    transform: translateX(-7px);
+  }
+  50% {
+    transform: translateX(6px);
+  }
+  70% {
+    transform: translateX(-4px);
+  }
+  85% {
+    transform: translateX(2px);
+  }
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
 .submit-button {
+  position: relative;
   min-height: 50px;
   margin-top: 0.2rem;
+  overflow: hidden;
   border: 0;
   border-radius: 999px;
   background: #29261f;
@@ -170,11 +400,47 @@ input:disabled {
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* light sweep across the button */
+.submit-button::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.22) 50%, transparent 70%);
+  content: "";
+  pointer-events: none;
+  transform: translateX(-120%);
+}
+
+.submit-button:hover:not(:disabled) {
+  box-shadow: 0 14px 30px rgba(41, 38, 31, 0.28);
+  transform: translateY(-2px);
+}
+
+.submit-button:hover:not(:disabled)::after {
+  animation: sheen 0.9s ease;
+}
+
+.submit-button:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .submit-button:disabled {
   cursor: wait;
   opacity: 0.62;
+}
+
+.submit-button:disabled::after {
+  animation: sheen 1.5s ease-in-out infinite;
+}
+
+@keyframes sheen {
+  to {
+    transform: translateX(120%);
+  }
 }
 
 .back-link {
@@ -189,4 +455,168 @@ input:disabled {
 .back-link:hover {
   color: #8c6233;
   text-decoration: underline;
+}
+
+
+/* =========================================================
+   SIGNING IN: the two fields gather into an orbit
+========================================================= */
+
+/* fields slide toward the middle and fade away */
+form.is-verifying .field-group {
+  filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(46px) scale(0.86);
+}
+
+form.is-verifying .field-group:nth-of-type(2) {
+  transform: translateY(-46px) scale(0.86);
+}
+
+.orbit {
+  position: absolute;
+  top: 5.15rem;
+  left: 50%;
+  width: 156px;
+  height: 156px;
+  margin: -78px 0 0 -78px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+form.is-verifying .orbit {
+  opacity: 1;
+  transition-delay: 0.12s;
+}
+
+.orbit-ring {
+  position: absolute;
+  inset: 14px;
+  border: 1.5px solid rgba(147, 106, 57, 0.3);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+form.is-verifying .orbit-ring {
+  animation: ring-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+@keyframes ring-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.orbit-hub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: #936a39;
+  opacity: 0;
+}
+
+form.is-verifying .orbit-hub {
+  animation: hub-pulse 1.6s ease-in-out 0.5s infinite;
+  opacity: 1;
+}
+
+@keyframes hub-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(147, 106, 57, 0.14);
+  }
+  50% {
+    box-shadow: 0 0 0 9px rgba(147, 106, 57, 0.04);
+  }
+}
+
+.orbit-turn {
+  position: absolute;
+  inset: 0;
+}
+
+form.is-verifying .orbit-turn {
+  animation: orbit-turn 2.4s cubic-bezier(0.65, 0, 0.35, 1) 0.95s infinite;
+}
+
+@keyframes orbit-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orbit-tile {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  place-items: center;
+  border: 1.5px solid rgba(147, 106, 57, 0.4);
+  border-radius: 11px;
+  background: linear-gradient(145deg, #ffffff, #f1ece4);
+  box-shadow: 0 6px 16px rgba(40, 32, 22, 0.13);
+  opacity: 0;
+}
+
+.orbit-tile::after {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #b88746;
+  content: "";
+}
+
+form.is-verifying .orbit-tile {
+  animation:
+    tile-gather 0.85s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) both,
+    tile-self 2.4s cubic-bezier(0.65, 0, 0.35, 1) 0.95s infinite;
+}
+
+/* tiles start in a row (like the code slots) and glide onto the circle */
+@keyframes tile-gather {
+  from {
+    opacity: 0;
+    scale: 0.7;
+    translate: var(--sx) 0;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: var(--cx) var(--cy);
+  }
+}
+
+@keyframes tile-self {
+  to {
+    rotate: -720deg;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

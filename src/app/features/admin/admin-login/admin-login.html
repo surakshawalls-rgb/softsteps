@@ -14,7 +14,7 @@
       <p>Sign in to manage business communications.</p>
     </div>
 
-    <form (ngSubmit)="signIn()" #loginForm="ngForm">
+    <form (ngSubmit)="signIn()" #loginForm="ngForm" [class.is-verifying]="isSubmitting">
       <div class="field-group">
         <label for="admin-email">Email address</label>
         <input
@@ -63,6 +63,18 @@
       <button class="submit-button" type="submit" [disabled]="isSubmitting">
         {{ isSubmitting ? 'Verifying access...' : 'Sign in securely' }}
       </button>
+
+      <!-- Decorative loader (no text): the fields gather into an orbit while signing in -->
+      <div class="orbit" aria-hidden="true">
+        <span class="orbit-ring"></span>
+        <span class="orbit-hub"></span>
+        <span class="orbit-turn">
+          <span class="orbit-tile" style="--sx: -57px; --cx: 0px; --cy: -56px; --d: 0s"></span>
+          <span class="orbit-tile" style="--sx: -19px; --cx: 56px; --cy: 0px; --d: 0.06s"></span>
+          <span class="orbit-tile" style="--sx: 19px; --cx: 0px; --cy: 56px; --d: 0.12s"></span>
+          <span class="orbit-tile" style="--sx: 57px; --cx: -56px; --cy: 0px; --d: 0.18s"></span>
+        </span>
+      </div>
     </form>
 
     <a class="back-link" routerLink="/">Return to the public website</a>

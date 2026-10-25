@@ -13,7 +13,8 @@ import { Product, ProductVariant } from '../../../shared/models/product.model';
 export class HomePage implements AfterViewInit, OnDestroy {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly platformId = inject(PLATFORM_ID);
-  private revealObserver?: IntersectionObserver;
+  private disposeAnimations?: () => void;
+  private destroyed = false;
   private callMessageTimer?: ReturnType<typeof setTimeout>;
 
   private readonly callNumberDisplay = '+91 70071 31072';
@@ -550,34 +551,26 @@ export class HomePage implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
-    void import('gsap').then(({ gsap }) => {
-      const sections = this.host.nativeElement.querySelectorAll('[data-reveal]');
-      this.revealObserver = new IntersectionObserver(
-        entries => {
-          for (const entry of entries) {
-            if (entry.isIntersecting) {
-              gsap.fromTo(
-                entry.target,
-                { opacity: 0, y: 24 },
-                { opacity: 1, y: 0, duration: 0.85, ease: 'power2.out' },
-              );
-              this.revealObserver?.unobserve(entry.target);
-            }
-          }
-        },
-        { threshold: 0.15 },
-      );
-
-      sections.forEach(section => this.revealObserver?.observe(section));
-    });
+    // all page animation lives in home-animations.ts (loaded only in the browser)
+    void import('./home-animations')
+      .then(({ initHomeAnimations }) => initHomeAnimations(this.host.nativeElement))
+      .then(dispose => {
+        if (this.destroyed) {
+          dispose();
+        } else {
+          this.disposeAnimations = dispose;
+        }
+      })
+      .catch(() => document.documentElement.classList.remove('ss-pending'));
   }
 
   ngOnDestroy(): void {
-    this.revealObserver?.disconnect();
+    this.destroyed = true;
+    this.disposeAnimations?.();
 
     if (this.callMessageTimer) {
       clearTimeout(this.callMessageTimer);

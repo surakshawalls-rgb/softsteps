@@ -8,6 +8,22 @@
   <meta name="description" content="Discover handcrafted carpets and rugs from India, created with premium materials, skilled craftsmanship and custom manufacturing for residential, hospitality and commercial interiors worldwide.">
   <meta name="theme-color" content="#211f1a">
   <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
+  <!-- Home page intro: keeps the page hidden for a moment so the intro animation can start cleanly.
+       Never blocks the site: it always shows itself after 4.5 seconds, even if scripts fail. -->
+  <style>
+    html.ss-pending { background: #0e0d0b; }
+    html.ss-pending body { opacity: 0; animation: ss-failsafe 0.01s 4.5s forwards; }
+    @keyframes ss-failsafe { to { opacity: 1; } }
+  </style>
+  <script>
+    (function () {
+      try {
+        if (location.pathname === '/' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          document.documentElement.classList.add('ss-pending');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
   <app-root></app-root>

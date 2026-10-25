@@ -1,6 +1,14 @@
 <header class="site-header">
   <div class="announcement-bar">
     <span>Crafted with care in India <span aria-hidden="true">·</span> Made for spaces worldwide</span>
+
+    <a routerLink="/admin" class="login-link" title="Administrator login">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"></path>
+      </svg>
+      Login
+    </a>
   </div>
 
   <div class="header-main">
@@ -17,7 +25,6 @@
       <a routerLink="/shop" routerLinkActive="active">Shop Rugs</a>
       <a routerLink="/about" routerLinkActive="active">Our Story</a>
       <a routerLink="/contact" routerLinkActive="active">Contact</a>
-      <a routerLink="/admin" routerLinkActive="active">Admin</a>
     </nav>
 
     <a routerLink="/custom-requirement" class="header-cta">Custom Requirements<span aria-hidden="true">↗</span></a>
@@ -41,7 +48,6 @@
       <a routerLink="/collections" routerLinkActive="active" (click)="closeMenu()">Collections</a>
       <a routerLink="/categories" routerLinkActive="active" (click)="closeMenu()">Categories</a>
       <a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">Our Story</a>
-      <a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()">Admin</a>
       <a routerLink="/enquiries" routerLinkActive="active" (click)="closeMenu()">Project Enquiry</a>
       <a routerLink="/contact" routerLinkActive="active" (click)="closeMenu()">Contact Us</a>
       <a routerLink="/custom-requirement" class="mobile-nav-cta" (click)="closeMenu()">Submit a detailed requirement <span aria-hidden="true">→</span></a>
