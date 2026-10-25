@@ -2,6 +2,7 @@
 import { Component, inject, PLATFORM_ID } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { ScrollMotion } from './core/motion/scroll-motion.service';
 import { StorefrontLayout } from './layouts/storefront/storefront-layout/storefront-layout';
 
 @Component({
@@ -13,6 +14,9 @@ import { StorefrontLayout } from './layouts/storefront/storefront-layout/storefr
 export class App {
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
+
+  // Starts the site-wide scroll animations (browser only).
+  private readonly motion = inject(ScrollMotion);
 
   constructor() {
     // Every time a new page opens, start at the top (instantly, no scrolling animation).
