@@ -3,7 +3,7 @@
 }
 
 /* =========================================================
-   PAGE + AMBIENT LIGHT
+   PAGE (dark room) 
 ========================================================= */
 
 .login-page {
@@ -14,53 +14,308 @@
   overflow: hidden;
   padding: 2rem 1rem;
   background:
-    radial-gradient(circle at 15% 15%, rgba(183, 145, 95, 0.15), transparent 32rem),
-    linear-gradient(135deg, #f7f4ef, #eee8df);
+    radial-gradient(ellipse at 50% 120%, rgba(60, 44, 14, 0.35), transparent 60%),
+    #050505;
+  isolation: isolate;
 }
 
-.login-page::before,
-.login-page::after {
-  position: absolute;
-  border-radius: 50%;
-  content: "";
-  filter: blur(70px);
-  opacity: 0.32;
-  pointer-events: none;
-}
-
-.login-page::before {
-  top: -110px;
-  left: -120px;
-  width: 380px;
-  height: 380px;
-  background: #c9954f;
-  animation: drift-a 16s ease-in-out infinite alternate;
-}
-
-.login-page::after {
-  right: -100px;
-  bottom: -100px;
-  width: 330px;
-  height: 330px;
-  background: #a97841;
-  animation: drift-b 19s ease-in-out infinite alternate;
-}
-
-@keyframes drift-a {
-  to {
-    transform: translate(120px, 90px) scale(1.15);
-  }
-}
-
-@keyframes drift-b {
-  to {
-    transform: translate(-110px, -80px) scale(1.12);
+/* on wide screens the card sits to the right so the lamp has room on the left */
+@media (min-width: 981px) {
+  .login-page {
+    padding-left: clamp(1rem, 36vw, 560px);
   }
 }
 
 
 /* =========================================================
-   CARD + ENTRANCE
+   SCENE: lamp + light + fireflies
+========================================================= */
+
+.scene {
+  --card-cx: calc(50% + min(18vw, 280px));
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lamp {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--card-cx) - 720px);
+  width: 440px;
+  height: 520px;
+  transform: translateY(-50%);
+}
+
+.lamp > * {
+  position: absolute;
+  display: block;
+}
+
+/* soft warm glow around the whole lamp */
+.lamp-halo {
+  top: 64px;
+  left: 50%;
+  width: 980px;
+  height: 980px;
+  margin: -490px 0 0 -490px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 205, 90, 0.2),
+    rgba(255, 205, 90, 0.07) 38%,
+    transparent 66%
+  );
+  opacity: 0;
+  animation:
+    light-on 1.1s linear 1.35s both,
+    light-breathe 7s ease-in-out 2.5s infinite;
+}
+
+/* cone of light */
+.lamp-light {
+  top: 92px;
+  left: 50%;
+  width: 400px;
+  height: 392px;
+  margin-left: -200px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 214, 100, 0.62) 0%,
+    rgba(255, 206, 82, 0.27) 52%,
+    rgba(255, 200, 70, 0.05) 100%
+  );
+  clip-path: polygon(41% 0, 59% 0, 100% 100%, 0 100%);
+  filter: blur(2px);
+  opacity: 0;
+  animation:
+    light-on 1.1s linear 1.35s both,
+    light-breathe 6s ease-in-out 2.5s infinite;
+}
+
+/* light pooling on the floor */
+.lamp-pool {
+  bottom: 6px;
+  left: 50%;
+  width: 420px;
+  height: 46px;
+  margin-left: -210px;
+  background: radial-gradient(ellipse, rgba(255, 205, 80, 0.4), transparent 70%);
+  opacity: 0;
+  animation: light-on 1.1s linear 1.35s both;
+}
+
+.lamp-pole {
+  top: 88px;
+  bottom: 18px;
+  left: 50%;
+  width: 4px;
+  margin-left: -2px;
+  background: linear-gradient(90deg, #111, #2b2b2b 50%, #0e0e0e);
+}
+
+.lamp-base {
+  bottom: 8px;
+  left: 50%;
+  width: 78px;
+  height: 14px;
+  margin-left: -39px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 30%, #2e2e2e, #0e0e0e 70%);
+}
+
+.lamp-head {
+  top: 42px;
+  left: 50%;
+  width: 124px;
+  height: 48px;
+  margin-left: -62px;
+  border-radius: 62px 62px 9px 9px / 48px 48px 9px 9px;
+  background: linear-gradient(180deg, #232323, #0b0b0b);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.07);
+}
+
+.lamp-head::before {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 4px 4px 0 0;
+  background: #121212;
+  content: "";
+}
+
+/* the bright bulb under the shade */
+.lamp-bulb {
+  top: 86px;
+  left: 50%;
+  width: 104px;
+  height: 6px;
+  margin-left: -52px;
+  border-radius: 50%;
+  background: #fff5d3;
+  box-shadow:
+    0 0 14px 5px rgba(255, 214, 102, 0.95),
+    0 8px 46px 14px rgba(255, 200, 70, 0.5);
+  opacity: 0;
+  animation: light-on 1.1s linear 1.35s both;
+}
+
+/* pull cord with a glowing bead */
+.lamp-cord {
+  top: 88px;
+  left: calc(50% + 40px);
+  width: 1.5px;
+  height: 72px;
+  background: linear-gradient(#4a4a4a, #2a2a2a);
+  transform-origin: 50% 0;
+  animation:
+    cord-pull 0.5s cubic-bezier(0.3, 0, 0.3, 1) 1.05s both,
+    cord-sway 6s ease-in-out 1.7s infinite;
+}
+
+.lamp-cord i {
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: #ffd45e;
+  box-shadow: 0 0 10px 2px rgba(255, 200, 61, 0.85);
+  animation: bead-blink 0.5s ease-in-out 0s 2 both;
+}
+
+@keyframes bead-blink {
+  50% {
+    opacity: 0.25;
+    box-shadow: 0 0 3px 0 rgba(255, 200, 61, 0.4);
+  }
+}
+
+@keyframes cord-pull {
+  0% {
+    transform: translateY(0) scaleY(1);
+  }
+  45% {
+    transform: translateY(14px) scaleY(1.2);
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@keyframes cord-sway {
+  0%,
+  100% {
+    transform: rotate(1.5deg);
+  }
+  50% {
+    transform: rotate(-1.5deg);
+  }
+}
+
+/* the lamp "clicks on": quick flicker, then steady */
+@keyframes light-on {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  18% {
+    opacity: 0.12;
+  }
+  30% {
+    opacity: 1;
+  }
+  38% {
+    opacity: 0.4;
+  }
+  52% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes light-breathe {
+  50% {
+    opacity: 0.86;
+  }
+}
+
+
+/* ---------- fireflies ---------- */
+
+.fireflies {
+  position: absolute;
+  inset: 0;
+  animation: fade-in 2.5s ease 2.2s both;
+}
+
+.firefly {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: #ffe27a;
+  box-shadow:
+    0 0 var(--g) rgba(255, 214, 100, 0.95),
+    0 0 calc(var(--g) * 2.6) rgba(255, 200, 60, 0.45);
+  opacity: 0;
+  animation:
+    firefly-drift var(--dur) ease-in-out var(--dl) infinite alternate,
+    firefly-blink var(--blink) ease-in-out var(--dl) infinite;
+}
+
+@keyframes firefly-drift {
+  0% {
+    translate: 0 0;
+  }
+  33% {
+    translate: var(--dx1) var(--dy1);
+  }
+  66% {
+    translate: var(--dx2) var(--dy2);
+  }
+  100% {
+    translate: var(--dx3) var(--dy3);
+  }
+}
+
+@keyframes firefly-blink {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  70% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+
+/* =========================================================
+   GLASS CARD + ENTRANCE (appears as the lamp lights up)
 ========================================================= */
 
 .login-card {
@@ -68,11 +323,16 @@
   z-index: 1;
   width: min(100%, 460px);
   padding: clamp(1.5rem, 5vw, 2.75rem);
-  border: 1px solid rgba(41, 37, 31, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 28px;
-  background: rgba(255, 253, 249, 0.95);
-  box-shadow: 0 24px 70px rgba(40, 32, 22, 0.11);
-  animation: card-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  background: rgba(20, 18, 14, 0.72);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  color: #f3ead7;
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+  backdrop-filter: blur(16px) saturate(125%);
+  animation: card-in 1.2s cubic-bezier(0.22, 1, 0.36, 1) 1.65s backwards;
 }
 
 /* small handle at the top of the card */
@@ -84,54 +344,55 @@
   height: 4px;
   margin-left: -20px;
   border-radius: 4px;
-  background: rgba(41, 37, 31, 0.12);
+  background: rgba(255, 255, 255, 0.14);
   content: "";
 }
 
 @keyframes card-in {
   from {
+    filter: blur(10px);
     opacity: 0;
-    transform: translateY(34px) scale(0.965);
+    transform: translateY(26px) scale(0.97);
   }
 }
 
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(14px);
   }
 }
 
 .brand {
-  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s backwards;
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2s backwards;
 }
 
 .login-intro .eyebrow {
-  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s backwards;
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2.1s backwards;
 }
 
 .login-intro h1 {
-  animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.38s backwards;
+  animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) 2.18s backwards;
 }
 
 .login-intro > p:last-child {
-  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.46s backwards;
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2.26s backwards;
 }
 
 .field-group:nth-of-type(1) {
-  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.55s backwards;
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2.35s backwards;
 }
 
 .field-group:nth-of-type(2) {
-  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.64s backwards;
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2.44s backwards;
 }
 
 .submit-button {
-  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.74s backwards;
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2.54s backwards;
 }
 
 .back-link {
-  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.86s backwards;
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2.66s backwards;
 }
 
 
@@ -143,7 +404,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.8rem;
-  color: #211f1a;
+  color: #fff6e0;
   text-decoration: none;
 }
 
@@ -153,9 +414,9 @@
   width: 44px;
   height: 44px;
   place-items: center;
-  border: 1px solid rgba(157, 112, 57, 0.48);
+  border: 1px solid rgba(242, 193, 78, 0.55);
   border-radius: 50%;
-  color: #936a39;
+  color: #f2c14e;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 0.78rem;
   letter-spacing: 0.07em;
@@ -172,12 +433,12 @@
 }
 
 .brand-mark::before {
-  border: 1px dashed rgba(157, 112, 57, 0.32);
+  border: 1px dashed rgba(242, 193, 78, 0.34);
   animation: spin 22s linear infinite;
 }
 
 .brand-mark::after {
-  background: radial-gradient(circle at 50% 0, #b88746 0 2.6px, transparent 3.2px);
+  background: radial-gradient(circle at 50% 0, #ffd45e 0 2.6px, transparent 3.2px);
   animation: spin 4.5s linear infinite;
 }
 
@@ -198,7 +459,7 @@
 }
 
 .brand-copy small {
-  color: #7d7469;
+  color: #a39880;
   font-size: 0.55rem;
   letter-spacing: 0.2em;
 }
@@ -209,7 +470,7 @@
 
 .eyebrow {
   margin: 0 0 0.5rem;
-  color: #935f2b;
+  color: #f2c14e;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.13em;
@@ -218,7 +479,7 @@
 
 .login-intro h1 {
   margin: 0;
-  color: #211f1a;
+  color: #fff6e0;
   font-family: "Cormorant Garamond", Georgia, serif;
   font-size: 2.8rem;
   line-height: 1;
@@ -226,7 +487,7 @@
 
 .login-intro > p:last-child {
   margin: 0.75rem 0 0;
-  color: #6c6259;
+  color: #b9ae98;
   font-size: 0.92rem;
 }
 
@@ -251,7 +512,7 @@ form {
 }
 
 label {
-  color: #413a35;
+  color: #d7cbb2;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -260,18 +521,18 @@ label {
 }
 
 .field-group:focus-within label {
-  color: #935f2b;
+  color: #f2c14e;
 }
 
 input {
   width: 100%;
   min-height: 50px;
   padding: 0.8rem 0.9rem;
-  border: 1px solid rgba(41, 37, 31, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 13px;
   outline: none;
-  background: #fff;
-  color: #1f1a17;
+  background: rgba(255, 255, 255, 0.045);
+  color: #fff;
   font: inherit;
   transition:
     border-color 0.25s ease,
@@ -280,13 +541,18 @@ input {
     background-color 0.25s ease;
 }
 
-/* the active field glows and gently breathes, like the lit-up slot */
+input::placeholder {
+  color: #7d745f;
+}
+
+/* the active field glows warmly and gently breathes */
 input:focus-visible {
-  border-color: #a97841;
+  border-color: #f2c14e;
+  background: rgba(255, 255, 255, 0.07);
   box-shadow:
-    0 0 0 1px rgba(169, 120, 65, 0.55),
-    0 0 0 5px rgba(169, 120, 65, 0.14),
-    0 10px 26px rgba(147, 106, 57, 0.16);
+    0 0 0 1px rgba(242, 193, 78, 0.6),
+    0 0 0 5px rgba(242, 193, 78, 0.14),
+    0 10px 26px rgba(242, 193, 78, 0.14);
   transform: translateY(-1px);
   animation: field-breathe 2.4s ease-in-out infinite;
 }
@@ -294,9 +560,9 @@ input:focus-visible {
 @keyframes field-breathe {
   50% {
     box-shadow:
-      0 0 0 1px rgba(169, 120, 65, 0.8),
-      0 0 0 8px rgba(169, 120, 65, 0.08),
-      0 12px 30px rgba(147, 106, 57, 0.22);
+      0 0 0 1px rgba(242, 193, 78, 0.85),
+      0 0 0 8px rgba(242, 193, 78, 0.08),
+      0 12px 30px rgba(242, 193, 78, 0.2);
   }
 }
 
@@ -318,7 +584,17 @@ input:not(:placeholder-shown):focus-visible {
 }
 
 input:disabled {
-  background: #f5f2ee;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* browser autofill would otherwise paint the field white */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
+  -webkit-box-shadow: 0 0 0 1000px #1c1a14 inset;
+  transition: background-color 9999s ease 0s;
 }
 
 .password-field {
@@ -336,7 +612,7 @@ input:disabled {
   transform: translateY(-50%);
   border: 0;
   background: none;
-  color: #8c6233;
+  color: #f2c14e;
   cursor: pointer;
   font: inherit;
   font-size: 0.78rem;
@@ -345,16 +621,16 @@ input:disabled {
 }
 
 .visibility-button:hover {
-  color: #5f3f1c;
+  color: #ffe08a;
 }
 
 .form-error {
   margin: 0;
   padding: 0.8rem 0.9rem;
-  border: 1px solid rgba(163, 35, 35, 0.18);
+  border: 1px solid rgba(255, 112, 100, 0.38);
   border-radius: 12px;
-  background: rgba(163, 35, 35, 0.07);
-  color: #8d2d2d;
+  background: rgba(255, 90, 80, 0.1);
+  color: #ffb9b1;
   font-size: 0.88rem;
   line-height: 1.5;
   animation: error-in 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) backwards;
@@ -382,7 +658,7 @@ input:disabled {
 
 
 /* =========================================================
-   BUTTON
+   BUTTON (warm yellow, like the lit lamp)
 ========================================================= */
 
 .submit-button {
@@ -392,12 +668,13 @@ input:disabled {
   overflow: hidden;
   border: 0;
   border-radius: 999px;
-  background: #29261f;
-  color: #fffdf9;
+  background: linear-gradient(180deg, #ffd84a, #f2b92b);
+  box-shadow: 0 10px 28px rgba(255, 200, 60, 0.22);
+  color: #1b1405;
   cursor: pointer;
   font: inherit;
   font-size: 0.77rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.07em;
   text-transform: uppercase;
   transition:
@@ -409,14 +686,14 @@ input:disabled {
 .submit-button::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.22) 50%, transparent 70%);
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.5) 50%, transparent 70%);
   content: "";
   pointer-events: none;
   transform: translateX(-120%);
 }
 
 .submit-button:hover:not(:disabled) {
-  box-shadow: 0 14px 30px rgba(41, 38, 31, 0.28);
+  box-shadow: 0 16px 38px rgba(255, 200, 60, 0.38);
   transform: translateY(-2px);
 }
 
@@ -446,14 +723,15 @@ input:disabled {
 .back-link {
   display: block;
   margin-top: 1.7rem;
-  color: #75695e;
+  color: #a89d86;
   font-size: 0.82rem;
   text-align: center;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .back-link:hover {
-  color: #8c6233;
+  color: #f2c14e;
   text-decoration: underline;
 }
 
@@ -462,7 +740,6 @@ input:disabled {
    SIGNING IN: the two fields gather into an orbit
 ========================================================= */
 
-/* fields slide toward the middle and fade away */
 form.is-verifying .field-group {
   filter: blur(3px);
   opacity: 0;
@@ -494,7 +771,7 @@ form.is-verifying .orbit {
 .orbit-ring {
   position: absolute;
   inset: 14px;
-  border: 1.5px solid rgba(147, 106, 57, 0.3);
+  border: 1.5px solid rgba(242, 193, 78, 0.38);
   border-radius: 50%;
   opacity: 0;
 }
@@ -522,7 +799,7 @@ form.is-verifying .orbit-ring {
   height: 7px;
   margin: -3.5px 0 0 -3.5px;
   border-radius: 50%;
-  background: #936a39;
+  background: #ffd45e;
   opacity: 0;
 }
 
@@ -534,10 +811,10 @@ form.is-verifying .orbit-hub {
 @keyframes hub-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 3px rgba(147, 106, 57, 0.14);
+    box-shadow: 0 0 0 3px rgba(242, 193, 78, 0.2), 0 0 12px rgba(255, 212, 94, 0.6);
   }
   50% {
-    box-shadow: 0 0 0 9px rgba(147, 106, 57, 0.04);
+    box-shadow: 0 0 0 9px rgba(242, 193, 78, 0.05), 0 0 20px rgba(255, 212, 94, 0.9);
   }
 }
 
@@ -565,10 +842,12 @@ form.is-verifying .orbit-turn {
   height: 34px;
   margin: -17px 0 0 -17px;
   place-items: center;
-  border: 1.5px solid rgba(147, 106, 57, 0.4);
+  border: 1.5px solid rgba(242, 193, 78, 0.6);
   border-radius: 11px;
-  background: linear-gradient(145deg, #ffffff, #f1ece4);
-  box-shadow: 0 6px 16px rgba(40, 32, 22, 0.13);
+  background: linear-gradient(145deg, #2c281e, #15130e);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.5),
+    0 0 14px rgba(242, 193, 78, 0.18);
   opacity: 0;
 }
 
@@ -576,7 +855,7 @@ form.is-verifying .orbit-turn {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #b88746;
+  background: #ffd45e;
   content: "";
 }
 
@@ -586,7 +865,6 @@ form.is-verifying .orbit-tile {
     tile-self 2.4s cubic-bezier(0.65, 0, 0.35, 1) 0.95s infinite;
 }
 
-/* tiles start in a row (like the code slots) and glide onto the circle */
 @keyframes tile-gather {
   from {
     opacity: 0;
@@ -608,7 +886,31 @@ form.is-verifying .orbit-tile {
 
 
 /* =========================================================
-   REDUCED MOTION
+   PHONES / NARROW SCREENS: lamp shines from above, behind the card
+========================================================= */
+
+@media (max-width: 980px) {
+  .lamp {
+    top: 8px;
+    left: 50%;
+    margin-left: -220px;
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    border-radius: 24px;
+  }
+
+  .login-intro h1 {
+    font-size: 2.4rem;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION: lamp stays on, nothing moves
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
@@ -618,5 +920,9 @@ form.is-verifying .orbit-tile {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .fireflies {
+    display: none;
   }
 }
