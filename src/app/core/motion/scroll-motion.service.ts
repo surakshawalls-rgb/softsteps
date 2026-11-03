@@ -103,6 +103,9 @@ export class ScrollMotion {
   private mo?: MutationObserver;
   private bar?: HTMLElement;
   private pending = new Set<Element>();
+  /** elements waiting to scroll into view (so skipped ones can be swept up after a big jump) */
+  private readonly watching = new Set<Element>();
+  private sweepTimer = 0;
   private flushQueued = false;
   private mobile = false;
 
@@ -145,6 +148,17 @@ export class ScrollMotion {
       rootMargin: '0px',
       threshold: 0,
     });
+
+    // After a fast scroll or a page jump an observer never reports the elements that were skipped
+    // completely. Once scrolling pauses, show everything that is now above the screen.
+    win.addEventListener(
+      'scroll',
+      () => {
+        clearTimeout(this.sweepTimer);
+        this.sweepTimer = window.setTimeout(() => this.sweep(), 120);
+      },
+      { passive: true },
+    );
 
     this.queue(doc.body);
 
@@ -293,6 +307,7 @@ export class ScrollMotion {
     // hand everything to the observer
     for (const el of found) {
       this.io?.observe(el);
+      this.watching.add(el);
     }
   }
 
@@ -370,6 +385,7 @@ export class ScrollMotion {
 
     entering.forEach((entry, index) => {
       this.io?.unobserve(entry.target);
+      this.watching.delete(entry.target);
       const animation = this.animations.get(entry.target);
 
       if (animation) {
@@ -382,7 +398,26 @@ export class ScrollMotion {
     for (const entry of entries) {
       if (!entry.isIntersecting && entry.boundingClientRect.bottom < 0) {
         this.io?.unobserve(entry.target);
+        this.watching.delete(entry.target);
         this.animations.get(entry.target)?.finish();
+      }
+    }
+  }
+
+  /** Shows (without animating) every waiting element that is now above the screen, and forgets removed ones. */
+  private sweep(): void {
+    for (const el of Array.from(this.watching)) {
+      if (!el.isConnected) {
+        this.io?.unobserve(el);
+        this.watching.delete(el);
+        this.animations.delete(el);
+        continue;
+      }
+
+      if (el.getBoundingClientRect().bottom < 0) {
+        this.io?.unobserve(el);
+        this.watching.delete(el);
+        this.animations.get(el)?.finish();
       }
     }
   }

@@ -7,7 +7,8 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  border-top: 3px solid #b88746;
+  border-top: 0;
+  padding-top: 3px; /* keeps the content exactly where the old 3px top border put it */
   background:
     radial-gradient(circle at 8% 0%, rgba(184, 135, 70, 0.1), transparent 32%),
     radial-gradient(circle at 100% 100%, rgba(140, 106, 67, 0.07), transparent 30%),
@@ -31,6 +32,8 @@ a {
 ========================================================= */
 
 .footer-cta {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -88,6 +91,8 @@ a {
 }
 
 .footer-button {
+  position: relative;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -520,5 +525,375 @@ a {
     flex-direction: column;
     align-items: flex-start;
     padding-right: 76px;
+  }
+}
+
+
+/* =========================================================
+   ANIMATION
+   (JavaScript adds .anim-ready to the footer, then .is-in
+   to each part as it scrolls into view. Without JavaScript,
+   or with reduced motion, everything is simply visible.)
+========================================================= */
+
+/* ---------- 1. gold thread drawn across the top ---------- */
+
+.footer-thread,
+.footer-stitch,
+.footer-needle {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.footer-thread {
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #b88746 10%, #e6bf84 50%, #b88746 90%, transparent);
+  transform-origin: 0 50%;
+}
+
+.footer-stitch {
+  top: 12px;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, rgba(213, 170, 106, 0.55) 0 10px, transparent 10px 18px);
+}
+
+.footer-needle {
+  top: -3px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  border-radius: 50%;
+  background: #fff0c8;
+  box-shadow:
+    0 0 12px 4px rgba(230, 191, 132, 0.9),
+    0 0 28px 10px rgba(184, 135, 70, 0.5);
+  opacity: 0;
+}
+
+.site-footer.anim-ready:not(.is-in) .footer-thread {
+  transform: scaleX(0);
+}
+
+.site-footer.anim-ready:not(.is-in) .footer-stitch {
+  clip-path: inset(0 100% 0 0);
+}
+
+.site-footer.is-in .footer-thread {
+  animation: thread-draw 1.7s cubic-bezier(0.65, 0, 0.35, 1) backwards;
+}
+
+.site-footer.is-in .footer-stitch {
+  animation: stitch-draw 1.9s cubic-bezier(0.65, 0, 0.35, 1) 0.25s backwards;
+}
+
+.site-footer.is-in .footer-needle {
+  animation: needle-run 1.7s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+@keyframes thread-draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes stitch-draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes needle-run {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  8%,
+  92% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+
+/* ---------- 2. staggered reveal ---------- */
+
+.site-footer.anim-ready .rg:not(.is-in) .rv,
+.site-footer.anim-ready .rg.rv:not(.is-in) {
+  opacity: 0;
+}
+
+.rg.is-in .rv,
+.rg.rv.is-in {
+  animation: rv-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) backwards;
+}
+
+.rg.is-in .rv-right {
+  animation: rv-right 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) backwards;
+}
+
+.rg.is-in .rv-pop {
+  animation: rv-pop 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0s) backwards;
+}
+
+.rg.rv-panel.is-in {
+  animation:
+    rv-panel 1s cubic-bezier(0.22, 1, 0.36, 1) backwards,
+    cta-border 2.6s ease 0.6s backwards;
+}
+
+/* columns cascade left to right, items inside each column follow one by one */
+.footer-brand .rv {
+  --d: calc(var(--c, 0) * 0.12s + var(--j, 0) * 0.08s + 0.05s);
+}
+
+.footer-links .rv {
+  --d: calc(var(--c, 0) * 0.12s + var(--j, 0) * 0.07s + 0.05s);
+}
+
+.footer-contact .rv {
+  --d: calc(var(--c, 0) * 0.12s + var(--j, 0) * 0.1s + 0.05s);
+}
+
+/* the gold underline under each heading grows after the heading appears */
+.rg.is-in .footer-heading::after {
+  animation: line-grow 0.7s ease calc(var(--d, 0s) + 0.3s) backwards;
+}
+
+@keyframes rv-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+@keyframes rv-right {
+  from {
+    opacity: 0;
+    transform: translateX(34px);
+  }
+}
+
+@keyframes rv-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.2) rotate(-24deg);
+  }
+}
+
+@keyframes rv-panel {
+  from {
+    opacity: 0;
+    transform: translateY(46px) scale(0.975);
+  }
+}
+
+@keyframes line-grow {
+  from {
+    width: 0;
+  }
+}
+
+
+/* ---------- 3. light on the call-to-action ---------- */
+
+.footer-cta > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* a soft band of light crosses the panel every few seconds */
+.footer-cta::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 226, 160, 0.11) 50%, transparent 62%);
+  content: "";
+  pointer-events: none;
+  transform: translateX(-130%);
+}
+
+.footer-cta.is-in::before {
+  animation: cta-sweep 9s ease-in-out 1.1s infinite;
+}
+
+@keyframes cta-sweep {
+  0% {
+    transform: translateX(-130%);
+  }
+  16%,
+  100% {
+    transform: translateX(130%);
+  }
+}
+
+@keyframes cta-border {
+  from {
+    border-color: rgba(213, 170, 106, 0.85);
+    box-shadow: 0 0 42px rgba(184, 135, 70, 0.3);
+  }
+  to {
+    border-color: rgba(255, 255, 255, 0.09);
+    box-shadow: 0 0 0 rgba(184, 135, 70, 0);
+  }
+}
+
+/* the main button glows twice, then shimmers now and then */
+.footer-button-primary::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
+  content: "";
+  pointer-events: none;
+  transform: translateX(-130%);
+}
+
+.rg.is-in .footer-button-primary {
+  animation:
+    rv-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) backwards,
+    btn-glow 2.2s ease 1.4s 2;
+}
+
+.footer-cta.is-in .footer-button-primary::after {
+  animation: btn-sheen 6s ease-in-out 2s infinite;
+}
+
+@keyframes btn-glow {
+  50% {
+    box-shadow:
+      0 0 0 8px rgba(184, 135, 70, 0.18),
+      0 14px 40px rgba(184, 135, 70, 0.55);
+  }
+}
+
+@keyframes btn-sheen {
+  0% {
+    transform: translateX(-130%);
+  }
+  14%,
+  100% {
+    transform: translateX(130%);
+  }
+}
+
+
+/* ---------- 4. hover and tap details ---------- */
+
+/* links: a gold line draws itself under the word */
+.footer-links a::after,
+.footer-legal a::after {
+  position: absolute;
+  right: 0;
+  bottom: 3px;
+  left: 0;
+  height: 1px;
+  background: #d5aa6a;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.footer-links a:hover::after,
+.footer-legal a:hover::after {
+  transform: scaleX(1);
+}
+
+.footer-legal a {
+  position: relative;
+  padding-bottom: 3px;
+}
+
+/* the logo mark makes one turn */
+.footer-brand-mark {
+  transition:
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.3s ease;
+}
+
+.footer-logo:hover .footer-brand-mark {
+  background: rgba(184, 135, 70, 0.2);
+  transform: rotate(360deg);
+}
+
+.footer-badges span {
+  transition:
+    border-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.3s ease;
+}
+
+.footer-badges span:hover {
+  border-color: #b88746;
+  color: #f0d9b0;
+  transform: translateY(-2px);
+}
+
+/* social icons spring up on hover and squash on tap */
+.footer-social-links a {
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 0.2s ease;
+}
+
+.footer-social-links a:hover {
+  transform: translateY(-4px) scale(1.12) rotate(-5deg);
+}
+
+.footer-social-links a:active {
+  transform: scale(0.9);
+}
+
+/* contact cards: icon wobbles, card presses down on tap */
+.footer-contact-icon {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.footer-contact-item:hover .footer-contact-icon {
+  transform: scale(1.14) rotate(-8deg);
+}
+
+.footer-contact-item:active {
+  transform: scale(0.98);
+}
+
+.footer-button {
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease,
+    transform 200ms ease;
+}
+
+.footer-button:active {
+  transform: scale(0.97);
+}
+
+
+/* ---------- reduced motion: no movement at all ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .site-footer *,
+  .site-footer *::before,
+  .site-footer *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .footer-needle {
+    display: none;
   }
 }

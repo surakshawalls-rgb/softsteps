@@ -1,17 +1,38 @@
-<main class="login-page">
-  <!-- Decorative scene (no text): a lamp switches on and fireflies drift -->
-  <div class="scene" aria-hidden="true">
+<main
+  class="login-page"
+  [class.lamp-on]="lampOn()"
+  [class.lamp-off]="cardRevealed() && !lampOn()"
+  [class.card-revealed]="cardRevealed()"
+>
+  <!-- Decorative scene (no text): pull the cord to switch the lamp on; fireflies drift in the light -->
+  <div class="scene">
     <div class="lamp">
-      <span class="lamp-halo"></span>
-      <span class="lamp-light"></span>
-      <span class="lamp-pool"></span>
-      <span class="lamp-pole"></span>
-      <span class="lamp-base"></span>
-      <span class="lamp-head"></span>
-      <span class="lamp-bulb"></span>
-      <span class="lamp-cord"><i></i></span>
+      <span class="lamp-halo" aria-hidden="true"></span>
+      <span class="lamp-light" aria-hidden="true"></span>
+      <span class="lamp-pool" aria-hidden="true"></span>
+      <span class="lamp-pole" aria-hidden="true"></span>
+      <span class="lamp-base" aria-hidden="true"></span>
+      <span class="lamp-head" aria-hidden="true"></span>
+      <span class="lamp-bulb" aria-hidden="true"></span>
+
+      <button
+        type="button"
+        class="lamp-cord"
+        aria-label="Pull the lamp cord to switch the light on or off"
+        [attr.aria-pressed]="lampOn()"
+        [class.is-pulling]="isPulling()"
+        [style.--pull]="cordPull() + 'px'"
+        (pointerdown)="onCordPointerDown($event)"
+        (pointermove)="onCordPointerMove($event)"
+        (pointerup)="onCordPointerUp($event)"
+        (pointercancel)="onCordPointerUp($event)"
+        (click)="onCordClick($event)"
+      >
+        <i aria-hidden="true"></i>
+        <span class="lamp-hint" aria-hidden="true">Drag cord down <b>↓</b></span>
+      </button>
     </div>
-    <div class="fireflies">
+    <div class="fireflies" aria-hidden="true">
     <span class="firefly" style="--x: 60%; --y: 77%; --s: 7px; --g: 14px; --dur: 63s; --dl: -28s; --blink: 5.3s; --dx1: 110px; --dy1: -93px; --dx2: -96px; --dy2: 72px; --dx3: 53px; --dy3: 132px"></span>
     <span class="firefly" style="--x: 81%; --y: 29%; --s: 3px; --g: 6px; --dur: 62s; --dl: -19s; --blink: 3.8s; --dx1: 85px; --dy1: 165px; --dx2: 134px; --dy2: -169px; --dx3: 114px; --dy3: 12px"></span>
     <span class="firefly" style="--x: 60%; --y: 89%; --s: 6px; --g: 12px; --dur: 44s; --dl: -39s; --blink: 3.3s; --dx1: 80px; --dy1: -158px; --dx2: -160px; --dy2: -172px; --dx3: -93px; --dy3: -67px"></span>
