@@ -6,6 +6,7 @@ import { AdminAccessDeniedPage } from './features/admin/admin-access-denied/admi
 import { AdminLoginPage } from './features/admin/admin-login/admin-login';
 import { AdminPage } from './features/admin/admin-page/admin-page';
 import { MessageComposer } from './features/admin/communications/message-composer/message-composer';
+import { AdminOffersPage } from './features/admin/offers/offers-page/offers-page';
 import { ContactPage } from './features/contact/contact-page/contact-page';
 import { CustomRequirementPage } from './features/custom-requirement/custom-requirement-page/custom-requirement-page';
 import { EnquiryForm } from './features/enquiries/enquiry-form/enquiry-form';
@@ -39,6 +40,12 @@ export const routes: Routes = [
         component: MessageComposer,
         canActivate: [adminGuard],
         title: 'Admin Communications',
+      },
+      {
+        path: 'offers',
+        component: AdminOffersPage,
+        canActivate: [adminGuard],
+        title: 'Admin Offers',
       },
       {
         path: 'communication',

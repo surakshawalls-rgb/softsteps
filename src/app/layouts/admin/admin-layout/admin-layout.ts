@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { Auth } from '../../../core/auth/auth';
+import { FestivalReminder } from '../../../features/admin/offers/festival-reminder';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, FestivalReminder],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css',
 })

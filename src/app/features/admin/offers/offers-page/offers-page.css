@@ -1,0 +1,526 @@
+/* ==========================================================================
+   Soft Steps · Admin Offers page (matches the admin overview look)
+   ========================================================================== */
+
+.offers-page {
+  --ink: #1f1a17;
+  --ink-soft: #514a41;
+  --ink-muted: #837b71;
+  --brand: #935f2b;
+  --brand-dark: #6f4519;
+  --brand-light: #c99356;
+  --cream: #f7f2ec;
+  --cream-deep: #efe6da;
+  --line: rgba(41, 37, 31, 0.09);
+  --card: rgba(255, 255, 255, 0.92);
+  --shadow-sm: 0 1px 2px rgba(26, 22, 18, 0.04), 0 8px 24px rgba(26, 22, 18, 0.05);
+
+  display: grid;
+  gap: 1.5rem;
+  padding: 2rem 0 5.5rem;
+  color: var(--ink);
+}
+
+.offers-page h1,
+.offers-page h2 {
+  margin: 0;
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: currentColor;
+  text-shadow: none;
+}
+
+/* ---------- Header ---------- */
+.offers-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 2rem 2.2rem;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(201, 147, 86, 0.28), transparent 45%),
+    linear-gradient(135deg, #fffdf9 0%, var(--cream) 100%);
+  box-shadow: var(--shadow-sm);
+}
+
+.eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--brand);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.offers-header h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.7rem, 3vw, 2.3rem);
+  font-weight: 500;
+}
+
+.offers-intro {
+  max-width: 56ch;
+  margin: 0.6rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.offers-count {
+  display: grid;
+  min-width: 130px;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--card);
+  text-align: center;
+}
+
+.offers-count strong {
+  color: var(--brand-dark);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.offers-count span {
+  margin-top: 0.35rem;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+}
+
+/* ---------- Banners ---------- */
+.offers-banner {
+  padding: 0.9rem 1.1rem;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.offers-banner-success {
+  border: 1px solid rgba(46, 125, 80, 0.25);
+  background: #eef8f1;
+  color: #226240;
+}
+
+.offers-banner-error {
+  border: 1px solid rgba(141, 45, 45, 0.25);
+  background: #fbeeee;
+  color: #8d2d2d;
+}
+
+/* ---------- Panels ---------- */
+.offers-panel {
+  display: grid;
+  gap: 1.1rem;
+  padding: 1.6rem;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.panel-title h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.step {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* ---------- Offer type cards ---------- */
+.offer-types {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.offer-type {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.offer-type strong {
+  font-size: 0.95rem;
+}
+
+.offer-type span {
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.offer-type:hover {
+  border-color: var(--brand-light);
+}
+
+.offer-type.active {
+  border-color: var(--brand);
+  background: var(--cream);
+  box-shadow: 0 0 0 2px rgba(147, 95, 43, 0.18);
+}
+
+/* ---------- Fields ---------- */
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.field span {
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.field input,
+.search-input {
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: 1px solid rgba(41, 37, 31, 0.16);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.92rem;
+}
+
+.field input:focus,
+.search-input:focus {
+  border-color: var(--brand);
+  outline: 2px solid rgba(147, 95, 43, 0.18);
+}
+
+.discount-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.discount-field {
+  width: min(100%, 260px);
+}
+
+.hint {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+/* ---------- Segmented buttons ---------- */
+.segmented {
+  display: inline-flex;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--cream);
+}
+
+.segmented button {
+  min-height: 36px;
+  padding: 0 0.95rem;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.segmented button.active {
+  background: #fff;
+  color: var(--brand-dark);
+  box-shadow: 0 1px 4px rgba(26, 22, 18, 0.1);
+}
+
+/* ---------- List tools ---------- */
+.list-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.search-input {
+  flex: 1 1 240px;
+}
+
+.ghost-button {
+  min-height: 40px;
+  padding: 0 1rem;
+  border: 1px solid rgba(41, 37, 31, 0.16);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.ghost-button:hover:not(:disabled) {
+  border-color: var(--brand);
+  color: var(--brand-dark);
+}
+
+/* ---------- States ---------- */
+.state {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: start;
+  padding: 1.4rem;
+  border: 1px dashed rgba(41, 37, 31, 0.18);
+  border-radius: 16px;
+  background: var(--cream);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.state p {
+  margin: 0;
+}
+
+.state-error {
+  border-color: rgba(141, 45, 45, 0.3);
+  background: #fbeeee;
+  color: #8d2d2d;
+}
+
+/* ---------- Table ---------- */
+.table-wrap {
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.offers-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.offers-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.8rem 0.9rem;
+  background: var(--cream-deep);
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.offers-table td {
+  padding: 0.75rem 0.9rem;
+  border-top: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.offers-table tr.selected td {
+  background: rgba(201, 147, 86, 0.1);
+}
+
+.check-col {
+  width: 44px;
+}
+
+.check-col input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+
+.product-name {
+  display: block;
+  font-weight: 600;
+}
+
+.product-code {
+  color: var(--ink-muted);
+  font-size: 0.76rem;
+}
+
+.price-now {
+  font-weight: 700;
+}
+
+.price-old {
+  margin-left: 0.4rem;
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+}
+
+.price-preview {
+  color: #226240;
+}
+
+.muted {
+  color: var(--ink-muted);
+}
+
+.offer-badge {
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(147, 95, 43, 0.12);
+  color: var(--brand-dark);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #8d2d2d;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ---------- Action bar ---------- */
+.action-bar {
+  position: sticky;
+  bottom: 1rem;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow: 0 12px 36px rgba(26, 22, 18, 0.16);
+  backdrop-filter: blur(8px);
+}
+
+.action-summary {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.action-summary strong {
+  font-size: 0.95rem;
+}
+
+.action-summary span {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.primary-button,
+.danger-button {
+  min-height: 44px;
+  padding: 0 1.3rem;
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, var(--brand-light), var(--brand));
+  color: #fff;
+}
+
+.danger-button {
+  border: 1px solid rgba(141, 45, 45, 0.35);
+  background: #fff;
+  color: #8d2d2d;
+}
+
+.primary-button:disabled,
+.danger-button:disabled,
+.ghost-button:disabled,
+.link-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+  .offer-types {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .offers-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+  }
+
+  .offers-panel {
+    padding: 1.2rem;
+  }
+
+  .offer-types {
+    grid-template-columns: 1fr;
+  }
+
+  .action-bar {
+    bottom: 0.5rem;
+  }
+
+  .action-buttons {
+    width: 100%;
+  }
+
+  .action-buttons button {
+    flex: 1 1 auto;
+  }
+}
