@@ -4,10 +4,11 @@ import { RouterLink } from '@angular/router';
 import { Category } from '../../../shared/models/category.model';
 import { Collection } from '../../../shared/models/collection.model';
 import { Product, ProductVariant } from '../../../shared/models/product.model';
+import { HomeHero } from '../home-hero/home-hero';
 
 @Component({
   selector: 'app-home-page',
-  imports: [RouterLink],
+  imports: [RouterLink, HomeHero],
   templateUrl: './home-page.html',
 })
 export class HomePage implements AfterViewInit, OnDestroy {
