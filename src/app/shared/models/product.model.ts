@@ -18,10 +18,12 @@ export interface ProductImage {
   alt_text?: string;
   sort_order?: number;
   is_primary?: boolean;
+  image_type?: string | null;
 }
 
 export interface Product {
   id?: string;
+  product_code?: string | null;
   name?: string;
   slug?: string;
   description?: string;
@@ -37,6 +39,7 @@ export interface Product {
   construction?: string | null;
   origin_country?: string | null;
   moq?: number | null;
+  minimum_order_quantity?: number | null;
   lead_time?: string | null;
   is_new_arrival?: boolean;
   is_best_seller?: boolean;

@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -6,6 +7,7 @@ import { CatalogQueryService } from '../../../data-access/queries/catalog/catalo
 import { Product } from '../../../shared/models/product.model';
 import { ProductGallery } from '../product-gallery/product-gallery';
 import { PriceDisplay } from '../../../shared/components/price-display/price-display';
+import { Seo } from '../../../core/services/seo';
 
 @Component({
   selector: 'app-product-page',
@@ -16,6 +18,8 @@ import { PriceDisplay } from '../../../shared/components/price-display/price-dis
 export class ProductPage implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly catalogQuery = inject(CatalogQueryService);
+  private readonly seo = inject(Seo);
+  private readonly document = inject(DOCUMENT);
   private routeSubscription?: Subscription;
 
   product: Product | null = null;
@@ -44,6 +48,9 @@ export class ProductPage implements OnInit, OnDestroy {
 
     try {
       this.product = await this.catalogQuery.getProductBySlug(slug);
+      if (this.product) {
+        this.updateSeo();
+      }
     } catch (error) {
       console.error('Failed to load product:', error);
       const message = error instanceof Error ? error.message : '';
@@ -57,6 +64,22 @@ export class ProductPage implements OnInit, OnDestroy {
       }
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private updateSeo(): void {
+    if (!this.product) return;
+
+    const title = this.product.meta_title?.trim() || this.product.name || 'Soft Steps Carpets & Rugs';
+    const description = this.product.meta_description?.trim() || this.product.short_description || 'Handcrafted luxury rugs and carpets from Soft Steps.';
+
+    this.seo.updateTitle(title);
+    this.seo.updateDescription(description);
+
+    const origin = this.document.location?.origin;
+    if (this.product.slug && origin && origin !== 'null') {
+      const canonicalUrl = `${origin}/products/${this.product.slug}`;
+      this.seo.updateCanonicalUrl(canonicalUrl);
     }
   }
 
@@ -78,6 +101,46 @@ export class ProductPage implements OnInit, OnDestroy {
     if (value === null || value === undefined || value === '') return null;
     const text = String(value).trim();
     return /mm$/i.test(text) ? text : `${text} mm`;
+  }
+
+  get minimumOrderQuantity(): number | null {
+    const value = this.product?.minimum_order_quantity ?? this.product?.moq;
+    return typeof value === 'number' && value > 0 ? value : null;
+  }
+
+  get subcategory(): string | null {
+    const specs = this.product?.specifications as Record<string, unknown> | null;
+    if (!specs) return null;
+    const subcat = specs['subcategory'] ?? specs['Subcategory'];
+    return typeof subcat === 'string' && subcat.trim() ? subcat.trim() : null;
+  }
+
+  get size(): string | null {
+    const specs = this.product?.specifications as Record<string, unknown> | null;
+    if (!specs) return null;
+    const size = specs['size(3x5)'] ?? specs['size'] ?? specs['Size'];
+    return typeof size === 'string' && size.trim() ? size.trim() : null;
+  }
+
+  get warrantyPolicy(): string | null {
+    const specs = this.product?.specifications as Record<string, unknown> | null;
+    if (!specs) return null;
+    const warranty = specs['warranty and return policy'] ?? specs['warranty'] ?? specs['Warranty'];
+    return typeof warranty === 'string' && warranty.trim() ? warranty.trim() : null;
+  }
+
+  get freightPolicy(): string | null {
+    const specs = this.product?.specifications as Record<string, unknown> | null;
+    if (!specs) return null;
+    const freight = specs['Freight'] ?? specs['freight'] ?? specs['Freight and Shipping Policy'];
+    return typeof freight === 'string' && freight.trim() ? freight.trim() : null;
+  }
+
+  get satus(): string | null {
+    const specs = this.product?.specifications as Record<string, unknown> | null;
+    if (!specs) return null;
+    const satus = specs['SATUS'] ?? specs['status'] ?? specs['Status'];
+    return typeof satus === 'string' && satus.trim() ? satus.trim() : null;
   }
 
   get inquiryUrl(): string {

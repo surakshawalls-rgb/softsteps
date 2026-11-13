@@ -29,6 +29,12 @@
         <div class="product-information">
           <p class="eyebrow">{{ product.category?.name || 'Soft Steps Carpets & Rugs' }}</p>
           <h1>{{ product.name }}</h1>
+          @if (product.product_code) {
+            <p class="product-code">Product code: {{ product.product_code }}</p>
+          }
+          @if (subcategory) {
+            <p class="subcategory">{{ subcategory }}</p>
+          }
           @if (product.short_description) {
             <p class="short-description">{{ product.short_description }}</p>
           }
@@ -58,11 +64,14 @@
             @if (pileHeightLabel) {
               <div><dt>Pile height</dt><dd>{{ pileHeightLabel }}</dd></div>
             }
+            @if (size) {
+              <div><dt>Size</dt><dd>{{ size }}</dd></div>
+            }
             @if (product.origin_country) {
               <div><dt>Origin</dt><dd>{{ product.origin_country }}</dd></div>
             }
-            @if (product.moq) {
-              <div><dt>Minimum order</dt><dd>{{ product.moq }} pieces</dd></div>
+            @if (minimumOrderQuantity) {
+              <div><dt>Minimum order</dt><dd>{{ minimumOrderQuantity }} pieces</dd></div>
             }
           </dl>
 

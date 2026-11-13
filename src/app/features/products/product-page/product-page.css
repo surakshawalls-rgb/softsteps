@@ -14,6 +14,8 @@
 .product-information .eyebrow::before { content: ""; width: 28px; height: 1px; background: #b98a4f; }
 
 .product-information h1 { margin-top: 16px; font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(30px, 3.2vw, 44px); font-weight: 500; line-height: 1.1; letter-spacing: -.02em; }
+.product-code { margin-top: 10px; color: #78716c; font-size: 12px; letter-spacing: .04em; }
+.subcategory { display: inline-flex; margin-top: 10px; border: 1px solid #e6dfd3; border-radius: 999px; padding: 5px 11px; color: #8d642f; background: rgba(255, 253, 249, .8); font-size: 11px; font-weight: 600; }
 .short-description { margin-top: 16px; max-width: 540px; color: #6b655d; font-size: 15px; line-height: 1.85; }
 
 /* Price block */

@@ -104,114 +104,109 @@ export class CatalogQueryService {
   // ----------------------------------------------------------
 
   async getProducts(): Promise<Product[]> {
-    const { data, error } = await this.supabase
-      .from('products')
-      .select(`
-        *,
-        category:categories(*),
-        material:materials(*),
-        supplier:suppliers(*),
-        variants:product_variants(*),
-        images:product_images(*)
-      `)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false });
+      const { data, error } = await this.supabase
+        .from('products')
+        .select(`
+          *,
+          category:categories(*),
+          material:materials(*),
+          supplier:suppliers(*),
+          variants:product_variants(*),
+          images:product_images(*)
+        `)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+
+      return data;
     }
 
-    return data;
-  }
 
+    async getFeaturedProducts(): Promise<Product[]> {
+      const { data, error } = await this.supabase
+        .from('products')
+        .select(`
+          *,
+          category:categories(*),
+          material:materials(*),
+          variants:product_variants(*),
+          images:product_images(*)
+        `)
+        .eq('featured', true)
+        .order('created_at', { ascending: false });
 
-  async getFeaturedProducts(): Promise<Product[]> {
-    const { data, error } = await this.supabase
-      .from('products')
-      .select(`
-        *,
-        category:categories(*),
-        material:materials(*),
-        variants:product_variants(*),
-        images:product_images(*)
-      `)
-      .eq('status', 'active')
-      .eq('featured', true)
-      .order('created_at', { ascending: false });
+      if (error) {
+        throw error;
+      }
 
-    if (error) {
-      throw error;
+      return data;
     }
-
-    return data;
-  }
 
 
   async getProductsByCategorySlug(slug: string): Promise<Product[]> {
-    const { data, error } = await this.supabase
-      .from('products')
-      .select(`
-        *,
-        category:categories!inner(*),
-        material:materials(*),
-        variants:product_variants(*),
-        images:product_images(*)
-      `)
-      .eq('status', 'active')
-      .eq('category.slug', slug)
-      .order('created_at', { ascending: false });
+      const { data, error } = await this.supabase
+        .from('products')
+        .select(`
+          *,
+          category:categories!inner(*),
+          material:materials(*),
+          variants:product_variants(*),
+          images:product_images(*)
+        `)
+        .eq('category.slug', slug)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+
+      return data;
     }
-
-    return data;
-  }
 
 
   async getProductsByCollectionSlug(slug: string): Promise<Product[]> {
-    const collection = await this.getCollectionBySlug(slug);
-    const { data, error } = await this.supabase
-      .from('products')
-      .select(`
-        *,
-        category:categories(*),
-        material:materials(*),
-        variants:product_variants(*),
-        images:product_images(*)
-      `)
-      .eq('status', 'active')
-      .eq('collection_id', collection.id)
-      .order('created_at', { ascending: false });
+      const collection = await this.getCollectionBySlug(slug);
+      const { data, error } = await this.supabase
+        .from('products')
+        .select(`
+          *,
+          category:categories(*),
+          material:materials(*),
+          variants:product_variants(*),
+          images:product_images(*)
+        `)
+        .eq('collection_id', collection.id)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+
+      return data.map(product => ({ ...product, collection }));
     }
-
-    return data.map(product => ({ ...product, collection }));
-  }
 
 
   async getProductBySlug(slug: string): Promise<Product> {
-    const { data, error } = await this.supabase
-      .from('products')
-      .select(`
-        *,
-        category:categories(*),
-        material:materials(*),
-        supplier:suppliers(*),
-        variants:product_variants(*),
-        images:product_images(*)
-      `)
-      .eq('slug', slug)
-      .eq('status', 'active')
-      .single();
+      const { data, error } = await this.supabase
+        .from('products')
+        .select(`
+          *,
+          category:categories(*),
+          material:materials(*),
+          supplier:suppliers(*),
+          variants:product_variants(*),
+          images:product_images(*)
+        `)
+        .eq('slug', slug)
+        .single();
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+
+      return data;
     }
-
-    return data;
-  }
 
 }
