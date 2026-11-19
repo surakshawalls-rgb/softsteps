@@ -1,4 +1,5 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { ProductImageUrlService } from '../../../data-access/supabase/product-image-url.service';
 
 @Component({
   selector: 'app-product-image',
@@ -7,6 +8,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
   styleUrl: './product-image.css',
 })
 export class ProductImage implements OnChanges {
+  private readonly imageUrls = inject(ProductImageUrlService);
 
   @Input() src: string | null = null;
   @Input() alt = 'Carpet or rug';
@@ -15,17 +17,19 @@ export class ProductImage implements OnChanges {
 
   imageFailed = false;
   fallbackFailed = false;
+  private resolvedSrc: string | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['src'] || changes['fallbackSrc']) {
       this.imageFailed = false;
       this.fallbackFailed = false;
+      this.resolvedSrc = this.imageUrls.publicUrl(this.src);
     }
   }
 
   get displaySrc(): string {
-    if (this.src?.trim() && !this.imageFailed) {
-      return this.src.trim();
+    if (this.resolvedSrc && !this.imageFailed) {
+      return this.resolvedSrc;
     }
     return this.fallbackFailed ? '' : this.fallbackSrc;
   }

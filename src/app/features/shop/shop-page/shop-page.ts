@@ -37,6 +37,7 @@ export class ShopPage implements OnInit {
 
   filter: CatalogFilterState = {
     ...DEFAULT_CATALOG_FILTER,
+    subcategories: [],
     categories: [],
     materials: [],
     styles: [],

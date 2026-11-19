@@ -84,10 +84,9 @@ export class ProductPage implements OnInit, OnDestroy {
   }
 
   get price(): number | null {
-    const variant = this.product?.variants?.find(item => item.is_active !== false);
-    if (variant?.price !== null && variant?.price !== undefined) return variant.price;
-    if (this.product?.base_price != null && this.product?.compare_at_price != null) return this.product.compare_at_price;
-    return this.product?.base_price ?? null;
+    const value = this.product?.base_price ?? this.sizePrice;
+    if (typeof value === 'number') return value;
+    return null;
   }
 
   get salePrice(): number | null {
@@ -109,37 +108,50 @@ export class ProductPage implements OnInit, OnDestroy {
   }
 
   get subcategory(): string | null {
-    const specs = this.product?.specifications as Record<string, unknown> | null;
-    if (!specs) return null;
-    const subcat = specs['subcategory'] ?? specs['Subcategory'];
+    const subcat = this.product?.specifications?.subcategory;
     return typeof subcat === 'string' && subcat.trim() ? subcat.trim() : null;
   }
 
   get size(): string | null {
-    const specs = this.product?.specifications as Record<string, unknown> | null;
-    if (!specs) return null;
-    const size = specs['size(3x5)'] ?? specs['size'] ?? specs['Size'];
-    return typeof size === 'string' && size.trim() ? size.trim() : null;
+    const size = this.product?.specifications?.size;
+    if (typeof size === 'string' && size.trim() && !Number.isFinite(Number(size))) return size.trim();
+    return this.sizePrice !== null ? '3 x 5 ft' : null;
+  }
+
+  get sizePrice(): number | null {
+    const value = this.product?.specifications?.size_3x5_price;
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string' && value.trim() && Number.isFinite(Number(value))) return Number(value);
+    return null;
+  }
+
+  get isNewArrival(): boolean {
+    return this.product?.is_new_arrival === true;
+  }
+
+  get isBestSeller(): boolean {
+    return this.product?.is_best_seller === true;
+  }
+
+  get customizable(): boolean {
+    return this.product?.is_customizable === true;
   }
 
   get warrantyPolicy(): string | null {
-    const specs = this.product?.specifications as Record<string, unknown> | null;
-    if (!specs) return null;
-    const warranty = specs['warranty and return policy'] ?? specs['warranty'] ?? specs['Warranty'];
-    return typeof warranty === 'string' && warranty.trim() ? warranty.trim() : null;
+    return this.textValue(this.product?.specifications?.warranty_policy);
   }
 
   get freightPolicy(): string | null {
-    const specs = this.product?.specifications as Record<string, unknown> | null;
-    if (!specs) return null;
-    const freight = specs['Freight'] ?? specs['freight'] ?? specs['Freight and Shipping Policy'];
-    return typeof freight === 'string' && freight.trim() ? freight.trim() : null;
+    return this.textValue(this.product?.specifications?.freight_policy);
+  }
+
+  private textValue(...values: unknown[]): string | null {
+    const value = values.find(item => typeof item === 'string' && item.trim());
+    return typeof value === 'string' ? value.trim() : null;
   }
 
   get satus(): string | null {
-    const specs = this.product?.specifications as Record<string, unknown> | null;
-    if (!specs) return null;
-    const satus = specs['SATUS'] ?? specs['status'] ?? specs['Status'];
+    const satus = this.product?.specifications?.spreadsheet_status;
     return typeof satus === 'string' && satus.trim() ? satus.trim() : null;
   }
 

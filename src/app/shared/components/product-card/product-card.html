@@ -7,12 +7,30 @@
       class="block"
     >
 
-      <div class="overflow-hidden rounded-2xl">
+      <div class="relative overflow-hidden rounded-2xl">
         <app-product-image
           [src]="primaryImage"
           [alt]="product.name || 'Carpet or rug'"
           aspectRatio="aspect-[4/5]"
         ></app-product-image>
+        @if (hoverImage) {
+          <img
+            class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            [src]="hoverImage"
+            [alt]="product.name || 'Carpet or rug'"
+            loading="lazy"
+          />
+        }
+        @if (product.is_new_arrival || product.is_best_seller) {
+          <div class="absolute left-3 top-3 flex flex-col items-start gap-2">
+            @if (product.is_new_arrival) {
+              <span class="rounded-full bg-stone-900 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white">New Arrival</span>
+            }
+            @if (product.is_best_seller) {
+              <span class="rounded-full bg-amber-700 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white">Best Seller</span>
+            }
+          </div>
+        }
       </div>
 
       <div class="px-1 pb-2 pt-5">
@@ -32,12 +50,21 @@
             {{ product.material?.name }}
           </p>
         }
+        @if (product.is_customizable || product.made_to_order) {
+          <div class="mt-2 flex flex-wrap gap-2 text-[11px] font-medium text-stone-600">
+            @if (product.is_customizable) { <span>Customizable</span> }
+            @if (product.made_to_order) { <span>Made to Order</span> }
+          </div>
+        }
 
         <div class="mt-3">
           <app-price-display
             [price]="price"
             [salePrice]="salePrice"
           ></app-price-display>
+          @if (priceBasisLabel) {
+            <p class="mt-1 text-[11px] text-stone-500">Price for {{ priceBasisLabel }}</p>
+          }
         </div>
 
       </div>

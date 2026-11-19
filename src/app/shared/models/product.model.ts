@@ -21,6 +21,18 @@ export interface ProductImage {
   image_type?: string | null;
 }
 
+export interface ProductSpecifications {
+  subcategory?: string | null;
+  size?: string | null;
+  size_3x5?: number | string | null;
+  size_3x5_price?: number | string | null;
+  spreadsheet_status?: string | null;
+  warranty_policy?: string | null;
+  freight_policy?: string | null;
+  source_category?: string | null;
+  [key: string]: unknown;
+}
+
 export interface Product {
   id?: string;
   product_code?: string | null;
@@ -47,7 +59,7 @@ export interface Product {
   made_to_order?: boolean;
   cart_enabled?: boolean;
   verification_status?: string | null;
-  specifications?: Record<string, unknown> | null;
+  specifications?: ProductSpecifications | null;
   meta_title?: string | null;
   meta_description?: string | null;
   tags?: string[] | null;

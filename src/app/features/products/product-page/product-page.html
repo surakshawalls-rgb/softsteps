@@ -35,6 +35,12 @@
           @if (subcategory) {
             <p class="subcategory">{{ subcategory }}</p>
           }
+          @if (isNewArrival || isBestSeller) {
+            <div class="badge-row" aria-label="Product highlights">
+              @if (isNewArrival) { <span class="product-badge">New Arrival</span> }
+              @if (isBestSeller) { <span class="product-badge seller">Best Seller</span> }
+            </div>
+          }
           @if (product.short_description) {
             <p class="short-description">{{ product.short_description }}</p>
           }
@@ -73,7 +79,30 @@
             @if (minimumOrderQuantity) {
               <div><dt>Minimum order</dt><dd>{{ minimumOrderQuantity }} pieces</dd></div>
             }
+              @if (customizable) {
+                <div><dt>Customizable</dt><dd>Available</dd></div>
+              }
+              @if (product.made_to_order) {
+                <div><dt>Made to Order</dt><dd>Available</dd></div>
+              }
           </dl>
+
+            @if (warrantyPolicy || freightPolicy) {
+              <div class="policy-list">
+                @if (warrantyPolicy) {
+                  <details>
+                    <summary>Warranty and return policy</summary>
+                    <p>{{ warrantyPolicy }}</p>
+                  </details>
+                }
+                @if (freightPolicy) {
+                  <details>
+                    <summary>Freight policy</summary>
+                    <p>{{ freightPolicy }}</p>
+                  </details>
+                }
+              </div>
+            }
 
           <div class="product-actions">
             <a [routerLink]="inquiryUrl" class="primary-button">Enquire about this rug <span aria-hidden="true">↗</span></a>

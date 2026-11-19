@@ -15,7 +15,7 @@ import {
 } from '../../models/catalog-filter.model';
 import { Product } from '../../models/product.model';
 
-type ListKey = 'categories' | 'materials' | 'styles' | 'colors';
+type ListKey = 'subcategories' | 'categories' | 'materials' | 'styles' | 'colors';
 type GroupKey = ListKey | 'price';
 
 export interface FilterOption {
@@ -83,6 +83,7 @@ export class CatalogToolbar implements OnChanges {
 
   @Input() filter: CatalogFilterState = {
     ...DEFAULT_CATALOG_FILTER,
+    subcategories: [],
     categories: [],
     materials: [],
     styles: [],
@@ -104,6 +105,7 @@ export class CatalogToolbar implements OnChanges {
   mobileFiltersOpen = false;
 
   categoryOptions: FilterOption[] = [];
+  subcategoryOptions: FilterOption[] = [];
   materialOptions: FilterOption[] = [];
   styleOptions: FilterOption[] = [];
   colorOptions: FilterOption[] = [];
@@ -237,6 +239,7 @@ export class CatalogToolbar implements OnChanges {
     }
 
     const lists: [ListKey, FilterOption[]][] = [
+      ['subcategories', this.subcategoryOptions],
       ['categories', this.categoryOptions],
       ['materials', this.materialOptions],
       ['styles', this.styleOptions],
@@ -274,6 +277,7 @@ export class CatalogToolbar implements OnChanges {
   clear(): void {
     this.emit({
       search: '',
+      subcategories: [],
       categories: [],
       materials: [],
       styles: [],
@@ -322,6 +326,7 @@ export class CatalogToolbar implements OnChanges {
     const products = this.products ?? [];
 
     const categoryCounts = new Map<string, number>();
+    const subcategoryCounts = new Map<string, number>();
     const materialCounts = new Map<string, number>();
     const styles = new Map<string, FilterOption>();
     const colors = new Map<string, FilterOption>();
@@ -337,6 +342,11 @@ export class CatalogToolbar implements OnChanges {
         materialCounts.set(materialId, (materialCounts.get(materialId) ?? 0) + 1);
       }
 
+      const subcategory = normalizeFilterValue(product.specifications?.subcategory);
+      if (subcategory) {
+        subcategoryCounts.set(subcategory, (subcategoryCounts.get(subcategory) ?? 0) + 1);
+      }
+
       this.countInto(styles, product.style);
       this.countInto(colors, product.primary_color, true);
     }
@@ -346,6 +356,19 @@ export class CatalogToolbar implements OnChanges {
       label: category.name,
       count: categoryCounts.get(category.slug) ?? 0
     }));
+
+    this.subcategoryOptions = Array.from(subcategoryCounts.entries())
+      .map(([value, count]) => {
+        const product = products.find(item =>
+          normalizeFilterValue(item.specifications?.subcategory) === value
+        );
+        return {
+          value,
+          label: product?.specifications?.subcategory?.toString().trim() || value,
+          count
+        };
+      })
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 
     this.materialOptions = (this.materials ?? []).map(material => ({
       value: material.id,

@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, HostListener, Input, OnDestroy, inject, signal } from '@angular/core';
+import { ProductImageUrlService } from '../../../data-access/supabase/product-image-url.service';
 
 interface GalleryImage {
   id?: string;
@@ -7,6 +8,7 @@ interface GalleryImage {
   alt_text?: string | null;
   is_primary?: boolean;
   sort_order?: number | null;
+  image_type?: string | null;
 }
 
 @Component({
@@ -27,7 +29,7 @@ interface GalleryImage {
                 [attr.aria-label]="'Show image ' + ($index + 1) + ' of ' + images.length"
                 [attr.aria-current]="$index === index() ? 'true' : null"
               >
-                <img [src]="img.image_url" [alt]="img.alt_text || productName" loading="lazy" draggable="false" />
+                <img [src]="img.image_url" [alt]="img.alt_text || productName" loading="lazy" draggable="false" (error)="onImageError($event)" />
               </button>
             }
           </div>
@@ -52,6 +54,7 @@ interface GalleryImage {
               [src]="current?.image_url"
               [alt]="current?.alt_text || productName"
               draggable="false"
+              (error)="onImageError($event)"
             />
 
             <div
@@ -109,6 +112,7 @@ interface GalleryImage {
               [src]="current?.image_url"
               [alt]="current?.alt_text || productName"
               draggable="false"
+              (error)="onImageError($event)"
               (click)="toggleLbZoom($event)"
             />
           </div>
@@ -333,6 +337,7 @@ interface GalleryImage {
 })
 export class ProductGallery implements OnDestroy {
   private readonly doc = inject(DOCUMENT);
+  private readonly imageUrls = inject(ProductImageUrlService);
 
   private list: GalleryImage[] = [];
 
@@ -341,11 +346,23 @@ export class ProductGallery implements OnDestroy {
   /** Images are shown with the primary image first, then by sort order. */
   @Input() set images(value: GalleryImage[] | null | undefined) {
     this.list = (value ?? [])
+      .map(image => ({
+        ...image,
+        image_url: this.imageUrls.publicUrl(image.image_url),
+      }))
       .filter(image => !!image.image_url)
       .sort((a, b) => {
         if (!!a.is_primary !== !!b.is_primary) {
           return a.is_primary ? -1 : 1;
         }
+        const roleRank = (image: GalleryImage): number => {
+          const role = (image.image_type ?? '').toLowerCase().trim();
+          if (role === 'hover' || role === 'hover_image') return 1;
+          if (role === 'primary') return 0;
+          return 2;
+        };
+        const roleDifference = roleRank(a) - roleRank(b);
+        if (roleDifference !== 0) return roleDifference;
         return (a.sort_order ?? 0) - (b.sort_order ?? 0);
       });
     this.index.set(0);
@@ -368,6 +385,13 @@ export class ProductGallery implements OnDestroy {
   get zoomImage(): string {
     const url = this.current?.image_url;
     return url ? `url("${url}")` : 'none';
+  }
+
+  onImageError(event: Event): void {
+    const image = event.currentTarget as HTMLImageElement;
+    if (!image.src.endsWith('/Category%20imgs/Luxury_rugs.jpg')) {
+      image.src = '/Category%20imgs/Luxury_rugs.jpg';
+    }
   }
 
   select(i: number): void {

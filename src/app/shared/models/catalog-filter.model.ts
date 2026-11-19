@@ -7,6 +7,8 @@
 
 export interface CatalogFilterState {
   search: string;
+  /** selected normalized subcategory values */
+  subcategories: string[];
   /** selected category slugs */
   categories: string[];
   /** selected material ids */
@@ -22,6 +24,7 @@ export interface CatalogFilterState {
 
 export const DEFAULT_CATALOG_FILTER: CatalogFilterState = {
   search: '',
+  subcategories: [],
   categories: [],
   materials: [],
   styles: [],

@@ -92,6 +92,44 @@
           @if (selectedCount('categories')) {
             <em class="badge">{{ selectedCount('categories') }}</em>
           }
+
+
+          <!-- SUBCATEGORY -->
+          @if (subcategoryOptions.length) {
+            <section class="group">
+
+              <button
+                type="button"
+                class="group-head"
+                [attr.aria-expanded]="isOpen('subcategories')"
+                (click)="toggleGroup('subcategories')"
+              >
+                <span>Subcategory</span>
+                @if (selectedCount('subcategories')) {
+                  <em class="badge">{{ selectedCount('subcategories') }}</em>
+                }
+                <i class="chevron" [class.is-open]="isOpen('subcategories')" aria-hidden="true"></i>
+              </button>
+
+              @if (isOpen('subcategories')) {
+                <div class="group-body">
+                  @for (option of visibleOptions('subcategories', subcategoryOptions); track option.value) {
+                    <label class="opt">
+                      <input
+                        type="checkbox"
+                        [checked]="isSelected('subcategories', option.value)"
+                        (change)="toggle('subcategories', option.value)"
+                      />
+                      <span class="box" aria-hidden="true"></span>
+                      <span class="opt-label">{{ option.label }}</span>
+                      <span class="opt-count">{{ option.count }}</span>
+                    </label>
+                  }
+                </div>
+              }
+
+            </section>
+          }
           <i class="chevron" [class.is-open]="isOpen('categories')" aria-hidden="true"></i>
         </button>
 

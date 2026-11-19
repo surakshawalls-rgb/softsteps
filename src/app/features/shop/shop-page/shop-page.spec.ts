@@ -62,7 +62,7 @@ export class ShopPage implements OnInit {
       } else if (!this.requestedCategory) {
         this.filter = {
           ...this.filter,
-          category: DEFAULT_CATALOG_FILTER.category
+          categories: DEFAULT_CATALOG_FILTER.categories
         };
       }
     });
@@ -169,7 +169,7 @@ export class ShopPage implements OnInit {
 
     this.filter = {
       ...this.filter,
-      category: matchedCategory?.slug ?? this.requestedCategory
+      categories: [matchedCategory?.slug ?? this.requestedCategory]
     };
   }
 
@@ -182,3 +182,9 @@ export class ShopPage implements OnInit {
       .trim();
   }
 }
+
+describe('ShopPage', () => {
+  it('is available for catalogue rendering', () => {
+    expect(ShopPage).toBeDefined();
+  });
+});

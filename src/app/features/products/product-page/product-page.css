@@ -16,6 +16,9 @@
 .product-information h1 { margin-top: 16px; font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(30px, 3.2vw, 44px); font-weight: 500; line-height: 1.1; letter-spacing: -.02em; }
 .product-code { margin-top: 10px; color: #78716c; font-size: 12px; letter-spacing: .04em; }
 .subcategory { display: inline-flex; margin-top: 10px; border: 1px solid #e6dfd3; border-radius: 999px; padding: 5px 11px; color: #8d642f; background: rgba(255, 253, 249, .8); font-size: 11px; font-weight: 600; }
+.badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.product-badge { border-radius: 999px; padding: 6px 10px; background: #29251f; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.product-badge.seller { background: #9a6c34; }
 .short-description { margin-top: 16px; max-width: 540px; color: #6b655d; font-size: 15px; line-height: 1.85; }
 
 /* Price block */
@@ -30,6 +33,10 @@
 .spec-grid > div:hover { border-color: #d9c5a3; background: #fff; }
 .spec-grid dt { color: #a29b92; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
 .spec-grid dd { margin-top: 6px; color: #29251f; font-size: 14px; font-weight: 500; line-height: 1.5; }
+.policy-list { display: grid; gap: 10px; margin-top: 18px; }
+.policy-list details { border: 1px solid #ece6dc; border-radius: 14px; background: rgba(255,255,255,.75); }
+.policy-list summary { cursor: pointer; padding: 14px 16px; color: #29251f; font-size: 13px; font-weight: 600; }
+.policy-list p { margin: 0; padding: 0 16px 16px; color: #6b655d; font-size: 13px; line-height: 1.75; white-space: pre-line; }
 
 .product-actions { margin-top: 30px; }
 .primary-button { display: inline-flex; align-items: center; justify-content: center; gap: 18px; min-height: 52px; border: 1px solid #29251f; border-radius: 999px; padding: 0 28px; color: white; background: #29251f; font-size: 13px; font-weight: 600; letter-spacing: .02em; text-decoration: none; box-shadow: 0 14px 28px -16px rgba(41, 37, 31, .6); transition: background 180ms ease, border-color 180ms ease, transform 180ms ease; }

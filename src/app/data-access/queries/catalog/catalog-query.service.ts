@@ -1,5 +1,6 @@
 ﻿import { Injectable, inject } from '@angular/core';
 import { SupabaseClientService } from '../../supabase/supabase-client.service';
+import { ProductImageUrlService } from '../../supabase/product-image-url.service';
 import { Product } from '../../../shared/models/product.model';
 
 @Injectable({
@@ -8,6 +9,7 @@ import { Product } from '../../../shared/models/product.model';
 export class CatalogQueryService {
 
   private readonly supabase = inject(SupabaseClientService).client;
+  private readonly productImageUrls = inject(ProductImageUrlService);
 
 
   // ----------------------------------------------------------
@@ -114,13 +116,14 @@ export class CatalogQueryService {
           variants:product_variants(*),
           images:product_images(*)
         `)
+        .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       if (error) {
         throw error;
       }
 
-      return data;
+      return this.normalizeProducts(data as Product[] | null);
     }
 
 
@@ -135,13 +138,14 @@ export class CatalogQueryService {
           images:product_images(*)
         `)
         .eq('featured', true)
+        .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       if (error) {
         throw error;
       }
 
-      return data;
+      return this.normalizeProducts(data as Product[] | null);
     }
 
 
@@ -156,13 +160,14 @@ export class CatalogQueryService {
           images:product_images(*)
         `)
         .eq('category.slug', slug)
+        .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       if (error) {
         throw error;
       }
 
-      return data;
+      return this.normalizeProducts(data as Product[] | null);
     }
 
 
@@ -178,13 +183,15 @@ export class CatalogQueryService {
           images:product_images(*)
         `)
         .eq('collection_id', collection.id)
+        .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       if (error) {
         throw error;
       }
 
-      return data.map(product => ({ ...product, collection }));
+      return this.normalizeProducts(data as Product[] | null)
+        .map(product => ({ ...product, collection }));
     }
 
 
@@ -200,13 +207,28 @@ export class CatalogQueryService {
           images:product_images(*)
         `)
         .eq('slug', slug)
+        .eq('status', 'active')
         .single();
 
       if (error) {
         throw error;
       }
 
-      return data;
+      return this.normalizeProduct(data as Product);
     }
+
+  private normalizeProducts(products: Product[] | null): Product[] {
+    return (products ?? []).map(product => this.normalizeProduct(product));
+  }
+
+  private normalizeProduct(product: Product): Product {
+    return {
+      ...product,
+      images: product.images?.map(image => ({
+        ...image,
+        image_url: this.productImageUrls.publicUrl(image.image_url) ?? undefined,
+      })),
+    };
+  }
 
 }

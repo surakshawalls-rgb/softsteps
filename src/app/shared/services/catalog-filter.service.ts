@@ -59,6 +59,17 @@ export class CatalogFilterService {
         if (!searchableText.includes(search)) {
           return false;
         }
+
+        if (
+          filters.subcategories.length &&
+          !filters.subcategories.includes(
+            normalizeFilterValue(
+              (product.specifications as { subcategory?: string | null } | null)?.subcategory
+            )
+          )
+        ) {
+          return false;
+        }
       }
 
       // Each group is "any of the ticked values"; groups are combined with AND.
@@ -196,6 +207,21 @@ export class CatalogFilterService {
     );
   }
 
+  getSubcategories(products: Product[]) {
+    const map = new Map<string, { name: string; value: string }>();
+
+    products.forEach(product => {
+      const name = product.specifications?.subcategory?.toString().trim();
+      if (!name) return;
+      const value = normalizeFilterValue(name);
+      map.set(value, { name, value });
+    });
+
+    return Array.from(map.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+  }
+
   getMaterials(products: Product[]) {
     const map = new Map<string, { name: string; slug: string }>();
 
@@ -236,6 +262,7 @@ export class CatalogFilterService {
   reset(): CatalogFilterState {
     return {
       ...DEFAULT_CATALOG_FILTER,
+      subcategories: [],
       categories: [],
       materials: [],
       styles: [],
