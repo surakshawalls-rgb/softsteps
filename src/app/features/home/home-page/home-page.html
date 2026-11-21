@@ -307,7 +307,20 @@
           }
 
           <div class="qv-actions">
-            <a [routerLink]="['/products', qv.slug]" class="qv-primary" (click)="closeQuickView()">
+            @if (canQuickAdd()) {
+              <button type="button" class="qv-primary qv-cart" [class.is-added]="quickAdded()" (click)="addQuickViewToCart()">
+                {{ quickAdded() ? 'Added to cart' : 'Add to cart' }}
+              </button>
+
+              @if (quickAdded()) {
+                <p class="qv-added" role="status">
+                  {{ quickProductCode() }} is in your cart.
+                  <a routerLink="/cart" (click)="closeQuickView()">View cart</a>
+                </p>
+              }
+            }
+
+            <a [routerLink]="['/products', qv.slug]" [class]="canQuickAdd() ? 'qv-secondary' : 'qv-primary'" (click)="closeQuickView()">
               View product page <span aria-hidden="true">→</span>
             </a>
             <a routerLink="/enquiries" class="qv-secondary" (click)="closeQuickView()">

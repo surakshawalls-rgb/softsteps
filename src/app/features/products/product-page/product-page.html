@@ -29,93 +29,210 @@
         <div class="product-information">
           <p class="eyebrow">{{ product.category?.name || 'Soft Steps Carpets & Rugs' }}</p>
           <h1>{{ product.name }}</h1>
-          @if (product.product_code) {
-            <p class="product-code">Product code: {{ product.product_code }}</p>
-          }
-          @if (subcategory) {
-            <p class="subcategory">{{ subcategory }}</p>
-          }
-          @if (isNewArrival || isBestSeller) {
-            <div class="badge-row" aria-label="Product highlights">
-              @if (isNewArrival) { <span class="product-badge">New Arrival</span> }
-              @if (isBestSeller) { <span class="product-badge seller">Best Seller</span> }
-            </div>
-          }
+
+          <div class="meta-row">
+            @if (productCode) {
+              <span class="code-chip">Product code <strong>{{ productCode }}</strong></span>
+            }
+            @if (subcategory) {
+              <span class="tag-chip">{{ subcategory }}</span>
+            }
+            @if (isNewArrival) { <span class="product-badge">New arrival</span> }
+            @if (isBestSeller) { <span class="product-badge seller">Best seller</span> }
+          </div>
+
           @if (product.short_description) {
             <p class="short-description">{{ product.short_description }}</p>
           }
 
-          <div class="price-row">
-            <app-price-display [price]="price" [salePrice]="salePrice" [currency]="product.currency === 'USD' ? '$' : product.currency === 'AED' ? 'AED ' : '₹'"></app-price-display>
-          </div>
-          <p class="enquiry-note">Pricing and availability can be confirmed for your required size, material and quantity.</p>
+          <!-- Size, price, quantity and add to cart -->
+          <div id="top-buy" class="buy-card">
+            @if (sizeOptions.length > 0) {
+              <fieldset class="size-picker">
+                <legend>Size</legend>
+                <div class="size-options">
+                  @for (option of sizeOptions; track option.label; let i = $index) {
+                    <label class="size-option" [class.selected]="i === selectedSizeIndex()">
+                      <input
+                        type="radio"
+                        name="rug-size"
+                        [value]="i"
+                        [checked]="i === selectedSizeIndex()"
+                        (change)="selectSize(i)"
+                      />
+                      <span class="size-name">{{ option.label }}</span>
+                      <span class="size-price">
+                        @if (option.salePrice !== null && option.salePrice < option.price) {
+                          {{ formatPrice(option.salePrice) }}
+                          <s>{{ formatPrice(option.price) }}</s>
+                        } @else {
+                          {{ formatPrice(option.price) }}
+                        }
+                      </span>
+                    </label>
+                  }
+                </div>
+              </fieldset>
 
-          <div class="detail-divider"></div>
-          <dl class="spec-grid">
+              <div class="price-summary" aria-live="polite">
+                <div>
+                  <p class="price-label">Price per rug</p>
+                  <p class="price-now">{{ formatPrice(unitPrice) }}</p>
+                </div>
+                @if (quantity() > 1) {
+                  <div class="price-total">
+                    <p class="price-label">Total for {{ quantity() }}</p>
+                    <p class="price-now">{{ formatPrice(lineTotal) }}</p>
+                  </div>
+                }
+              </div>
+
+              @if (canAddToCart) {
+                <div class="buy-row">
+                  <div class="qty" role="group" aria-label="Quantity">
+                    <button type="button" (click)="changeQuantity(-1)" [disabled]="quantity() <= 1" aria-label="Decrease quantity">−</button>
+                    <output>{{ quantity() }}</output>
+                    <button type="button" (click)="changeQuantity(1)" [disabled]="quantity() >= 99" aria-label="Increase quantity">+</button>
+                  </div>
+                  <button type="button" class="primary-button add-button" [class.added]="justAdded()" (click)="addToCart()">
+                    {{ justAdded() ? 'Added to cart' : 'Add to cart' }}
+                  </button>
+                </div>
+
+                @if (justAdded()) {
+                  <p class="added-note" role="status">
+                    {{ quantity() }} × {{ productCode }} ({{ selectedSize?.label }}) is in your cart.
+                    <a routerLink="/cart">View cart</a>
+                  </p>
+                }
+              } @else {
+                <p class="cart-off-note">Online ordering is not open for this rug yet. Send an enquiry and our team will reply with availability.</p>
+              }
+            } @else {
+              <p class="price-on-request">Price on enquiry</p>
+              <p class="cart-off-note">Tell us the size, material and quantity you need and we will send a quotation.</p>
+            }
+
+            <a [routerLink]="inquiryUrl" class="secondary-button">Enquire about this rug <span aria-hidden="true">↗</span></a>
+            <p class="enquiry-note">Pricing and availability can be confirmed for your required size, material and quantity.</p>
+          </div>
+
+          <!-- At a glance -->
+          <dl class="glance">
             @if (product.material?.name) {
               <div><dt>Material</dt><dd>{{ product.material?.name }}</dd></div>
             }
             @if (product.construction) {
               <div><dt>Construction</dt><dd>{{ product.construction }}</dd></div>
             }
-            @if (product.style) {
-              <div><dt>Style</dt><dd>{{ product.style }}</dd></div>
-            }
-            @if (product.primary_color) {
-              <div><dt>Primary colour</dt><dd>{{ product.primary_color }}</dd></div>
-            }
-            @if (product.shape) {
-              <div><dt>Shape</dt><dd>{{ product.shape }}</dd></div>
-            }
             @if (pileHeightLabel) {
               <div><dt>Pile height</dt><dd>{{ pileHeightLabel }}</dd></div>
             }
-            @if (size) {
-              <div><dt>Size</dt><dd>{{ size }}</dd></div>
-            }
-            @if (product.origin_country) {
-              <div><dt>Origin</dt><dd>{{ product.origin_country }}</dd></div>
-            }
-            @if (minimumOrderQuantity) {
-              <div><dt>Minimum order</dt><dd>{{ minimumOrderQuantity }} pieces</dd></div>
-            }
-              @if (customizable) {
-                <div><dt>Customizable</dt><dd>Available</dd></div>
-              }
-              @if (product.made_to_order) {
-                <div><dt>Made to Order</dt><dd>Available</dd></div>
-              }
           </dl>
 
-            @if (warrantyPolicy || freightPolicy) {
-              <div class="policy-list">
-                @if (warrantyPolicy) {
-                  <details>
-                    <summary>Warranty and return policy</summary>
-                    <p>{{ warrantyPolicy }}</p>
-                  </details>
-                }
-                @if (freightPolicy) {
-                  <details>
-                    <summary>Freight policy</summary>
-                    <p>{{ freightPolicy }}</p>
-                  </details>
-                }
-              </div>
-            }
-
-          <div class="product-actions">
-            <a [routerLink]="inquiryUrl" class="primary-button">Enquire about this rug <span aria-hidden="true">↗</span></a>
-            <p>Made for considered spaces. Ask us about custom sizes, colours and project quantities.</p>
-
-            <ul class="trust-list" aria-label="Why choose Soft Steps">
-              <li>Handcrafted in India</li>
-              <li>Custom sizes &amp; colours</li>
-              <li>Export support worldwide</li>
+          @if (madeToOrder || customizable) {
+            <ul class="service-list" aria-label="Ordering options">
+              @if (madeToOrder) { <li>Made to order</li> }
+              @if (customizable) { <li>Custom sizes &amp; colours available</li> }
             </ul>
-          </div>
+          }
+
+          <nav class="jump-links" aria-label="Product information">
+            <button type="button" (click)="scrollToSection('sizes-pricing')">Sizes &amp; pricing</button>
+            <button type="button" (click)="scrollToSection('specifications')">Specifications</button>
+            @if (warrantyPolicy.length) { <button type="button" (click)="scrollToSection('warranty')">Warranty &amp; returns</button> }
+            @if (freightPolicy.length) { <button type="button" (click)="scrollToSection('freight')">Freight &amp; shipping</button> }
+          </nav>
+
+          <ul class="trust-list" aria-label="Why choose Soft Steps">
+            <li>Handcrafted in India</li>
+            <li>Custom sizes &amp; colours</li>
+            <li>Export support worldwide</li>
+          </ul>
         </div>
       </div>
+
+      <!-- Sizes and pricing -->
+      <section id="sizes-pricing" class="detail-section">
+        <div class="section-heading">
+          <h2>Sizes and pricing</h2>
+          <p>Prices are per rug. Need a different size or a bulk quantity? We make to your measurements.</p>
+        </div>
+
+        <div class="section-body">
+          @if (sizeOptions.length > 0) {
+            <table class="price-table">
+              <caption class="sr-only">Available sizes and prices for {{ product.name }}</caption>
+              <thead>
+                <tr><th scope="col">Size</th><th scope="col">Price</th><th scope="col"><span class="sr-only">Choose</span></th></tr>
+              </thead>
+              <tbody>
+                @for (option of sizeOptions; track option.label; let i = $index) {
+                  <tr [class.selected]="i === selectedSizeIndex()">
+                    <th scope="row">{{ option.label }}</th>
+                    <td>
+                      @if (option.salePrice !== null && option.salePrice < option.price) {
+                        {{ formatPrice(option.salePrice) }} <s>{{ formatPrice(option.price) }}</s>
+                      } @else {
+                        {{ formatPrice(option.price) }}
+                      }
+                    </td>
+                    <td class="table-action">
+                      @if (sizeOptions.length > 1) {
+                        <button type="button" (click)="selectSize(i); scrollToSection('top-buy')">Select</button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <p class="muted">Pricing for this rug is shared on enquiry.</p>
+          }
+          <a [routerLink]="inquiryUrl" class="text-link">Request a custom size <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+
+      <!-- Specifications -->
+      <section id="specifications" class="detail-section">
+        <div class="section-heading">
+          <h2>Specifications</h2>
+          <p>Everything we have recorded for this design.</p>
+        </div>
+
+        <dl class="spec-table">
+          @if (productCode) { <div><dt>Product code</dt><dd>{{ productCode }}</dd></div> }
+          @if (product.material?.name) { <div><dt>Material</dt><dd>{{ product.material?.name }}</dd></div> }
+          @if (product.construction) { <div><dt>Construction</dt><dd>{{ product.construction }}</dd></div> }
+          @if (product.style) { <div><dt>Style</dt><dd>{{ product.style }}</dd></div> }
+          @if (product.primary_color) { <div><dt>Primary colour</dt><dd>{{ product.primary_color }}</dd></div> }
+          @if (product.shape) { <div><dt>Shape</dt><dd>{{ product.shape }}</dd></div> }
+          @if (pileHeightLabel) { <div><dt>Pile height</dt><dd>{{ pileHeightLabel }}</dd></div> }
+          @if (size) { <div><dt>Standard size</dt><dd>{{ size }}</dd></div> }
+          @if (product.origin_country) { <div><dt>Origin</dt><dd>{{ product.origin_country }}</dd></div> }
+          @if (minimumOrderQuantity) { <div><dt>Minimum order</dt><dd>{{ minimumOrderQuantity }} pieces</dd></div> }
+          <div><dt>Customisable</dt><dd>{{ customizable ? 'Yes' : 'On request' }}</dd></div>
+          <div><dt>Made to order</dt><dd>{{ madeToOrder ? 'Yes' : 'No' }}</dd></div>
+        </dl>
+      </section>
+
+      <!-- Warranty and freight -->
+      @if (warrantyPolicy.length || freightPolicy.length) {
+        <section class="policy-grid" aria-label="Warranty and freight">
+          @if (warrantyPolicy.length) {
+            <article id="warranty" class="policy-card">
+              <h2>Warranty and returns</h2>
+              @for (line of warrantyPolicy; track $index) { <p>{{ line }}</p> }
+            </article>
+          }
+          @if (freightPolicy.length) {
+            <article id="freight" class="policy-card">
+              <h2>Freight and shipping</h2>
+              @for (line of freightPolicy; track $index) { <p>{{ line }}</p> }
+            </article>
+          }
+        </section>
+      }
 
       @if (product.design_story || product.description) {
         <section class="story-section">

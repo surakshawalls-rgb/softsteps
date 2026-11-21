@@ -304,3 +304,57 @@
     height: 10px;
   }
 }
+
+/* =========================================================
+   CART LINK (shopping bag with item count)
+========================================================= */
+
+.cart-link {
+  position: relative;
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1px solid rgba(41, 37, 31, 0.12);
+  border-radius: 50%;
+  color: #29261f;
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.cart-link:hover {
+  border-color: #b98a4f;
+  background: #fff;
+}
+
+.cart-link:focus-visible {
+  outline: 2px solid #b98a4f;
+  outline-offset: 3px;
+}
+
+.cart-link svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cart-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: grid;
+  min-width: 19px;
+  height: 19px;
+  place-items: center;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #9a6c34;
+  color: #fff;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1;
+}

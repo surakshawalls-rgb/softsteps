@@ -13,6 +13,7 @@ import { EnquiryForm } from './features/enquiries/enquiry-form/enquiry-form';
 import { HomePage } from './features/home/home-page/home-page';
 import { PrivacyPolicyPage } from './features/privacy-policy/privacy-policy-page/privacy-policy-page';
 import { ProductPage } from './features/products/product-page/product-page';
+import { CartPage } from './features/cart/cart-page/cart-page';
 import { CategoryPage } from './features/categories/category-page/category-page';
 import { CollectionPage } from './features/collections/collection-page/collection-page';
 import { ShopPage } from './features/shop/shop-page/shop-page';
@@ -100,6 +101,12 @@ export const routes: Routes = [
     path: 'products/:slug',
     component: ProductPage,
     title: 'Product | Soft Steps Carpets & Rugs',
+  },
+
+  {
+    path: 'cart',
+    component: CartPage,
+    title: 'Your Cart | Soft Steps Carpets & Rugs',
   },
 
   {

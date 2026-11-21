@@ -29,6 +29,21 @@
 
     <a routerLink="/custom-requirement" class="header-cta">Custom Requirements<span aria-hidden="true">↗</span></a>
 
+    <a
+      routerLink="/cart"
+      class="cart-link"
+      [attr.aria-label]="cart.count() ? 'Cart, ' + cart.count() + (cart.count() === 1 ? ' item' : ' items') : 'Cart, empty'"
+      (click)="closeMenu()"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 8h14l-1.2 11H6.2L5 8Z"></path>
+        <path d="M9 8V6.5a3 3 0 0 1 6 0V8"></path>
+      </svg>
+      @if (cart.count() > 0) {
+        <span class="cart-count" aria-hidden="true">{{ cart.count() > 99 ? '99+' : cart.count() }}</span>
+      }
+    </a>
+
     <button
       type="button"
       class="menu-toggle"

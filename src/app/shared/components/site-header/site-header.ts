@@ -1,5 +1,6 @@
-﻿import { Component } from '@angular/core';
+﻿import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CartService } from '../../../core/services/cart.service';
 
 @Component({
   selector: 'app-site-header',
@@ -8,6 +9,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './site-header.css',
 })
 export class SiteHeader {
+  protected readonly cart = inject(CartService);
+
   isMenuOpen = false;
 
   toggleMenu(): void {

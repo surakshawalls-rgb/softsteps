@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, HostListener, inject, OnDestroy, PLATFORM_ID, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, OnDestroy, PLATFORM_ID, ViewChild, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CartService } from '../../../core/services/cart.service';
 import { Category } from '../../../shared/models/category.model';
 import { Collection } from '../../../shared/models/collection.model';
 import { Product, ProductVariant } from '../../../shared/models/product.model';
@@ -14,6 +15,8 @@ import { HomeHero } from '../home-hero/home-hero';
 export class HomePage implements AfterViewInit, OnDestroy {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly cart = inject(CartService);
+  private quickAddedTimer?: ReturnType<typeof setTimeout>;
   private disposeAnimations?: () => void;
   private destroyed = false;
   private callMessageTimer?: ReturnType<typeof setTimeout>;
@@ -36,6 +39,9 @@ export class HomePage implements AfterViewInit, OnDestroy {
   quickIndex = 0;
   quickVariantIndex = 0;
   quickImageIndex = 0;
+
+  /** true for a few seconds after "Add to cart" is pressed in the quick view */
+  readonly quickAdded = signal(false);
 
   private railTrack?: HTMLElement;
   private railFrame = 0;
@@ -112,6 +118,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
       return;
     }
 
+    this.quickAdded.set(false);
     this.quickView = product;
     this.quickIndex = index;
     this.quickVariantIndex = 0;
@@ -128,6 +135,8 @@ export class HomePage implements AfterViewInit, OnDestroy {
     }
 
     this.quickView = null;
+    this.quickAdded.set(false);
+    clearTimeout(this.quickAddedTimer);
 
     if (isPlatformBrowser(this.platformId)) {
       document.body.style.overflow = '';
@@ -149,6 +158,58 @@ export class HomePage implements AfterViewInit, OnDestroy {
     }
 
     return this.priceInfo(this.quickView, this.quickView.variants?.[this.quickVariantIndex]);
+  }
+
+  // ----- quick view: add to cart -----
+
+  /** The product code the cart uses to identify this rug. */
+  quickProductCode(): string | null {
+    const code = this.quickView?.['product_code'];
+    return typeof code === 'string' && code.trim() ? code.trim() : null;
+  }
+
+  /** Same size wording as the product page, so the same rug never appears twice in the cart. */
+  private quickSizeLabel(): string {
+    const product = this.quickView;
+    const variantSize = product?.variants?.[this.quickVariantIndex]?.size;
+    if (typeof variantSize === 'string' && variantSize.trim()) return variantSize.trim();
+
+    const specSize = product?.specifications?.['size'];
+    if (typeof specSize === 'string' && specSize.trim() && !Number.isFinite(Number(specSize))) return specSize.trim();
+
+    return product?.specifications?.['size_3x5_price'] != null ? '3 x 5 ft' : 'Standard size';
+  }
+
+  /** The cart needs a product code and a price. A rug can be switched off in the catalogue (Cart Enabled = No). */
+  canQuickAdd(): boolean {
+    const info = this.quickViewPrice();
+    return !!this.quickView && this.quickView.cart_enabled !== false && !!this.quickProductCode() && info.price !== null;
+  }
+
+  addQuickViewToCart(): void {
+    const product = this.quickView;
+    const code = this.quickProductCode();
+    const info = this.quickViewPrice();
+
+    if (!product || !code || info.price === null || !this.canQuickAdd()) {
+      return;
+    }
+
+    const unitPrice = info.sale !== null && info.sale < info.price ? info.sale : info.price;
+
+    this.cart.add({
+      productCode: code,
+      slug: product.slug ?? '',
+      name: product.name ?? code,
+      imageUrl: this.productImage(product),
+      size: this.quickSizeLabel(),
+      unitPrice,
+      currency: typeof product.currency === 'string' && product.currency.trim() ? product.currency.trim() : 'INR',
+    });
+
+    this.quickAdded.set(true);
+    clearTimeout(this.quickAddedTimer);
+    this.quickAddedTimer = setTimeout(() => this.quickAdded.set(false), 6000);
   }
 
   // ----- rail behaviour -----
