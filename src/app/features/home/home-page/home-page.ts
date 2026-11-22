@@ -204,6 +204,8 @@ export class HomePage implements AfterViewInit, OnDestroy {
       imageUrl: this.productImage(product),
       size: this.quickSizeLabel(),
       unitPrice,
+      originalUnitPrice: unitPrice < info.price ? info.price : null,
+      offer: product.offer ?? null,
       currency: typeof product.currency === 'string' && product.currency.trim() ? product.currency.trim() : 'INR',
     });
 

@@ -78,291 +78,112 @@
     </div>
 
 
-    <!-- CATEGORY -->
-    @if (categoryOptions.length) {
+    <!--
+      Every block below is built from the "groups" list in catalog-toolbar.ts:
+      Availability, Category, Type, Size, Colour, Material, Price range,
+      Shape, Weaving technique, Style and Discount (a block is hidden when no product has it).
+    -->
+    @for (group of groups; track group.key) {
+
       <section class="group">
 
         <button
           type="button"
           class="group-head"
-          [attr.aria-expanded]="isOpen('categories')"
-          (click)="toggleGroup('categories')"
+          [attr.aria-expanded]="isOpen(group.key)"
+          (click)="toggleGroup(group.key)"
         >
-          <span>Category</span>
-          @if (selectedCount('categories')) {
-            <em class="badge">{{ selectedCount('categories') }}</em>
+          <span>{{ group.title }}</span>
+          @if (selectedCount(group.key)) {
+            <em class="badge">{{ selectedCount(group.key) }}</em>
           }
+          <i class="chevron" [class.is-open]="isOpen(group.key)" aria-hidden="true"></i>
+        </button>
 
+        @if (isOpen(group.key)) {
 
-          <!-- SUBCATEGORY -->
-          @if (subcategoryOptions.length) {
-            <section class="group">
+          <div class="group-body">
 
-              <button
-                type="button"
-                class="group-head"
-                [attr.aria-expanded]="isOpen('subcategories')"
-                (click)="toggleGroup('subcategories')"
-              >
-                <span>Subcategory</span>
-                @if (selectedCount('subcategories')) {
-                  <em class="badge">{{ selectedCount('subcategories') }}</em>
-                }
-                <i class="chevron" [class.is-open]="isOpen('subcategories')" aria-hidden="true"></i>
-              </button>
+            @if (group.kind === 'price') {
 
-              @if (isOpen('subcategories')) {
-                <div class="group-body">
-                  @for (option of visibleOptions('subcategories', subcategoryOptions); track option.value) {
-                    <label class="opt">
-                      <input
-                        type="checkbox"
-                        [checked]="isSelected('subcategories', option.value)"
-                        (change)="toggle('subcategories', option.value)"
-                      />
-                      <span class="box" aria-hidden="true"></span>
-                      <span class="opt-label">{{ option.label }}</span>
-                      <span class="opt-count">{{ option.count }}</span>
-                    </label>
-                  }
-                </div>
+              @for (preset of pricePresets; track preset.label; let i = $index) {
+                <label class="opt">
+                  <input
+                    type="checkbox"
+                    [checked]="isPresetActive(preset)"
+                    (change)="togglePreset(preset)"
+                  />
+                  <span class="box" aria-hidden="true"></span>
+                  <span class="opt-label">{{ preset.label }}</span>
+                  <span class="opt-count">({{ presetCount(i) }})</span>
+                </label>
               }
 
-            </section>
-          }
-          <i class="chevron" [class.is-open]="isOpen('categories')" aria-hidden="true"></i>
-        </button>
+              <div class="price-inputs">
 
-        @if (isOpen('categories')) {
-          <div class="group-body">
-            @for (option of visibleOptions('categories', categoryOptions); track option.value) {
-              <label class="opt" [class.is-empty]="products.length > 0 && option.count === 0 && !isSelected('categories', option.value)">
                 <input
-                  type="checkbox"
-                  [checked]="isSelected('categories', option.value)"
-                  (change)="toggle('categories', option.value)"
+                  type="number"
+                  [ngModel]="filter.minPrice"
+                  (ngModelChange)="setPrice('min', $event)"
+                  placeholder="Min ₹"
+                  min="0"
+                  aria-label="Minimum price"
                 />
-                <span class="box" aria-hidden="true"></span>
-                <span class="opt-label">{{ option.label }}</span>
-                <span class="opt-count">{{ option.count }}</span>
-              </label>
+
+                <span aria-hidden="true">—</span>
+
+                <input
+                  type="number"
+                  [ngModel]="filter.maxPrice"
+                  (ngModelChange)="setPrice('max', $event)"
+                  placeholder="Max ₹"
+                  min="0"
+                  aria-label="Maximum price"
+                />
+
+              </div>
+
+            } @else {
+
+              @for (option of visibleOptions(asList(group.key), group.options); track option.value) {
+                <label
+                  class="opt"
+                  [class.is-empty]="products.length > 0 && option.count === 0 && !isSelected(asList(group.key), option.value)"
+                >
+                  <input
+                    type="checkbox"
+                    [checked]="isSelected(asList(group.key), option.value)"
+                    (change)="toggle(asList(group.key), option.value)"
+                  />
+                  @if (group.swatches) {
+                    <span class="swatch" [style.background]="option.swatch" aria-hidden="true"></span>
+                  } @else {
+                    <span class="box" aria-hidden="true"></span>
+                  }
+                  <span class="opt-label" [class.cap]="group.capitalize">{{ option.label }}</span>
+                  <span class="opt-count">({{ option.count }})</span>
+                </label>
+              }
+
+              @if (hiddenCount(asList(group.key), group.options) > 0) {
+                <button type="button" class="show-more" (click)="toggleExpanded(group.key)">
+                  More
+                </button>
+              } @else if (canCollapse(asList(group.key), group.options)) {
+                <button type="button" class="show-more" (click)="toggleExpanded(group.key)">
+                  Less
+                </button>
+              }
+
             }
-            @if (hiddenCount('categories', categoryOptions) > 0) {
-              <button type="button" class="show-more" (click)="toggleExpanded('categories')">
-                + Show {{ hiddenCount('categories', categoryOptions) }} more
-              </button>
-            } @else if (canCollapse('categories', categoryOptions)) {
-              <button type="button" class="show-more" (click)="toggleExpanded('categories')">
-                − Show less
-              </button>
-            }
+
           </div>
+
         }
 
       </section>
+
     }
-
-
-    <!-- MATERIAL -->
-    @if (materialOptions.length) {
-      <section class="group">
-
-        <button
-          type="button"
-          class="group-head"
-          [attr.aria-expanded]="isOpen('materials')"
-          (click)="toggleGroup('materials')"
-        >
-          <span>Material</span>
-          @if (selectedCount('materials')) {
-            <em class="badge">{{ selectedCount('materials') }}</em>
-          }
-          <i class="chevron" [class.is-open]="isOpen('materials')" aria-hidden="true"></i>
-        </button>
-
-        @if (isOpen('materials')) {
-          <div class="group-body">
-            @for (option of visibleOptions('materials', materialOptions); track option.value) {
-              <label class="opt" [class.is-empty]="products.length > 0 && option.count === 0 && !isSelected('materials', option.value)">
-                <input
-                  type="checkbox"
-                  [checked]="isSelected('materials', option.value)"
-                  (change)="toggle('materials', option.value)"
-                />
-                <span class="box" aria-hidden="true"></span>
-                <span class="opt-label">{{ option.label }}</span>
-                <span class="opt-count">{{ option.count }}</span>
-              </label>
-            }
-            @if (hiddenCount('materials', materialOptions) > 0) {
-              <button type="button" class="show-more" (click)="toggleExpanded('materials')">
-                + Show {{ hiddenCount('materials', materialOptions) }} more
-              </button>
-            } @else if (canCollapse('materials', materialOptions)) {
-              <button type="button" class="show-more" (click)="toggleExpanded('materials')">
-                − Show less
-              </button>
-            }
-          </div>
-        }
-
-      </section>
-    }
-
-
-    <!-- STYLE (only shown when products have a style) -->
-    @if (styleOptions.length) {
-      <section class="group">
-
-        <button
-          type="button"
-          class="group-head"
-          [attr.aria-expanded]="isOpen('styles')"
-          (click)="toggleGroup('styles')"
-        >
-          <span>Style</span>
-          @if (selectedCount('styles')) {
-            <em class="badge">{{ selectedCount('styles') }}</em>
-          }
-          <i class="chevron" [class.is-open]="isOpen('styles')" aria-hidden="true"></i>
-        </button>
-
-        @if (isOpen('styles')) {
-          <div class="group-body">
-            @for (option of visibleOptions('styles', styleOptions); track option.value) {
-              <label class="opt">
-                <input
-                  type="checkbox"
-                  [checked]="isSelected('styles', option.value)"
-                  (change)="toggle('styles', option.value)"
-                />
-                <span class="box" aria-hidden="true"></span>
-                <span class="opt-label cap">{{ option.label }}</span>
-                <span class="opt-count">{{ option.count }}</span>
-              </label>
-            }
-            @if (hiddenCount('styles', styleOptions) > 0) {
-              <button type="button" class="show-more" (click)="toggleExpanded('styles')">
-                + Show {{ hiddenCount('styles', styleOptions) }} more
-              </button>
-            } @else if (canCollapse('styles', styleOptions)) {
-              <button type="button" class="show-more" (click)="toggleExpanded('styles')">
-                − Show less
-              </button>
-            }
-          </div>
-        }
-
-      </section>
-    }
-
-
-    <!-- COLOUR (only shown when products have a colour) -->
-    @if (colorOptions.length) {
-      <section class="group">
-
-        <button
-          type="button"
-          class="group-head"
-          [attr.aria-expanded]="isOpen('colors')"
-          (click)="toggleGroup('colors')"
-        >
-          <span>Colour</span>
-          @if (selectedCount('colors')) {
-            <em class="badge">{{ selectedCount('colors') }}</em>
-          }
-          <i class="chevron" [class.is-open]="isOpen('colors')" aria-hidden="true"></i>
-        </button>
-
-        @if (isOpen('colors')) {
-          <div class="group-body">
-            @for (option of visibleOptions('colors', colorOptions); track option.value) {
-              <label class="opt">
-                <input
-                  type="checkbox"
-                  [checked]="isSelected('colors', option.value)"
-                  (change)="toggle('colors', option.value)"
-                />
-                <span class="swatch" [style.background]="option.swatch" aria-hidden="true"></span>
-                <span class="opt-label cap">{{ option.label }}</span>
-                <span class="opt-count">{{ option.count }}</span>
-              </label>
-            }
-            @if (hiddenCount('colors', colorOptions) > 0) {
-              <button type="button" class="show-more" (click)="toggleExpanded('colors')">
-                + Show {{ hiddenCount('colors', colorOptions) }} more
-              </button>
-            } @else if (canCollapse('colors', colorOptions)) {
-              <button type="button" class="show-more" (click)="toggleExpanded('colors')">
-                − Show less
-              </button>
-            }
-          </div>
-        }
-
-      </section>
-    }
-
-
-    <!-- PRICE -->
-    <section class="group">
-
-      <button
-        type="button"
-        class="group-head"
-        [attr.aria-expanded]="isOpen('price')"
-        (click)="toggleGroup('price')"
-      >
-        <span>Price</span>
-        @if (selectedCount('price')) {
-          <em class="badge">1</em>
-        }
-        <i class="chevron" [class.is-open]="isOpen('price')" aria-hidden="true"></i>
-      </button>
-
-      @if (isOpen('price')) {
-        <div class="group-body">
-
-          @for (preset of pricePresets; track preset.label) {
-            <label class="opt">
-              <input
-                type="checkbox"
-                [checked]="isPresetActive(preset)"
-                (change)="togglePreset(preset)"
-              />
-              <span class="box" aria-hidden="true"></span>
-              <span class="opt-label">{{ preset.label }}</span>
-            </label>
-          }
-
-          <div class="price-inputs">
-
-            <input
-              type="number"
-              [ngModel]="filter.minPrice"
-              (ngModelChange)="setPrice('min', $event)"
-              placeholder="Min ₹"
-              min="0"
-              aria-label="Minimum price"
-            />
-
-            <span aria-hidden="true">—</span>
-
-            <input
-              type="number"
-              [ngModel]="filter.maxPrice"
-              (ngModelChange)="setPrice('max', $event)"
-              placeholder="Max ₹"
-              min="0"
-              aria-label="Maximum price"
-            />
-
-          </div>
-
-        </div>
-      }
-
-    </section>
 
 
     <div class="drawer-footer">

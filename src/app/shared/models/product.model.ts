@@ -1,3 +1,4 @@
+import { AppliedOffer } from './offer.model';
 export interface ProductVariant {
   id?: string;
   product_id?: string;
@@ -79,6 +80,9 @@ export interface Product {
 
   variants?: ProductVariant[];
   images?: ProductImage[];
+  
+  /** Set when a live offer has been applied to this product's prices. */
+  offer?: AppliedOffer | null;
 
   created_at?: string;
   updated_at?: string;

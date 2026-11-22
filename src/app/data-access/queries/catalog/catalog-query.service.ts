@@ -2,6 +2,7 @@
 import { SupabaseClientService } from '../../supabase/supabase-client.service';
 import { ProductImageUrlService } from '../../supabase/product-image-url.service';
 import { Product } from '../../../shared/models/product.model';
+import { OfferService } from '../../../core/services/offer.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ export class CatalogQueryService {
 
   private readonly supabase = inject(SupabaseClientService).client;
   private readonly productImageUrls = inject(ProductImageUrlService);
+  private readonly offers = inject(OfferService);
 
 
   // ----------------------------------------------------------
@@ -123,7 +125,7 @@ export class CatalogQueryService {
         throw error;
       }
 
-      return this.normalizeProducts(data as Product[] | null);
+      return this.offers.applyTo(this.normalizeProducts(data as Product[] | null));
     }
 
 
@@ -145,7 +147,7 @@ export class CatalogQueryService {
         throw error;
       }
 
-      return this.normalizeProducts(data as Product[] | null);
+      return this.offers.applyTo(this.normalizeProducts(data as Product[] | null));
     }
 
 
@@ -167,7 +169,7 @@ export class CatalogQueryService {
         throw error;
       }
 
-      return this.normalizeProducts(data as Product[] | null);
+      return this.offers.applyTo(this.normalizeProducts(data as Product[] | null));
     }
 
 
@@ -190,8 +192,9 @@ export class CatalogQueryService {
         throw error;
       }
 
-      return this.normalizeProducts(data as Product[] | null)
-        .map(product => ({ ...product, collection }));
+      const withOffers = await this.offers.applyTo(this.normalizeProducts(data as Product[] | null));
+
+      return withOffers.map(product => ({ ...product, collection }));
     }
 
 
@@ -214,7 +217,9 @@ export class CatalogQueryService {
         throw error;
       }
 
-      return this.normalizeProduct(data as Product);
+      const [product] = await this.offers.applyTo([this.normalizeProduct(data as Product)]);
+
+      return product;
     }
 
   private normalizeProducts(products: Product[] | null): Product[] {

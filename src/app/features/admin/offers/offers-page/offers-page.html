@@ -5,19 +5,24 @@
       <p class="eyebrow">Pricing</p>
       <h1>Offers &amp; Sales</h1>
       <p class="offers-intro">
-        Create an offer, choose the discount and select the products. New prices go live on the
-        website straight away, and you can remove an offer at any time to bring the original prices back.
+        Create an offer, choose the discount, set when it starts and ends, and add products by
+        product code. Prices on the website change by themselves at the start time and go back to
+        normal at the end time.
       </p>
     </div>
 
     <div class="offers-stats">
       <div class="stat">
-        <strong>{{ activeOffersCount() }}</strong>
-        <span>On offer now</span>
+        <strong>{{ liveCount() }}</strong>
+        <span>Live offers</span>
       </div>
       <div class="stat">
-        <strong>{{ selectedCount() }}</strong>
-        <span>Selected</span>
+        <strong>{{ productsOnOfferCount() }}</strong>
+        <span>Products on offer</span>
+      </div>
+      <div class="stat">
+        <strong>{{ scheduledCount() }}</strong>
+        <span>Scheduled</span>
       </div>
     </div>
   </header>
@@ -30,335 +35,424 @@
     <div class="offers-banner offers-banner-error" role="alert">{{ errorMessage() }}</div>
   }
 
-  <!-- Festival calendar -->
-  <section class="offers-panel">
-    <div class="panel-head">
-      <div>
+  @if (setupNeeded()) {
+    <!-- One-time setup -->
+    <section class="offers-panel setup-card">
+      <div class="panel-head">
+        <p class="eyebrow">One-time setup</p>
+        <h2>Offers need a database table</h2>
+        <p class="panel-sub">
+          This takes a minute and only has to be done once. After it, press <strong>Check again</strong>.
+        </p>
+      </div>
+
+      <ol class="setup-steps">
+        <li>Press <strong>Copy setup SQL</strong> below.</li>
+        <li>Open your Supabase project, then <strong>SQL Editor</strong>, then <strong>New query</strong>.</li>
+        <li>Paste the text, press <strong>Run</strong>, and wait for "Success".</li>
+        <li>Come back here and press <strong>Check again</strong>.</li>
+      </ol>
+
+      <div class="setup-actions">
+        <button type="button" class="primary-button" (click)="copySetupSql()">
+          {{ copied() ? 'Copied' : 'Copy setup SQL' }}
+        </button>
+        <button type="button" class="ghost-button" (click)="loadAll()" [disabled]="loading()">
+          {{ loading() ? 'Checking...' : 'Check again' }}
+        </button>
+      </div>
+
+      <details class="setup-sql">
+        <summary>Show the SQL</summary>
+        <pre>{{ setupSql }}</pre>
+      </details>
+    </section>
+  } @else {
+    <!-- Your offers -->
+    <section class="offers-panel">
+      <div class="panel-head">
+        <p class="eyebrow">Overview</p>
+        <h2>Your offers</h2>
+      </div>
+
+      @if (loading() && offers().length === 0) {
+        <div class="state" role="status">Loading offers...</div>
+      } @else if (offers().length === 0) {
+        <div class="state">
+          <strong>No offers yet</strong>
+          <p>Create your first offer below.</p>
+        </div>
+      } @else {
+        <div class="offer-list">
+          @for (offer of offers(); track offer.id) {
+            <article class="offer-row" [class.is-live]="statusOf(offer) === 'live'">
+              <div class="offer-row-main">
+                <div class="offer-row-title">
+                  <strong>{{ offer.name }}</strong>
+                  <span [class]="'status-chip status-' + statusOf(offer)">{{ statusLabel(offer) }}</span>
+                </div>
+                <p class="offer-row-meta">
+                  {{ discountLabel(offer) }} &middot; {{ offer.product_codes.length }}
+                  product{{ offer.product_codes.length === 1 ? '' : 's' }} &middot; {{ whenLabel(offer) }}
+                </p>
+                <p class="offer-row-codes">{{ codesPreview(offer) }}</p>
+              </div>
+
+              <div class="offer-row-actions">
+                <button type="button" class="ghost-button" (click)="editOffer(offer)" [disabled]="saving()">Edit</button>
+                <button type="button" class="ghost-button" (click)="duplicateOffer(offer)" [disabled]="saving()">Duplicate</button>
+                <button type="button" class="ghost-button" (click)="toggleActive(offer)" [disabled]="saving()">
+                  {{ offer.is_active ? 'Pause' : 'Resume' }}
+                </button>
+                <button type="button" class="danger-link" (click)="deleteOffer(offer)" [disabled]="saving()">Delete</button>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Festival calendar -->
+    <section class="offers-panel">
+      <div class="panel-head">
         <p class="eyebrow">Calendar</p>
         <h2>Upcoming festivals</h2>
         <p class="panel-sub">
           A reminder appears in the admin panel 3 days before each festival. Choose a festival to
-          name your offer after it.
+          fill in the offer name and dates for you.
         </p>
       </div>
-    </div>
 
-    @if (calendarStale) {
-      <div class="offers-banner offers-banner-error" role="status">
-        The festival calendar needs next year's dates. Open
-        <strong>festival-calendar.ts</strong> and add them.
-      </div>
-    }
-
-    <div class="festival-grid">
-      @for (item of upcomingFestivals; track item.id) {
-        <article
-          class="festival-card"
-          [class.soon]="item.daysLeft <= 3"
-          [class.active]="festival()?.id === item.id"
-        >
-          <div class="festival-top">
-            <span class="festival-days">{{ daysLabel(item.daysLeft) }}</span>
-            @if (item.confirm) {
-              <span class="festival-confirm">Confirm date</span>
-            }
-          </div>
-
-          <h3>{{ item.name }}</h3>
-          <p class="festival-date">{{ dateLabel(item.date) }}</p>
-
-          <button
-            type="button"
-            class="festival-button"
-            [class.selected]="festival()?.id === item.id"
-            [attr.aria-pressed]="festival()?.id === item.id"
-            (click)="toggleFestival(item)"
-          >
-            {{ festival()?.id === item.id ? 'Selected' : 'Use for offer' }}
-          </button>
-        </article>
-      }
-    </div>
-  </section>
-
-  <!-- Builder + summary -->
-  <div class="offers-layout">
-    <div class="offers-main">
-      <!-- Offer setup -->
-      <section class="offers-panel">
-        <div class="panel-head">
-          <div class="panel-title">
-            <span class="step">1</span>
-            <div>
-              <h2>Offer setup</h2>
-              <p class="panel-sub">Choose the type of offer and how much to take off.</p>
-            </div>
-          </div>
+      @if (calendarStale) {
+        <div class="offers-banner offers-banner-error" role="status">
+          The festival calendar needs next year's dates. Open
+          <strong>festival-calendar.ts</strong> and add them.
         </div>
+      }
 
-        <div class="offer-types">
-          @for (option of offerOptions; track option.value) {
+      <div class="festival-grid">
+        @for (item of upcomingFestivals; track item.id) {
+          <article
+            class="festival-card"
+            [class.soon]="item.daysLeft <= 3"
+            [class.active]="festival()?.id === item.id"
+          >
+            <div class="festival-top">
+              <span class="festival-days">{{ daysLabel(item.daysLeft) }}</span>
+              @if (item.confirm) {
+                <span class="festival-confirm">Confirm date</span>
+              }
+            </div>
+
+            <h3>{{ item.name }}</h3>
+            <p class="festival-date">{{ dateLabel(item.date) }}</p>
+
             <button
               type="button"
-              class="offer-type"
-              [class.active]="offerType() === option.value"
-              [attr.aria-pressed]="offerType() === option.value"
-              (click)="chooseOffer(option.value)"
+              class="festival-button"
+              [class.selected]="festival()?.id === item.id"
+              [attr.aria-pressed]="festival()?.id === item.id"
+              (click)="toggleFestival(item)"
             >
-              <strong>{{ option.title }}</strong>
-              <span>{{ option.description }}</span>
+              {{ festival()?.id === item.id ? 'Selected' : 'Use for offer' }}
             </button>
-          }
-        </div>
-
-        @if (offerType() === 'festive') {
-          <p class="name-note">
-            @if (festival(); as selectedFestival) {
-              Offer name: <strong>{{ selectedFestival.name }} Offer</strong>
-              <button type="button" class="link-button" (click)="toggleFestival(selectedFestival)">
-                Clear festival
-              </button>
-            } @else {
-              Offer name: <strong>Festive Offer</strong> &middot; choose a festival above to name
-              it after the festival.
-            }
-          </p>
+          </article>
         }
+      </div>
+    </section>
 
-        @if (offerType() === 'custom') {
+    @if (loadError()) {
+      <div class="offers-banner offers-banner-error" role="alert">{{ loadError() }}</div>
+    }
+
+    <!-- Builder + summary -->
+    <div class="offers-layout">
+      <div class="offers-main">
+        <!-- Offer setup -->
+        <section class="offers-panel">
+          <div class="panel-head">
+            <div class="panel-title">
+              <span class="step">1</span>
+              <div>
+                <h2>{{ editingId() ? 'Edit offer' : 'New offer' }}</h2>
+                <p class="panel-sub">Choose the type, the discount and when the offer runs.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="offer-types">
+            @for (option of offerOptions; track option.value) {
+              <button
+                type="button"
+                class="offer-type"
+                [class.active]="offerType() === option.value"
+                [attr.aria-pressed]="offerType() === option.value"
+                (click)="chooseOffer(option.value)"
+              >
+                <strong>{{ option.title }}</strong>
+                <span>{{ option.description }}</span>
+              </button>
+            }
+          </div>
+
           <label class="field">
-            <span>Custom offer name</span>
+            <span>Offer name (shown on the products)</span>
             <input
               type="text"
               maxlength="60"
-              placeholder="e.g. Anniversary Offer"
-              [value]="customLabel()"
-              (input)="onCustomLabel($event)"
+              placeholder="e.g. Diwali Offer"
+              [value]="name()"
+              (input)="onName($event)"
             />
           </label>
-        }
 
-        <div class="divider"></div>
+          <div class="divider"></div>
 
-        <div class="discount-row">
-          <div class="field">
-            <span>Discount type</span>
-            <div class="segmented" role="group" aria-label="Discount type">
-              <button
-                type="button"
-                [class.active]="discountType() === 'percent'"
-                [attr.aria-pressed]="discountType() === 'percent'"
-                (click)="setDiscountType('percent')"
-              >
-                Percentage (%)
-              </button>
-              <button
-                type="button"
-                [class.active]="discountType() === 'flat'"
-                [attr.aria-pressed]="discountType() === 'flat'"
-                (click)="setDiscountType('flat')"
-              >
-                Flat amount
-              </button>
+          <div class="discount-row">
+            <div class="field">
+              <span>Discount type</span>
+              <div class="segmented" role="group" aria-label="Discount type">
+                <button
+                  type="button"
+                  [class.active]="discountType() === 'percent'"
+                  [attr.aria-pressed]="discountType() === 'percent'"
+                  (click)="setDiscountType('percent')"
+                >
+                  Percentage (%)
+                </button>
+                <button
+                  type="button"
+                  [class.active]="discountType() === 'flat'"
+                  [attr.aria-pressed]="discountType() === 'flat'"
+                  (click)="setDiscountType('flat')"
+                >
+                  Flat amount
+                </button>
+              </div>
+            </div>
+
+            <label class="field discount-field">
+              <span>{{ discountType() === 'percent' ? 'Discount percentage' : 'Amount off each product' }}</span>
+              <input
+                type="number"
+                min="1"
+                [attr.max]="discountType() === 'percent' ? 90 : null"
+                step="1"
+                inputmode="decimal"
+                [value]="discountValue() ?? ''"
+                (input)="onDiscountValue($event)"
+              />
+            </label>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="schedule-grid">
+            <label class="field">
+              <span>Starts</span>
+              <input type="datetime-local" [value]="startsAt()" (input)="onStartsAt($event)" />
+            </label>
+
+            <div class="field">
+              <span class="end-toggle">
+                <label class="check-inline">
+                  <input type="checkbox" [checked]="hasEnd()" (change)="toggleHasEnd()" />
+                  End date
+                </label>
+              </span>
+              <input
+                type="datetime-local"
+                [value]="endsAt()"
+                [disabled]="!hasEnd()"
+                (input)="onEndsAt($event)"
+              />
             </div>
           </div>
 
-          <label class="field discount-field">
-            <span>{{ discountType() === 'percent' ? 'Discount percentage' : 'Amount off each product' }}</span>
+          <p class="hint">
+            The discount is taken from each product's current selling price. The old price is shown
+            struck through next to the new price, with the offer name on the product. Without an end
+            date the offer runs until you pause or delete it.
+          </p>
+        </section>
+
+        <!-- Products -->
+        <section class="offers-panel">
+          <div class="panel-head">
+            <div class="panel-title">
+              <span class="step">2</span>
+              <div>
+                <h2>Products in this offer</h2>
+                <p class="panel-sub">Add products by product code, or tick them in the list.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="code-box">
+            <label class="field">
+              <span>Add by product code</span>
+              <textarea
+                rows="2"
+                placeholder="SS_1001, SS_1002, SS_1005   or a range:  SS_1001-SS_1010"
+                [value]="codeText()"
+                (input)="onCodeText($event)"
+              ></textarea>
+            </label>
+            <button type="button" class="ghost-button" (click)="addCodes()">Add codes</button>
+          </div>
+
+          @if (codeMessage()) {
+            <p class="code-message">{{ codeMessage() }}</p>
+          }
+
+          <div class="list-tools">
             <input
-              type="number"
-              min="1"
-              [attr.max]="discountType() === 'percent' ? 90 : null"
-              step="1"
-              inputmode="decimal"
-              [value]="discountValue() ?? ''"
-              (input)="onDiscountValue($event)"
+              type="search"
+              class="search-input"
+              placeholder="Search by name, code or category"
+              aria-label="Search products"
+              [value]="search()"
+              (input)="onSearch($event)"
             />
-          </label>
-        </div>
 
-        <p class="hint">
-          The discount is taken from each product's current selling price. The old price is shown
-          struck through on the website next to the new price.
-        </p>
-      </section>
-
-      <!-- Products -->
-      <section class="offers-panel">
-        <div class="panel-head">
-          <div class="panel-title">
-            <span class="step">2</span>
-            <div>
-              <h2>Select products</h2>
-              <p class="panel-sub">Tick the products that should get this offer.</p>
+            <div class="segmented" role="group" aria-label="Filter products">
+              <button type="button" [class.active]="filter() === 'all'" (click)="setFilter('all')">All</button>
+              <button type="button" [class.active]="filter() === 'selected'" (click)="setFilter('selected')">Selected</button>
+              <button type="button" [class.active]="filter() === 'on-offer'" (click)="setFilter('on-offer')">On offer</button>
             </div>
-          </div>
-        </div>
 
-        <div class="list-tools">
-          <input
-            type="search"
-            class="search-input"
-            placeholder="Search by name, code or category"
-            aria-label="Search products"
-            [value]="search()"
-            (input)="onSearch($event)"
-          />
-
-          <div class="segmented" role="group" aria-label="Filter products">
-            <button type="button" [class.active]="filter() === 'all'" (click)="setFilter('all')">All</button>
-            <button type="button" [class.active]="filter() === 'with'" (click)="setFilter('with')">On offer</button>
-            <button type="button" [class.active]="filter() === 'without'" (click)="setFilter('without')">No offer</button>
+            <button type="button" class="ghost-button" (click)="loadAll()" [disabled]="loading()">
+              {{ loading() ? 'Loading...' : 'Refresh' }}
+            </button>
           </div>
 
-          <button type="button" class="ghost-button" (click)="loadProducts()" [disabled]="loading()">
-            {{ loading() ? 'Loading...' : 'Refresh' }}
-          </button>
-        </div>
-
-        @if (loading()) {
-          <div class="state" role="status">Loading products...</div>
-        } @else if (loadError()) {
-          <div class="state state-error" role="alert">
-            <p>{{ loadError() }}</p>
-            <button type="button" class="ghost-button" (click)="loadProducts()">Try again</button>
-          </div>
-        } @else if (filteredProducts().length === 0) {
-          <div class="state">
-            <strong>No products found</strong>
-            <p>Try a different search or filter.</p>
-          </div>
-        } @else {
-          <div class="table-wrap">
-            <table class="offers-table">
-              <thead>
-                <tr>
-                  <th scope="col" class="check-col">
-                    <input
-                      type="checkbox"
-                      aria-label="Select all shown products"
-                      [checked]="allVisibleSelected()"
-                      (change)="toggleAllVisible()"
-                    />
-                  </th>
-                  <th scope="col">Product</th>
-                  <th scope="col">Price now</th>
-                  <th scope="col">Current offer</th>
-                  <th scope="col">After new offer</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (product of filteredProducts(); track product.id) {
-                  <tr [class.selected]="isSelected(product.id)">
-                    <td class="check-col">
+          @if (loading() && products().length === 0) {
+            <div class="state" role="status">Loading products...</div>
+          } @else if (filteredProducts().length === 0) {
+            <div class="state">
+              <strong>No products found</strong>
+              <p>Try a different search or filter.</p>
+            </div>
+          } @else {
+            <div class="table-wrap">
+              <table class="offers-table">
+                <thead>
+                  <tr>
+                    <th scope="col" class="check-col">
                       <input
                         type="checkbox"
-                        [attr.aria-label]="'Select ' + product.name"
-                        [checked]="isSelected(product.id)"
-                        (change)="toggle(product.id)"
+                        aria-label="Select all shown products"
+                        [checked]="allVisibleSelected()"
+                        (change)="toggleAllVisible()"
                       />
-                    </td>
-                    <td>
-                      <strong class="product-name">{{ product.name }}</strong>
-                      <span class="product-meta">
-                        {{ product.product_code || '' }}
-                        @if (product.product_code && categoryName(product)) {
-                          &middot;
-                        }
-                        {{ categoryName(product) }}
-                      </span>
-                    </td>
-                    <td>
-                      <span class="price-now">{{ formatMoney(currentPrice(product), product.currency) }}</span>
-                      @if (product.offer_type && product.compare_at_price) {
-                        <s class="price-old">{{ formatMoney(product.compare_at_price, product.currency) }}</s>
-                      }
-                    </td>
-                    <td>
-                      @if (product.offer_type) {
-                        <span class="offer-badge">{{ offerBadge(product) }}</span>
-                        <button
-                          type="button"
-                          class="link-button"
-                          (click)="removeOne(product.id)"
-                          [disabled]="saving()"
-                        >
-                          Remove
-                        </button>
-                      } @else {
-                        <span class="muted">&mdash;</span>
-                      }
-                    </td>
-                    <td>
-                      @if (isSelected(product.id) && previewPrice(product) !== null) {
-                        <strong class="price-preview">{{ formatMoney(previewPrice(product), product.currency) }}</strong>
-                      } @else {
-                        <span class="muted">&mdash;</span>
-                      }
-                    </td>
+                    </th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Price now</th>
+                    <th scope="col">In other offers</th>
+                    <th scope="col">After this offer</th>
                   </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        }
-      </section>
-    </div>
+                </thead>
+                <tbody>
+                  @for (product of filteredProducts(); track product.id) {
+                    <tr [class.selected]="isSelected(product.id)">
+                      <td class="check-col">
+                        <input
+                          type="checkbox"
+                          [attr.aria-label]="'Select ' + product.name"
+                          [checked]="isSelected(product.id)"
+                          [disabled]="!product.product_code"
+                          (change)="toggle(product)"
+                        />
+                      </td>
+                      <td class="code-cell">{{ product.product_code || 'No code' }}</td>
+                      <td>
+                        <strong class="product-name">{{ product.name }}</strong>
+                        <span class="product-meta">{{ categoryName(product) }}</span>
+                      </td>
+                      <td>
+                        <span class="price-now">{{ formatMoney(priceOf(product), product.currency) }}</span>
+                      </td>
+                      <td>
+                        @if (otherOffers(product)) {
+                          <span class="offer-badge">{{ otherOffers(product) }}</span>
+                        } @else {
+                          <span class="muted">&mdash;</span>
+                        }
+                      </td>
+                      <td>
+                        @if (isSelected(product.id) && previewPrice(product) !== null) {
+                          <strong class="price-preview">{{ formatMoney(previewPrice(product), product.currency) }}</strong>
+                        } @else {
+                          <span class="muted">&mdash;</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
 
-    <!-- Summary -->
-    <aside class="offers-summary" aria-label="Offer summary">
-      <div class="summary-card">
-        <h2>Offer summary</h2>
-
-        <dl class="summary-list">
-          <div>
-            <dt>Offer name</dt>
-            <dd>{{ offerLabel() || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Discount</dt>
-            <dd>{{ discountSummary() || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Products selected</dt>
-            <dd>{{ selectedCount() }}</dd>
-          </div>
-          <div>
-            <dt>Already on offer</dt>
-            <dd>{{ selectedWithOfferCount() }}</dd>
-          </div>
-        </dl>
-
-        @if (validationMessage()) {
-          <p class="summary-note">{{ validationMessage() }}</p>
-        } @else {
-          <p class="summary-note summary-ready">Ready to apply.</p>
-        }
-
-        <button
-          type="button"
-          class="primary-button"
-          (click)="applyOffer()"
-          [disabled]="saving() || !!validationMessage()"
-        >
-          {{ saving() ? 'Working...' : 'Apply offer' }}
-        </button>
-
-        <button
-          type="button"
-          class="danger-button"
-          (click)="removeSelected()"
-          [disabled]="saving() || selectedWithOfferCount() === 0"
-        >
-          Remove offer from selected
-        </button>
-
-        @if (selectedCount() > 0) {
-          <button type="button" class="link-button clear-link" (click)="clearSelection()" [disabled]="saving()">
-            Clear selection
-          </button>
-        }
+          <p class="hint">
+            If a product is in more than one live offer, the website uses the offer that gives the
+            lowest price.
+          </p>
+        </section>
       </div>
-    </aside>
-  </div>
+
+      <!-- Summary -->
+      <aside class="offers-summary" aria-label="Offer summary">
+        <div class="summary-card">
+          <h2>{{ editingId() ? 'Editing offer' : 'Offer summary' }}</h2>
+
+          <dl class="summary-list">
+            <div>
+              <dt>Offer name</dt>
+              <dd>{{ name() || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Discount</dt>
+              <dd>{{ formulaLabel() || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Products</dt>
+              <dd>{{ selectedProducts().length }}</dd>
+            </div>
+            <div>
+              <dt>Ends</dt>
+              <dd>{{ hasEnd() ? 'On the end date' : 'No end date' }}</dd>
+            </div>
+          </dl>
+
+          @if (validationMessage()) {
+            <p class="summary-note">{{ validationMessage() }}</p>
+          } @else {
+            <p class="summary-note summary-ready">Ready to save.</p>
+          }
+
+          <button
+            type="button"
+            class="primary-button"
+            (click)="save()"
+            [disabled]="saving() || !!validationMessage()"
+          >
+            {{ saving() ? 'Saving...' : editingId() ? 'Update offer' : 'Save offer' }}
+          </button>
+
+          @if (editingId()) {
+            <button type="button" class="danger-button" (click)="cancelEdit()" [disabled]="saving()">
+              Cancel editing
+            </button>
+          }
+
+          @if (selectedProducts().length > 0) {
+            <button type="button" class="link-button clear-link" (click)="clearSelection()" [disabled]="saving()">
+              Clear selection
+            </button>
+          }
+        </div>
+      </aside>
+    </div>
+  }
 </section>

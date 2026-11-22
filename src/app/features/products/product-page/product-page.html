@@ -39,7 +39,9 @@
             }
             @if (isNewArrival) { <span class="product-badge">New arrival</span> }
             @if (isBestSeller) { <span class="product-badge seller">Best seller</span> }
-          </div>
+          </div>            @if (product.offer) {
+              <app-offer-badge [offer]="product.offer" [large]="true" [showEnds]="true"></app-offer-badge>
+            }
 
           @if (product.short_description) {
             <p class="short-description">{{ product.short_description }}</p>

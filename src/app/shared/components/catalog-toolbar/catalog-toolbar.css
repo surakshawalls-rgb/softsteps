@@ -601,3 +601,63 @@ select:focus {
     transition: none !important;
   }
 }
+
+/* =========================================================
+   JAIPUR-STYLE SIDEBAR
+   Flat list of groups, quiet headings, "Label (count)" rows
+   and plain "More" / "Less" links.
+========================================================= */
+
+.group-head {
+  padding: 18px 0 10px;
+  color: #29251f;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.group-body {
+  padding-bottom: 18px;
+  animation: none;
+}
+
+.opt {
+  padding: 6px 0;
+  font-size: 13.5px;
+}
+
+.opt-label {
+  flex: 0 1 auto;
+}
+
+.opt-count {
+  margin-right: auto;
+  color: #8b8175;
+  font-size: 13px;
+}
+
+.box {
+  border-radius: 2px;
+}
+
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
+}
+
+.opt input:checked + .swatch {
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 3px #29251f;
+}
+
+.show-more {
+  margin-top: 4px;
+  padding: 2px 0;
+  color: #29251f;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-transform: uppercase;
+}

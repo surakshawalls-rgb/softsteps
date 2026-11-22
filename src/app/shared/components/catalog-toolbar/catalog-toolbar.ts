@@ -4,18 +4,35 @@
   HostListener,
   Input,
   OnChanges,
-  Output
+  Output,
+  inject
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   CatalogFilterState,
   CatalogSort,
   DEFAULT_CATALOG_FILTER,
-  normalizeFilterValue
+  DISCOUNT_STEPS,
+  normalizeFilterValue,
+  productAvailability,
+  productColors,
+  productDiscount,
+  productSizes
 } from '../../models/catalog-filter.model';
 import { Product } from '../../models/product.model';
+import { CatalogFilterService } from '../../services/catalog-filter.service';
 
-type ListKey = 'subcategories' | 'categories' | 'materials' | 'styles' | 'colors';
+type ListKey =
+  | 'availability'
+  | 'subcategories'
+  | 'categories'
+  | 'sizes'
+  | 'colors'
+  | 'materials'
+  | 'shapes'
+  | 'constructions'
+  | 'styles'
+  | 'discounts';
 type GroupKey = ListKey | 'price';
 
 export interface FilterOption {
@@ -23,6 +40,18 @@ export interface FilterOption {
   label: string;
   count: number;
   swatch?: string;
+}
+
+/** One block of the sidebar (Category, Size, Colour ...), in the order it is shown. */
+export interface FilterGroup {
+  key: GroupKey;
+  title: string;
+  kind: 'list' | 'price';
+  options: FilterOption[];
+  /** colour dots instead of tick boxes */
+  swatches?: boolean;
+  /** show the words with a capital first letter ("hand tufted" -> "Hand Tufted") */
+  capitalize?: boolean;
 }
 
 interface FilterChip {
@@ -67,10 +96,16 @@ const COLOR_SWATCHES: Record<string, string> = {
   orange: '#d9822b',
   yellow: '#e2c04a',
   mustard: '#c9a227',
+  ochre: '#c58a2b',
   gold: '#c9a24a',
   pink: '#d98ca0',
   purple: '#6e4a8e',
   multi: 'conic-gradient(#a8322d, #e2c04a, #4f7a52, #3b6ea5, #6e4a8e, #a8322d)'
+};
+
+const AVAILABILITY_LABELS: Record<string, string> = {
+  customizable: 'Customizable',
+  'made-to-order': 'Made to order'
 };
 
 @Component({
@@ -80,6 +115,7 @@ const COLOR_SWATCHES: Record<string, string> = {
   styleUrl: './catalog-toolbar.css'
 })
 export class CatalogToolbar implements OnChanges {
+  private readonly catalogFilter = inject(CatalogFilterService);
 
   @Input() filter: CatalogFilterState = {
     ...DEFAULT_CATALOG_FILTER,
@@ -93,7 +129,7 @@ export class CatalogToolbar implements OnChanges {
   @Input() categories: { id: string; name: string; slug: string }[] = [];
   @Input() materials: { id: string; name: string; slug: string }[] = [];
 
-  /** the full (unfiltered) product list; used for the Style / Colour options and the counts */
+  /** the full (unfiltered) product list; used for the options and the counts */
   @Input() products: Product[] = [];
 
   @Input() resultCount = 0;
@@ -104,19 +140,16 @@ export class CatalogToolbar implements OnChanges {
 
   mobileFiltersOpen = false;
 
-  categoryOptions: FilterOption[] = [];
-  subcategoryOptions: FilterOption[] = [];
-  materialOptions: FilterOption[] = [];
-  styleOptions: FilterOption[] = [];
-  colorOptions: FilterOption[] = [];
+  /** the sidebar blocks, rebuilt whenever the products change */
+  groups: FilterGroup[] = [];
 
-  /** which accordion groups are expanded */
-  private readonly openGroups = new Set<GroupKey>(['categories', 'materials', 'price']);
+  /** groups the visitor has closed (every group starts open) */
+  private readonly closedGroups = new Set<GroupKey>();
 
   /** groups whose full option list is shown (otherwise only the first few) */
   private readonly expandedGroups = new Set<GroupKey>();
 
-  readonly visibleLimit = 6;
+  readonly visibleLimit = 5;
 
   readonly sortOptions: {
     value: CatalogSort;
@@ -136,25 +169,27 @@ export class CatalogToolbar implements OnChanges {
     { label: '₹25,000 & above', min: 25000, max: null }
   ];
 
+  private presetCounts: number[] = this.pricePresets.map(() => 0);
+
   ngOnChanges(): void {
     this.buildOptions();
   }
 
-  /* ---------- accordion ---------- */
+  /* ---------- groups ---------- */
 
   isOpen(group: GroupKey): boolean {
-    return this.openGroups.has(group);
+    return !this.closedGroups.has(group);
   }
 
   toggleGroup(group: GroupKey): void {
-    if (this.openGroups.has(group)) {
-      this.openGroups.delete(group);
+    if (this.closedGroups.has(group)) {
+      this.closedGroups.delete(group);
     } else {
-      this.openGroups.add(group);
+      this.closedGroups.add(group);
     }
   }
 
-  /** first few options, or all of them once "Show more" was pressed (selected ones always stay visible) */
+  /** first few options, or all of them once "More" was pressed (selected ones always stay visible) */
   visibleOptions(group: ListKey, options: FilterOption[]): FilterOption[] {
     if (this.expandedGroups.has(group) || options.length <= this.visibleLimit + 1) {
       return options;
@@ -181,21 +216,30 @@ export class CatalogToolbar implements OnChanges {
     }
   }
 
+  /** the template passes a plain string; this keeps it type-safe */
+  asList(key: GroupKey): ListKey {
+    return key as ListKey;
+  }
+
   selectedCount(group: GroupKey): number {
     if (group === 'price') {
       return this.filter.minPrice !== null || this.filter.maxPrice !== null ? 1 : 0;
     }
-    return this.filter[group].length;
+    return this.listOf(group).length;
   }
 
   /* ---------- selecting ---------- */
 
+  private listOf(list: ListKey): string[] {
+    return this.filter[list] ?? [];
+  }
+
   isSelected(list: ListKey, value: string): boolean {
-    return this.filter[list].includes(value);
+    return this.listOf(list).includes(value);
   }
 
   toggle(list: ListKey, value: string): void {
-    const current = this.filter[list];
+    const current = this.listOf(list);
     const next = current.includes(value)
       ? current.filter(item => item !== value)
       : [...current, value];
@@ -220,6 +264,10 @@ export class CatalogToolbar implements OnChanges {
     return this.filter.minPrice === preset.min && this.filter.maxPrice === preset.max;
   }
 
+  presetCount(index: number): number {
+    return this.presetCounts[index] ?? 0;
+  }
+
   togglePreset(preset: PricePreset): void {
     if (this.isPresetActive(preset)) {
       this.emit({ minPrice: null, maxPrice: null });
@@ -238,17 +286,15 @@ export class CatalogToolbar implements OnChanges {
       chips.push({ id: 'search', kind: 'search', label: `“${f.search.trim()}”` });
     }
 
-    const lists: [ListKey, FilterOption[]][] = [
-      ['subcategories', this.subcategoryOptions],
-      ['categories', this.categoryOptions],
-      ['materials', this.materialOptions],
-      ['styles', this.styleOptions],
-      ['colors', this.colorOptions]
-    ];
+    for (const group of this.groups) {
+      if (group.kind !== 'list') {
+        continue;
+      }
 
-    for (const [list, options] of lists) {
-      for (const value of f[list]) {
-        const label = options.find(option => option.value === value)?.label ?? value;
+      const list = group.key as ListKey;
+
+      for (const value of this.listOf(list)) {
+        const label = group.options.find(option => option.value === value)?.label ?? value;
         chips.push({ id: `${list}:${value}`, kind: 'list', list, value, label });
       }
     }
@@ -282,6 +328,11 @@ export class CatalogToolbar implements OnChanges {
       materials: [],
       styles: [],
       colors: [],
+      availability: [],
+      sizes: [],
+      shapes: [],
+      constructions: [],
+      discounts: [],
       minPrice: null,
       maxPrice: null
     });
@@ -328,8 +379,15 @@ export class CatalogToolbar implements OnChanges {
     const categoryCounts = new Map<string, number>();
     const subcategoryCounts = new Map<string, number>();
     const materialCounts = new Map<string, number>();
+    const availabilityCounts = new Map<string, number>();
+    const sizes = new Map<string, FilterOption>();
     const styles = new Map<string, FilterOption>();
     const colors = new Map<string, FilterOption>();
+    const shapes = new Map<string, FilterOption>();
+    const constructions = new Map<string, FilterOption>();
+    const discountCounts = DISCOUNT_STEPS.map(() => 0);
+
+    this.presetCounts = this.pricePresets.map(() => 0);
 
     for (const product of products) {
       const categorySlug = product.category?.slug;
@@ -347,17 +405,48 @@ export class CatalogToolbar implements OnChanges {
         subcategoryCounts.set(subcategory, (subcategoryCounts.get(subcategory) ?? 0) + 1);
       }
 
+      for (const item of productAvailability(product)) {
+        availabilityCounts.set(item, (availabilityCounts.get(item) ?? 0) + 1);
+      }
+
+      for (const size of productSizes(product)) {
+        this.countInto(sizes, size.label);
+      }
+
+      for (const color of productColors(product)) {
+        this.countInto(colors, color, true);
+      }
+
       this.countInto(styles, product.style);
-      this.countInto(colors, product.primary_color, true);
+      this.countInto(shapes, product.shape);
+      this.countInto(constructions, product.construction);
+
+      const discount = productDiscount(product);
+      DISCOUNT_STEPS.forEach((step, index) => {
+        if (discount >= step) {
+          discountCounts[index] += 1;
+        }
+      });
+
+      const price = this.catalogFilter.getPrice(product);
+      if (price !== null) {
+        this.pricePresets.forEach((preset, index) => {
+          const aboveMin = preset.min === null || price >= preset.min;
+          const belowMax = preset.max === null || price <= preset.max;
+          if (aboveMin && belowMax) {
+            this.presetCounts[index] += 1;
+          }
+        });
+      }
     }
 
-    this.categoryOptions = (this.categories ?? []).map(category => ({
+    const categoryOptions: FilterOption[] = (this.categories ?? []).map(category => ({
       value: category.slug,
       label: category.name,
       count: categoryCounts.get(category.slug) ?? 0
     }));
 
-    this.subcategoryOptions = Array.from(subcategoryCounts.entries())
+    const subcategoryOptions: FilterOption[] = Array.from(subcategoryCounts.entries())
       .map(([value, count]) => {
         const product = products.find(item =>
           normalizeFilterValue(item.specifications?.subcategory) === value
@@ -370,14 +459,40 @@ export class CatalogToolbar implements OnChanges {
       })
       .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 
-    this.materialOptions = (this.materials ?? []).map(material => ({
+    const materialOptions: FilterOption[] = (this.materials ?? []).map(material => ({
       value: material.id,
       label: material.name,
       count: materialCounts.get(material.id) ?? 0
     }));
 
-    this.styleOptions = this.sortedOptions(styles);
-    this.colorOptions = this.sortedOptions(colors);
+    const availabilityOptions: FilterOption[] = Array.from(availabilityCounts.entries())
+      .map(([value, count]) => ({ value, label: AVAILABILITY_LABELS[value] ?? value, count }))
+      .sort((a, b) => b.count - a.count);
+
+    const discountOptions: FilterOption[] = DISCOUNT_STEPS
+      .map((step, index) => ({
+        value: String(step),
+        label: `${step}% & above`,
+        count: discountCounts[index]
+      }))
+      .filter(option => option.count > 0);
+
+    // The order follows the filter on jaipurrugs.com
+    const allGroups: FilterGroup[] = [
+      { key: 'availability', title: 'Availability', kind: 'list', options: availabilityOptions },
+      { key: 'categories', title: 'Category', kind: 'list', options: categoryOptions },
+      { key: 'subcategories', title: 'Type', kind: 'list', options: subcategoryOptions },
+      { key: 'sizes', title: 'Size', kind: 'list', options: this.sortedOptions(sizes) },
+      { key: 'colors', title: 'Colour', kind: 'list', options: this.sortedOptions(colors), swatches: true, capitalize: true },
+      { key: 'materials', title: 'Material', kind: 'list', options: materialOptions },
+      { key: 'price', title: 'Price range', kind: 'price', options: [] },
+      { key: 'shapes', title: 'Shape', kind: 'list', options: this.sortedOptions(shapes), capitalize: true },
+      { key: 'constructions', title: 'Weaving technique', kind: 'list', options: this.sortedOptions(constructions), capitalize: true },
+      { key: 'styles', title: 'Style', kind: 'list', options: this.sortedOptions(styles), capitalize: true },
+      { key: 'discounts', title: 'Discount', kind: 'list', options: discountOptions }
+    ];
+
+    this.groups = allGroups.filter(group => group.kind === 'price' || group.options.length > 0);
   }
 
   private countInto(

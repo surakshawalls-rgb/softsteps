@@ -3,7 +3,11 @@ import { Product } from '../models/product.model';
 import {
   CatalogFilterState,
   DEFAULT_CATALOG_FILTER,
-  normalizeFilterValue
+  normalizeFilterValue,
+  productAvailability,
+  productColors,
+  productDiscount,
+  productSizes
 } from '../models/catalog-filter.model';
 
 @Injectable({
@@ -50,6 +54,7 @@ export class CatalogFilterService {
           product.style,
           product.primary_color,
           product.construction,
+          product.shape,
           ...(product.tags ?? [])
         ]
           .filter(Boolean)
@@ -59,17 +64,17 @@ export class CatalogFilterService {
         if (!searchableText.includes(search)) {
           return false;
         }
+      }
 
-        if (
-          filters.subcategories.length &&
-          !filters.subcategories.includes(
-            normalizeFilterValue(
-              (product.specifications as { subcategory?: string | null } | null)?.subcategory
-            )
+      if (
+        filters.subcategories.length &&
+        !filters.subcategories.includes(
+          normalizeFilterValue(
+            (product.specifications as { subcategory?: string | null } | null)?.subcategory
           )
-        ) {
-          return false;
-        }
+        )
+      ) {
+        return false;
       }
 
       // Each group is "any of the ticked values"; groups are combined with AND.
@@ -97,9 +102,46 @@ export class CatalogFilterService {
 
       if (
         filters.colors.length &&
-        !filters.colors.includes(normalizeFilterValue(product.primary_color))
+        !productColors(product).some(color => filters.colors.includes(color))
       ) {
         return false;
+      }
+
+      if (
+        filters.availability?.length &&
+        !productAvailability(product).some(item => filters.availability!.includes(item))
+      ) {
+        return false;
+      }
+
+      if (
+        filters.sizes?.length &&
+        !productSizes(product).some(size => filters.sizes!.includes(size.value))
+      ) {
+        return false;
+      }
+
+      if (
+        filters.shapes?.length &&
+        !filters.shapes.includes(normalizeFilterValue(product.shape))
+      ) {
+        return false;
+      }
+
+      if (
+        filters.constructions?.length &&
+        !filters.constructions.includes(normalizeFilterValue(product.construction))
+      ) {
+        return false;
+      }
+
+      if (filters.discounts?.length) {
+        // "20% & above" and "30% & above" together simply mean "20% & above"
+        const smallest = Math.min(...filters.discounts.map(Number));
+
+        if (productDiscount(product) < smallest) {
+          return false;
+        }
       }
 
       const price = this.getPrice(product);
@@ -266,7 +308,12 @@ export class CatalogFilterService {
       categories: [],
       materials: [],
       styles: [],
-      colors: []
+      colors: [],
+      availability: [],
+      sizes: [],
+      shapes: [],
+      constructions: [],
+      discounts: []
     };
   }
 

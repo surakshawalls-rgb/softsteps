@@ -60,3 +60,9 @@ h1 { font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(32px, 4
   .line-image { width: 84px; height: 108px; }
   .line-total { grid-column: 2; }
 }
+/* Offer details */
+.line-offer { display: block; margin-top: 8px; }
+.line-unit s { margin-left: 6px; color: #a29b92; font-size: 12px; }
+.line-save { margin-top: 4px; color: #2f5a3a; font-size: 13px; font-weight: 600; }
+.summary .was { color: #8a8379; font-weight: 500; text-decoration: line-through; }
+.summary .saving dt, .summary .saving dd { color: #2f5a3a; }

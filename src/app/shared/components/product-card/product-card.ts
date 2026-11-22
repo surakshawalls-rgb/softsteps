@@ -4,13 +4,14 @@ import { Product } from '../../models/product.model';
 import { ProductImageUrlService } from '../../../data-access/supabase/product-image-url.service';
 import { ProductImage } from '../product-image/product-image';
 import { PriceDisplay } from '../price-display/price-display';
-
+import { OfferBadge } from '../offer-badge/offer-badge';
 @Component({
   selector: 'app-product-card',
-  imports: [
+    imports: [
     RouterLink,
     ProductImage,
-    PriceDisplay
+    PriceDisplay,
+    OfferBadge
   ],
   templateUrl: './product-card.html',
   styleUrl: './product-card.css',

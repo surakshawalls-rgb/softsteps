@@ -24,7 +24,18 @@
               <div class="line-info">
                 <a class="line-name" [routerLink]="['/products', item.slug]">{{ item.name }}</a>
                 <p class="line-meta">Code {{ item.productCode }} · {{ item.size }}</p>
-                <p class="line-unit">{{ money(item.unitPrice, item.currency) }} each</p>
+                @if (item.offer) {
+                  <app-offer-badge class="line-offer" [offer]="item.offer" [showEnds]="true"></app-offer-badge>
+                }
+                <p class="line-unit">
+                  {{ money(item.unitPrice, item.currency) }} each
+                  @if (unitSaving(item) > 0) {
+                    <s>{{ money(item.originalUnitPrice!, item.currency) }}</s>
+                  }
+                </p>
+                @if (unitSaving(item) > 0) {
+                  <p class="line-save">You save {{ money(lineSaving(item), item.currency) }}</p>
+                }
 
                 <div class="line-controls">
                   <div class="qty" role="group" [attr.aria-label]="'Quantity for ' + item.name">
@@ -45,6 +56,10 @@
           <h2>Order summary</h2>
           <dl>
             <div><dt>Items</dt><dd>{{ cart.count() }}</dd></div>
+            @if (totalSaving > 0) {
+              <div><dt>Price before offers</dt><dd class="was">{{ money(subtotalBeforeOffers, cart.currency()) }}</dd></div>
+              <div class="saving"><dt>Offer savings</dt><dd>− {{ money(totalSaving, cart.currency()) }}</dd></div>
+            }
             <div class="total"><dt>Subtotal</dt><dd>{{ money(cart.subtotal(), cart.currency()) }}</dd></div>
           </dl>
           <p class="note">Freight, taxes and delivery timing are confirmed by our team when your order request is reviewed. Online payment is not connected yet.</p>

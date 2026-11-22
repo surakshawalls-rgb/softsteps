@@ -8,7 +8,7 @@ import { Product } from '../../../shared/models/product.model';
 import { ProductGallery } from '../product-gallery/product-gallery';
 import { Seo } from '../../../core/services/seo';
 import { CartService, formatMoney } from '../../../core/services/cart.service';
-
+import { OfferBadge } from '../../../shared/components/offer-badge/offer-badge';
 /** One size a rug can be bought in. */
 interface SizeOption {
   label: string;
@@ -18,7 +18,7 @@ interface SizeOption {
 
 @Component({
   selector: 'app-product-page',
-  imports: [RouterLink, ProductGallery],
+  imports: [RouterLink, ProductGallery, OfferBadge], 
   templateUrl: './product-page.html',
   styleUrl: './product-page.css',
 })
@@ -210,6 +210,10 @@ export class ProductPage implements OnInit, OnDestroy {
 
     const price = this.price;
     if (price === null) return [];
+    const compareAt = typeof product.compare_at_price === 'number' ? product.compare_at_price : null;
+    if (compareAt !== null && compareAt > price) {
+      return [{ label: this.size ?? 'Standard size', price: compareAt, salePrice: price }];
+    }
     return [{ label: this.size ?? 'Standard size', price, salePrice: null }];
   }
 
@@ -272,6 +276,8 @@ export class ProductPage implements OnInit, OnDestroy {
         size: size.label,
         unitPrice: unit,
         currency: this.currencyCode,
+        originalUnitPrice: size.salePrice !== null && size.salePrice < size.price ? size.price : null,
+        offer: product.offer ?? null,
       },
       this.quantity(),
     );
