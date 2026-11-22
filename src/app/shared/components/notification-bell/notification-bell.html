@@ -40,6 +40,10 @@
           </p>
         }
 
+        @if (pushMessage()) {
+          <p class="bell-notice">{{ pushMessage() }}</p>
+        }
+
         <ul class="bell-list">
           @for (item of items(); track item.id) {
             <li>
@@ -71,6 +75,16 @@
             <span class="bell-hint">Desktop alerts on</span>
           } @else if (desktopPermission() === 'denied') {
             <span class="bell-hint">Desktop alerts blocked in browser</span>
+          }
+
+          @if (pushStatus() === 'idle' || pushStatus() === 'error') {
+            <button type="button" class="link-button" (click)="enablePush()">
+              {{ pushStatus() === 'error' ? 'Retry phone alerts' : 'Enable phone alerts' }}
+            </button>
+          } @else if (pushStatus() === 'enabled') {
+            <span class="bell-hint">Phone alerts on</span>
+          } @else if (pushStatus() === 'denied') {
+            <span class="bell-hint">Phone alerts blocked</span>
           }
         </footer>
       </section>

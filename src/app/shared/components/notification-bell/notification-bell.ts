@@ -2,6 +2,7 @@ import { Component, ElementRef, HostListener, OnDestroy, OnInit, inject, signal 
 import { Router } from '@angular/router';
 
 import { Notification as NotificationService } from '../../../core/services/notification';
+import { PushNotificationService } from '../../../core/services/push-notification';
 import { AdminNotification } from '../../models/notification.model';
 
 @Component({
@@ -12,6 +13,7 @@ import { AdminNotification } from '../../models/notification.model';
 })
 export class NotificationBell implements OnInit, OnDestroy {
   private readonly notifications = inject(NotificationService);
+  private readonly push = inject(PushNotificationService);
   private readonly router = inject(Router);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -22,11 +24,18 @@ export class NotificationBell implements OnInit, OnDestroy {
   readonly setupMissing = this.notifications.adminSetupMissing;
   readonly soundEnabled = this.notifications.soundEnabled;
   readonly desktopPermission = this.notifications.desktopPermission;
+  readonly pushStatus = this.push.status;
+  readonly pushMessage = this.push.message;
 
   readonly open = signal(false);
 
   ngOnInit(): void {
-    void this.notifications.startAdminLive();
+    void this.notifications.startAdminLive().then(() => {
+      // Android app only: also register this phone for alerts when the app is closed.
+      if (this.notifications.adminActive()) {
+        void this.push.registerAdminDevice();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -56,6 +65,10 @@ export class NotificationBell implements OnInit, OnDestroy {
 
   enableDesktop(): void {
     void this.notifications.requestDesktopPermission();
+  }
+
+  enablePush(): void {
+    void this.push.registerAdminDevice();
   }
 
   timeAgo(value: string): string {
