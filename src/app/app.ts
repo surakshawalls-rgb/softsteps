@@ -2,17 +2,20 @@
 import { Component, inject, PLATFORM_ID } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { Notification as NotificationService } from './core/services/notification';
 import { StorefrontLayout } from './layouts/storefront/storefront-layout/storefront-layout';
+import { NotificationToast } from './shared/components/notification-toast/notification-toast';
 
 @Component({
   selector: 'app-root',
-  imports: [StorefrontLayout],
+  imports: [StorefrontLayout, NotificationToast],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly notifications = inject(NotificationService);
 
   private disposePage?: () => void;
   private navigationId = 0;
@@ -21,6 +24,9 @@ export class App {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
+
+    // live "new offer" popups for visitors
+    this.notifications.startPublicLive();
 
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))

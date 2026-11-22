@@ -3,11 +3,12 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 
 import { Auth } from '../../../core/auth/auth';
 import { FestivalReminder } from '../../../features/admin/offers/festival-reminder';
+import { NotificationBell } from '../../../shared/components/notification-bell/notification-bell';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, FestivalReminder],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, FestivalReminder, NotificationBell],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css',
 })

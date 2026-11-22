@@ -1,6 +1,8 @@
-﻿import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+﻿import { Component, DestroyRef, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 
+import { Notification as NotificationService } from '../../../core/services/notification';
 import { SupabaseService } from '../../../core/services/supabase.service';
 
 interface CustomRequirementSubmission {
@@ -26,6 +28,8 @@ interface CustomRequirementSubmission {
 export class AdminPage implements OnInit {
   private readonly supabase = inject(SupabaseService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly notifications = inject(NotificationService);
+  private readonly destroyRef = inject(DestroyRef);
 
   requirements: CustomRequirementSubmission[] = [];
   requirementsLoading = true;
@@ -34,10 +38,23 @@ export class AdminPage implements OnInit {
 
   ngOnInit(): void {
     void this.loadRequirements();
+
+    // Live update: when a new requirement notification arrives, reload the table
+    // quietly (no loading flicker).
+    this.notifications.adminInsert$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((item) => {
+        if (item.type === 'custom_requirement') {
+          void this.loadRequirements(true);
+        }
+      });
   }
 
-  async loadRequirements(): Promise<void> {
-    this.requirementsLoading = true;
+  async loadRequirements(silent = false): Promise<void> {
+    if (!silent) {
+      this.requirementsLoading = true;
+    }
+
     this.requirementsError = '';
 
     try {
