@@ -1,5 +1,5 @@
 <section class="pm">
-<header><div><small>CATALOGUE ADMINISTRATION</small><h1>{{mode==='list'?'Product Management':mode==='new'?'Add product':mode==='history'?'Product history':mode==='preview'?'Product preview':'Edit product'}}</h1></div><a routerLink="/admin/products">All products</a>@if(mode==='list'){<a class="primary" routerLink="/admin/products/new">+ Add product</a>}</header>
+<header><div><small>CATALOGUE ADMINISTRATION</small><h1>{{mode==='list'?'Product Management':mode==='new'?'Add product':mode==='history'?'Product history':mode==='preview'?'Product preview':'Edit product'}}</h1></div><a routerLink="/admin/products">All products</a>@if(mode==='list'){<a routerLink="/admin/products/bulk">Excel Bulk Update</a><a class="primary" routerLink="/admin/products/new">+ Add product</a>}</header>
 @if(error){<p class="error" role="alert">{{error}}</p>} @if(notice){<p class="notice" role="status">{{notice}}</p>} @if(busy){<p role="status">Working… {{uploadProgress}}</p>}
 @if(mode==='list'){
 <div class="stats">@for(c of ['total','active','draft','archived','pending'];track c){<div><small>{{label(c)}}</small><strong>{{counts[c]}}</strong></div>}</div>

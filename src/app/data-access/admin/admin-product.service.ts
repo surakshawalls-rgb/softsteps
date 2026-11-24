@@ -7,14 +7,7 @@ export type Row = Record<string, any>;
 export class AdminProductService {
   private db = inject(SupabaseClientService).client;
   async rpc<T>(name: string, args: Row = {}): Promise<T> {
-    console.log('[RPC REQUEST]', name, JSON.stringify(args, null, 2));
-
     const {data,error} = await this.db.rpc(name,args);
-
-    console.log('[RPC RESPONSE]', name, {
-      data: data,
-      error: error
-    });
     if (error) {
       console.error('[AdminProductService] RPC failed:', name, {
         code: error.code,

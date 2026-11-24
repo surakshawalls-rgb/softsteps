@@ -51,6 +51,12 @@ export const routes: Routes = [
         title: 'Product Management | Soft Steps',
       },
       {
+        path: 'products/bulk',
+        loadComponent: () => import('./features/admin/bulk-products/bulk-products').then(m => m.BulkProducts),
+        canActivate: [adminGuard],
+        title: 'Excel Bulk Update | Soft Steps',
+      },
+      {
         path: 'products/new',
         loadComponent: () => import('./features/admin/products/products').then(m => m.AdminProducts),
         canActivate: [adminGuard],
