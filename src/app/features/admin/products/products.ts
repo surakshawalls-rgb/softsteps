@@ -1,0 +1,46 @@
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AdminProductService, Lookup, Row } from '../../../data-access/admin/admin-product.service';
+
+@Component({selector:'app-admin-products',standalone:true,imports:[CommonModule,FormsModule,RouterLink],templateUrl:'./products.html',styleUrl:'./products.css'})
+export class AdminProducts implements OnInit {
+
+  private readonly cdr = inject(ChangeDetectorRef);
+  private api=inject(AdminProductService); private route=inject(ActivatedRoute); private router=inject(Router);
+  mode='list'; busy=false; error=''; notice=''; dirty=false; tab='General'; tabs=['General','Specifications','Pricing','Images','SEO','Settings'];
+  categories:Lookup[]=[]; materials:Lookup[]=[]; collections:Lookup[]=[]; items:Row[]=[]; total=0; counts:Record<string,number>={}; page=0; historyPage=0; history:Row[]=[]; historyTotal=0;
+  filters={search:'',category_id:'',material_id:'',status:'working',verification_status:'',sort:'updated_at'};
+  product:Row={}; variants:Row[]=[]; images:Row[]=[]; removedImages:string[]=[]; specText='{}'; tagsText=''; materialName=''; folder=''; uploadProgress='';
+  general=['name','short_description','description','design_story','origin_country']; specs=['construction','style','primary_color','shape','pile_height_mm','minimum_order_quantity','lead_time_days']; pricing=['base_cost','base_price','compare_at_price','currency']; flags=['featured','is_new_arrival','is_best_seller','is_customizable','made_to_order','cart_enabled']; variantFields=['size','width','length','unit','color','color_code','pattern','material','construction','cost_price','selling_price','currency','stock_quantity','minimum_order_quantity','lead_time_days']; numeric=['pile_height_mm','minimum_order_quantity','lead_time_days','base_cost','base_price','compare_at_price','width','length','cost_price','selling_price','stock_quantity'];
+  label(s:string){return s.replace(/_/g,' ').replace(/^./,c=>c.toUpperCase());}
+  async run(fn:()=>Promise<void>){if(this.busy)return;this.busy=true;this.error='';this.notice='';this.cdr.markForCheck();try{await fn();}catch(e){
+      console.error('[Product Management]', e);
+      this.error = e instanceof Error ? e.message : String(e);
+    }finally {
+      this.busy = false;
+      this.cdr.markForCheck();
+    }}
+  async ngOnInit(){this.mode=this.route.snapshot.data['mode']||'list';await this.run(async()=>{const l=await this.api.lookups();this.categories=l.categories;this.materials=l.materials;this.collections=l.collections;if(this.mode==='list')await this.loadList();else if(this.mode==='new')this.product={name:'',category_id:null,currency:'INR',status:'draft',verification_status:'pending'};else {await this.loadProduct();if(this.mode==='history')await this.loadHistory();}});}
+  async loadList(){const r=await this.api.list({...this.filters,offset:this.page*25,limit:25});this.items=r.items;this.total=r.total;this.counts=r.counts;}
+  search(){this.page=0;return this.run(()=>this.loadList());}
+  move(n:number){this.page+=n;return this.run(()=>this.loadList());}
+  async loadProduct(){const r=await this.api.get(this.route.snapshot.paramMap.get('id')!);this.product=r['product'];this.variants=r['variants']||[];this.images=r['images']||[];this.folder=r['storage_folder']||'';this.specText=JSON.stringify(this.product['specifications']||{},null,2);this.tagsText=(this.product['tags']||[]).join(', ');this.removedImages=[];this.dirty=false;}
+  async loadHistory(){const r=await this.api.history(this.product['id'],this.historyPage*25);this.history=r.items;this.historyTotal=r.total;}
+  historyMove(n:number){this.historyPage+=n;return this.run(()=>this.loadHistory());}
+  mark(){this.dirty=true;}
+  canLeave(){return !this.dirty||typeof window==='undefined'||window.confirm('Discard unsaved changes? Uploaded files may remain in Storage.');}
+  addVariant(){this.variants.push({size:'',width:null,length:null,unit:'ft',currency:this.product['currency']||'INR',stock_quantity:0,is_active:true});this.mark();}
+  removeVariant(i:number){if(this.variants[i]['id'])this.variants[i]['is_active']=false;else this.variants.splice(i,1);this.mark();}
+  async save(){await this.run(async()=>{if(!String(this.product['name']||'').trim()||!this.product['category_id'])throw new Error('Product name and category are required.');const specifications=JSON.parse(this.specText);if(!specifications||typeof specifications!=='object'||Array.isArray(specifications))throw new Error('Specifications must be a JSON object.');const fields=[...this.general,...this.specs,...this.pricing,...this.flags,'category_id','collection_id','material_id','meta_title','meta_description'];const p:Row={};for(const k of fields)if(this.product[k]!==undefined)p[k]=this.product[k]===''?null:this.product[k];p['specifications']=specifications;p['tags']=this.tagsText.split(',').map(s=>s.trim()).filter(Boolean);if(this.mode==='new'){const r=await this.api.create(p);this.dirty=false;await this.router.navigate(['/admin/products',r['product']['id'],'edit']);return;}await this.api.update(this.product['id'],this.product['updated_at'],{product:p,variants:this.variants.map(v=>Object.fromEntries(['id','is_active',...this.variantFields].filter(k=>v[k]!==undefined).map(k=>[k,v[k]]))),images:this.images.map((v,i)=>({...Object.fromEntries(['id','variant_id','image_url','alt_text','image_type','is_primary'].filter(k=>v[k]!==undefined).map(k=>[k,v[k]])),sort_order:i})),remove_image_ids:this.removedImages});await this.loadProduct();this.notice='Changes saved.';});}
+  addMaterial(){return this.run(async()=>{if(!this.materialName.trim())throw new Error('Enter a material name.');const m=await this.api.material(this.materialName.trim());if(!this.materials.some(x=>x.id===m.id))this.materials.push(m);this.product['material_id']=m.id;this.materialName='';this.mark();});}
+  upload(event:Event){const input=event.target as HTMLInputElement;const files=Array.from(input.files||[]);input.value='';return this.uploadFiles(files);}
+  drop(event:DragEvent){event.preventDefault();if(!this.busy&&this.mode==='edit')return this.uploadFiles(Array.from(event.dataTransfer?.files||[]));return Promise.resolve();}
+  uploadFiles(files:File[]){return this.run(async()=>{try{for(let i=0;i<files.length;i++){this.uploadProgress=`Uploading ${i+1} of ${files.length}`;const image=await this.api.upload(files[i],this.folder,this.product['product_code']);image['alt_text']=this.product['name'];this.images.push(image);this.mark();}if(!this.images.some(x=>x['is_primary']&&!x['variant_id'])){const i=this.images.findIndex(x=>!x['variant_id']);if(i>=0)this.primary(i);}this.notice='Images uploaded. Save changes to attach them.';}finally{this.uploadProgress='';}});}
+  primary(i:number){if(this.images[i]['variant_id'])return;this.images.forEach((v,j)=>{if(!v['variant_id']){v['is_primary']=i===j;if(i===j)v['image_type']='primary';else if(v['image_type']==='primary')v['image_type']='gallery';}});this.mark();}
+  reorder(i:number,d:number){const j=i+d;if(j<0||j>=this.images.length)return;[this.images[i],this.images[j]]=[this.images[j],this.images[i]];this.mark();}
+  removeImage(i:number){const v=this.images[i];if(v['id'])this.removedImages.push(v['id']);this.images.splice(i,1);this.mark();}
+  action(a:'publish'|'archive'|'restore'){if(this.dirty){this.error='Save changes before changing status.';return;}const reason=a==='archive'?window.prompt('Reason for archiving:'):'';if(a==='archive'&&!reason?.trim())return;if(!window.confirm(`Confirm ${a} product?`))return;return this.run(async()=>{await this.api.action(a,this.product['id'],this.product['updated_at'],reason||'');await this.loadProduct();this.notice='Product status updated.';});}
+  verify(){if(this.dirty){this.error='Save changes before verification.';return;}return this.run(async()=>{await this.api.update(this.product['id'],this.product['updated_at'],{verification_status:'verified'});await this.loadProduct();this.notice='Product verified.';});}
+}

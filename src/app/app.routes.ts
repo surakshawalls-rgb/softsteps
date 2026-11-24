@@ -1,4 +1,4 @@
-﻿import { Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 
 import { adminGuard } from './core/guards/admin-guard';
 import { AboutPage } from './features/about/about-page/about-page';
@@ -41,6 +41,46 @@ export const routes: Routes = [
         component: MessageComposer,
         canActivate: [adminGuard],
         title: 'Admin Communications',
+      },
+      {
+        path: 'products',
+        loadComponent: () => import('./features/admin/products/products').then(m => m.AdminProducts),
+        canActivate: [adminGuard],
+        canDeactivate: [(component: import('./features/admin/products/products').AdminProducts) => component.canLeave()],
+        data: { mode: 'list' },
+        title: 'Product Management | Soft Steps',
+      },
+      {
+        path: 'products/new',
+        loadComponent: () => import('./features/admin/products/products').then(m => m.AdminProducts),
+        canActivate: [adminGuard],
+        canDeactivate: [(component: import('./features/admin/products/products').AdminProducts) => component.canLeave()],
+        data: { mode: 'new' },
+        title: 'Product Management | Soft Steps',
+      },
+      {
+        path: 'products/:id/edit',
+        loadComponent: () => import('./features/admin/products/products').then(m => m.AdminProducts),
+        canActivate: [adminGuard],
+        canDeactivate: [(component: import('./features/admin/products/products').AdminProducts) => component.canLeave()],
+        data: { mode: 'edit' },
+        title: 'Product Management | Soft Steps',
+      },
+      {
+        path: 'products/:id/preview',
+        loadComponent: () => import('./features/admin/products/products').then(m => m.AdminProducts),
+        canActivate: [adminGuard],
+        canDeactivate: [(component: import('./features/admin/products/products').AdminProducts) => component.canLeave()],
+        data: { mode: 'preview' },
+        title: 'Product Management | Soft Steps',
+      },
+      {
+        path: 'products/:id/history',
+        loadComponent: () => import('./features/admin/products/products').then(m => m.AdminProducts),
+        canActivate: [adminGuard],
+        canDeactivate: [(component: import('./features/admin/products/products').AdminProducts) => component.canLeave()],
+        data: { mode: 'history' },
+        title: 'Product Management | Soft Steps',
       },
       {
         path: 'offers',
