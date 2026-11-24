@@ -4,7 +4,7 @@ android {
     namespace = "com.softstepscarpet.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.softstepscarpet.app"
+        applicationId "com.softstepscarpets.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

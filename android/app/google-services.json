@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "846709972052",
+    "project_id": "soft-steps-8c0a7",
+    "storage_bucket": "soft-steps-8c0a7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846709972052:android:feff207b6253bad2ed61c1",
+        "android_client_info": {
+          "package_name": "com.softstepscarpets.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAV426fEdSZrmne7aV1c1VTkPpChbO7qts"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
