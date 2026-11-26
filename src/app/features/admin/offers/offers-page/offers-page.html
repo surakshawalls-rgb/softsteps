@@ -123,6 +123,14 @@
         </p>
       </div>
 
+      @if (bannerSetupNeeded()) {
+        <div class="offers-banner offers-banner-error" role="alert">
+          Banner uploads need a one-time setup. In Supabase open <strong>SQL Editor</strong>, paste
+          the contents of <strong>supabase/migrations/202611250001_festival_banners.sql</strong> and
+          press <strong>Run</strong>.
+        </div>
+      }
+
       @if (calendarStale) {
         <div class="offers-banner offers-banner-error" role="status">
           The festival calendar needs next year's dates. Open
@@ -146,6 +154,59 @@
 
             <h3>{{ item.name }}</h3>
             <p class="festival-date">{{ dateLabel(item.date) }}</p>
+
+            <div class="festival-banner">
+              @if (bannerOf(item.name); as banner) {
+                @if (banner.preview ?? banner.saved; as imageSrc) {
+                  <img
+                    class="festival-banner-image"
+                    [class.has-error]="!!banner.error"
+                    [src]="imageSrc"
+                    [alt]="item.name + ' home banner'"
+                  />
+                }
+
+                @if (banner.error) {
+                  <p class="festival-banner-error" role="alert">{{ banner.error }}</p>
+                  @if (banner.saved) {
+                    <p class="festival-banner-hint">Your current banner stays in use.</p>
+                  }
+                } @else if (banner.message) {
+                  <p class="festival-banner-ok" role="status">{{ banner.message }}</p>
+                }
+
+                <input
+                  #bannerInput
+                  class="festival-banner-input"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  [attr.aria-label]="'Upload home banner for ' + item.name"
+                  (change)="onBannerChosen(item, $event)"
+                />
+
+                <div class="festival-banner-actions">
+                  <button
+                    type="button"
+                    class="festival-banner-button"
+                    [disabled]="banner.busy"
+                    (click)="bannerInput.click()"
+                  >
+                    {{ banner.busy ? 'Working…' : banner.saved ? 'Replace banner' : 'Upload home banner' }}
+                  </button>
+
+                  @if (banner.saved && !banner.busy) {
+                    <button type="button" class="festival-banner-remove" (click)="removeBanner(item)">
+                      Remove
+                    </button>
+                  }
+                </div>
+              }
+
+              <p class="festival-banner-hint">
+                {{ bannerSize.width }} × {{ bannerSize.height }} px · JPG, PNG or WebP · up to
+                {{ bannerMaxMb }} MB
+              </p>
+            </div>
 
             <button
               type="button"

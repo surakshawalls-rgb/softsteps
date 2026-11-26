@@ -71,41 +71,58 @@ import {
         display: none;
       }
 
+      /* Dark and gold like the home banner, so the reminder is the first thing seen in the admin panel. */
       .festival-reminder {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
-        padding: 1rem 1.3rem;
-        border: 1px solid rgba(147, 95, 43, 0.3);
+        gap: 1rem 1.5rem;
+        padding: 1.1rem 1.4rem;
+        border: 1px solid #2b241b;
         border-radius: 20px;
         background:
-          radial-gradient(circle at 96% 10%, rgba(201, 147, 86, 0.28), transparent 50%),
-          linear-gradient(135deg, #fffdf9 0%, #f7f2ec 100%);
-        box-shadow: 0 8px 24px rgba(26, 22, 18, 0.06);
+          radial-gradient(ellipse at 96% 50%, rgba(232, 176, 75, 0.3), transparent 55%),
+          linear-gradient(135deg, #1b1712 0%, #0d0b09 100%);
+        box-shadow: 0 14px 32px rgba(26, 22, 18, 0.2);
       }
 
       .festival-reminder-warning {
         border-color: rgba(141, 45, 45, 0.28);
         background: #fbeeee;
+        box-shadow: 0 8px 24px rgba(26, 22, 18, 0.06);
       }
 
       .festival-reminder-text {
         display: grid;
-        gap: 0.25rem;
+        gap: 0.3rem;
         max-width: 70ch;
       }
 
       .festival-reminder-text strong {
-        color: #1f1a17;
-        font-size: 0.98rem;
+        color: #fff8ea;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 1.2rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
       }
 
       .festival-reminder-text span {
-        color: #514a41;
+        color: #d9cdb8;
         font-size: 0.85rem;
-        line-height: 1.5;
+        line-height: 1.55;
+      }
+
+      .festival-reminder-warning .festival-reminder-text strong {
+        color: #1f1a17;
+        font-family: inherit;
+        font-size: 0.98rem;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      .festival-reminder-warning .festival-reminder-text span {
+        color: #514a41;
       }
 
       .festival-reminder-actions {
@@ -117,27 +134,52 @@ import {
       .festival-reminder-button {
         display: inline-flex;
         align-items: center;
-        min-height: 40px;
-        padding: 0 1.1rem;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #c99356, #935f2b);
-        color: #fff;
+        min-height: 42px;
+        padding: 0 1.4rem;
+        border-radius: 999px;
+        background: #d4b27e;
+        color: #1b1712;
         font-size: 0.84rem;
         font-weight: 700;
         text-decoration: none;
+        transition: background-color 0.2s ease;
+      }
+
+      .festival-reminder-button:hover {
+        background: #e8cf9f;
       }
 
       .festival-reminder-dismiss {
-        min-height: 40px;
-        padding: 0 0.9rem;
-        border: 1px solid rgba(41, 37, 31, 0.16);
-        border-radius: 12px;
-        background: #fff;
-        color: #514a41;
+        min-height: 42px;
+        padding: 0 1rem;
+        border: 1px solid rgba(255, 248, 234, 0.28);
+        border-radius: 999px;
+        background: transparent;
+        color: #f2e3c4;
         cursor: pointer;
         font: inherit;
         font-size: 0.82rem;
         font-weight: 600;
+        transition:
+          background-color 0.2s ease,
+          border-color 0.2s ease;
+      }
+
+      .festival-reminder-dismiss:hover {
+        border-color: rgba(255, 248, 234, 0.6);
+        background: rgba(255, 248, 234, 0.08);
+      }
+
+      .festival-reminder-warning .festival-reminder-dismiss {
+        border-color: rgba(41, 37, 31, 0.16);
+        background: #fff;
+        color: #514a41;
+      }
+
+      .festival-reminder-button:focus-visible,
+      .festival-reminder-dismiss:focus-visible {
+        outline: 2px solid #d4b27e;
+        outline-offset: 2px;
       }
     `,
   ],

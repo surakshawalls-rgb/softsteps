@@ -2,6 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 
+import { FestivalBannerService } from '../../../core/services/festival-banner.service';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import {
   HeroContent,
@@ -27,6 +28,10 @@ interface OfferRow {
 export class HomeHero implements OnInit {
   private readonly supabase = inject(SupabaseService);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly bannerService = inject(FestivalBannerService);
+
+  /** Banners uploaded by the admin (Admin > Offers > Upcoming festivals), by festival name. */
+  private readonly uploadedBanners = signal<Record<string, string>>({});
 
   /** What the hero shows (festival banner + texts, or the normal hero). */
   readonly content = signal<HeroContent>(resolveHero(new Date()));
@@ -36,7 +41,9 @@ export class HomeHero implements OnInit {
    * While a festival banner is live the original photos are not shown at all.
    */
   readonly art = computed<SafeUrl | string | null>(() => {
-    const art = this.content().art;
+    const content = this.content();
+    const uploaded = content.festivalName ? this.uploadedBanners()[content.festivalName] : undefined;
+    const art = uploaded ?? content.art;
 
     return art?.startsWith('data:') ? this.sanitizer.bypassSecurityTrustUrl(art) : art;
   });
@@ -61,6 +68,12 @@ export class HomeHero implements OnInit {
 
   ngOnInit(): void {
     void this.loadOffers();
+    void this.loadBanners();
+  }
+
+  /** An uploaded banner replaces the drawn artwork of that festival. No banner = nothing changes. */
+  private async loadBanners(): Promise<void> {
+    this.uploadedBanners.set(await this.bannerService.getUrls());
   }
 
   /**

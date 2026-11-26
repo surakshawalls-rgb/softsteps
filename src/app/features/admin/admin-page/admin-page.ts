@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 
 import { Notification as NotificationService } from '../../../core/services/notification';
 import { SupabaseService } from '../../../core/services/supabase.service';
+import { AdminWhatsNew } from './admin-whats-new';
 
 interface CustomRequirementSubmission {
   id: string;
@@ -21,7 +22,7 @@ interface CustomRequirementSubmission {
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, AdminWhatsNew],
   templateUrl: './admin-page.html',
   styleUrl: './admin-page.css',
 })

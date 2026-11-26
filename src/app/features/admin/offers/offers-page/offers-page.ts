@@ -2,6 +2,14 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { OfferInput, OfferService } from '../../../../core/services/offer.service';
+import {
+  FestivalBannerService,
+  HERO_BANNER_MAX_BYTES,
+  HERO_BANNER_SIZE,
+  ImageSize,
+  checkBannerFile,
+  readImageSize,
+} from '../../../../core/services/festival-banner.service';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { DiscountType, OfferType, ProductOffer } from '../../../../shared/models/offer.model';
 import { Product } from '../../../../shared/models/product.model';
@@ -51,6 +59,17 @@ const OFFER_OPTIONS: OfferOption[] = [
   { value: 'custom', title: 'Custom Offer', description: 'Your own offer name and discount.' },
 ];
 
+/** What one festival card shows for its home hero banner. */
+interface BannerView {
+  saved: string | null;
+  preview: string | null;
+  error: string;
+  message: string;
+  busy: boolean;
+}
+
+const NO_BANNER: BannerView = { saved: null, preview: null, error: '', message: '', busy: false };
+
 function pad(value: number): string {
   return String(value).padStart(2, '0');
 }
@@ -70,6 +89,7 @@ function toLocalInput(date: Date): string {
 export class AdminOffersPage implements OnInit {
   private readonly supabase = inject(SupabaseService);
   private readonly offerService = inject(OfferService);
+  private readonly bannerService = inject(FestivalBannerService);
   private readonly route = inject(ActivatedRoute);
 
   readonly offerOptions = OFFER_OPTIONS;
@@ -79,6 +99,12 @@ export class AdminOffersPage implements OnInit {
   readonly upcomingFestivals: UpcomingFestival[] = getUpcomingFestivals(new Date(), 6);
   readonly calendarStale = calendarNeedsUpdate();
   readonly festival = signal<UpcomingFestival | null>(null);
+
+  // ----- home hero banner upload (one per festival) -----
+  readonly bannerSize = HERO_BANNER_SIZE;
+  readonly bannerMaxMb = HERO_BANNER_MAX_BYTES / (1024 * 1024);
+  readonly banners = signal<Record<string, BannerView>>({});
+  readonly bannerSetupNeeded = signal(false);
 
   // ----- data -----
   readonly products = signal<AdminProduct[]>([]);
@@ -244,6 +270,7 @@ export class AdminOffersPage implements OnInit {
     }
 
     void this.loadAll();
+    void this.loadBanners();
   }
 
   async loadAll(): Promise<void> {
@@ -298,6 +325,131 @@ export class AdminOffersPage implements OnInit {
       this.products.set([]);
       this.loadError.set('Unable to load products. ' + this.messageOf(error));
     }
+  }
+
+  // ==========================================================================
+  // Home hero banners
+  // ==========================================================================
+
+  private async loadBanners(): Promise<void> {
+    try {
+      const rows = await this.bannerService.listAll();
+      const saved: Record<string, BannerView> = {};
+
+      for (const row of rows) {
+        saved[row.festival] = { ...NO_BANNER, saved: row.image_url };
+      }
+
+      // keep anything the admin already did while this was loading
+      this.banners.update((current) => ({ ...saved, ...current }));
+    } catch (error: unknown) {
+      const text = this.messageOf(error);
+
+      if (/festival_banners|schema cache|does not exist|42P01|PGRST205/i.test(text)) {
+        this.bannerSetupNeeded.set(true);
+      } else {
+        console.error('Unable to load festival banners:', error);
+      }
+    }
+  }
+
+  bannerOf(festivalName: string): BannerView {
+    return this.banners()[festivalName] ?? NO_BANNER;
+  }
+
+  private patchBanner(festivalName: string, patch: Partial<BannerView>): void {
+    this.banners.update((current) => ({
+      ...current,
+      [festivalName]: { ...(current[festivalName] ?? NO_BANNER), ...patch },
+    }));
+  }
+
+  async onBannerChosen(item: UpcomingFestival, event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+
+    if (!file) {
+      return;
+    }
+
+    const name = item.name;
+    const oldPreview = this.bannerOf(name).preview;
+
+    if (oldPreview) {
+      URL.revokeObjectURL(oldPreview);
+    }
+
+    // the chosen image is shown right away, so an error can be shown below it
+    const preview = URL.createObjectURL(file);
+    this.patchBanner(name, { preview, error: '', message: '', busy: true });
+
+    let size: ImageSize;
+
+    try {
+      size = await readImageSize(file);
+    } catch (error: unknown) {
+      this.patchBanner(name, { busy: false, error: this.messageOf(error) });
+      return;
+    }
+
+    const problem = checkBannerFile(file, size);
+
+    if (problem) {
+      this.patchBanner(name, { busy: false, error: problem });
+      return;
+    }
+
+    try {
+      const banner = await this.bannerService.save(name, file, size);
+      URL.revokeObjectURL(preview);
+      this.patchBanner(name, {
+        saved: banner.image_url,
+        preview: null,
+        busy: false,
+        message: 'Banner saved. The home page shows it while this festival is live.',
+      });
+    } catch (error: unknown) {
+      this.patchBanner(name, { busy: false, error: this.bannerErrorText(error) });
+    }
+  }
+
+  async removeBanner(item: UpcomingFestival): Promise<void> {
+    const name = item.name;
+    const preview = this.bannerOf(name).preview;
+    this.patchBanner(name, { busy: true, error: '', message: '' });
+
+    try {
+      await this.bannerService.remove(name);
+
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+
+      this.patchBanner(name, {
+        saved: null,
+        preview: null,
+        busy: false,
+        message: 'Banner removed. The home page uses the standard festival artwork again.',
+      });
+    } catch (error: unknown) {
+      this.patchBanner(name, { busy: false, error: this.bannerErrorText(error) });
+    }
+  }
+
+  private bannerErrorText(error: unknown): string {
+    const message = this.messageOf(error);
+
+    if (/festival_banners|schema cache|does not exist|42P01|PGRST205|bucket not found/i.test(message)) {
+      this.bannerSetupNeeded.set(true);
+      return 'Banner uploads need the one-time database setup shown above.';
+    }
+
+    if (/row-level security|permission denied|42501|unauthorized/i.test(message)) {
+      return 'Your account is not allowed to change banners. Sign in with an admin account.';
+    }
+
+    return message || 'The banner could not be saved. Try again.';
   }
 
   // ==========================================================================

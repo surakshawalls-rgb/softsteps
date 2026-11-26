@@ -43,7 +43,13 @@
 
     <div class="sidebar-head">
 
-      <h3>Filter by</h3>
+      <div class="head-main">
+        <h3>Find your rug</h3>
+        <p class="head-count">
+          <strong>{{ resultCount }}</strong>
+          of {{ totalCount }} rugs match
+        </p>
+      </div>
 
       @if (hasFilters()) {
         <button type="button" class="clear-all" (click)="clear()">
@@ -60,6 +66,11 @@
         ✕
       </button>
 
+    </div>
+
+    <!-- a thin gold thread that shortens as the filters narrow the catalogue -->
+    <div class="match-bar" aria-hidden="true">
+      <span [style.width.%]="matchPercent"></span>
     </div>
 
 
@@ -79,9 +90,9 @@
 
 
     <!--
-      Every block below is built from the "groups" list in catalog-toolbar.ts:
-      Availability, Category, Type, Size, Colour, Material, Price range,
-      Shape, Weaving technique, Style and Discount (a block is hidden when no product has it).
+      Every block below is built from the "groups" list in catalog-toolbar.ts.
+      A block, or a single option, with 0 rugs is hidden and returns by itself
+      once a rug has that value.
     -->
     @for (group of groups; track group.key) {
 
@@ -106,72 +117,118 @@
 
             @if (group.kind === 'price') {
 
-              @for (preset of pricePresets; track preset.label; let i = $index) {
-                <label class="opt">
-                  <input
-                    type="checkbox"
-                    [checked]="isPresetActive(preset)"
-                    (change)="togglePreset(preset)"
-                  />
-                  <span class="box" aria-hidden="true"></span>
-                  <span class="opt-label">{{ preset.label }}</span>
-                  <span class="opt-count">({{ presetCount(i) }})</span>
-                </label>
+              @if (hasSlider) {
+                <div class="price-viz">
+
+                  <div class="skyline" aria-hidden="true">
+                    @for (bar of histogram; track $index) {
+                      <span class="thread" [class.on]="barOn(bar)" [style.height.%]="bar.pct"></span>
+                    }
+                  </div>
+
+                  <div class="range">
+                    <span class="range-fill" [style.left.%]="fillLeft" [style.right.%]="fillRight"></span>
+
+                    <input
+                      type="range"
+                      class="range-in"
+                      [min]="priceBounds.min"
+                      [max]="priceBounds.max"
+                      [step]="priceStep"
+                      [value]="sliderLo"
+                      (input)="onSlide('min', $any($event.target).value)"
+                      aria-label="Minimum price"
+                    />
+
+                    <input
+                      type="range"
+                      class="range-in"
+                      [min]="priceBounds.min"
+                      [max]="priceBounds.max"
+                      [step]="priceStep"
+                      [value]="sliderHi"
+                      (input)="onSlide('max', $any($event.target).value)"
+                      aria-label="Maximum price"
+                    />
+                  </div>
+
+                  <div class="range-values">
+                    <span>{{ money(sliderLo) }}</span>
+                    <span>{{ money(sliderHi) }}</span>
+                  </div>
+
+                </div>
               }
 
-              <div class="price-inputs">
-
-                <input
-                  type="number"
-                  [ngModel]="filter.minPrice"
-                  (ngModelChange)="setPrice('min', $event)"
-                  placeholder="Min ₹"
-                  min="0"
-                  aria-label="Minimum price"
-                />
-
-                <span aria-hidden="true">—</span>
-
-                <input
-                  type="number"
-                  [ngModel]="filter.maxPrice"
-                  (ngModelChange)="setPrice('max', $event)"
-                  placeholder="Max ₹"
-                  min="0"
-                  aria-label="Maximum price"
-                />
-
+              <div class="pills">
+                @for (preset of pricePresets; track preset.label; let i = $index) {
+                  @if (presetCount(i) > 0 || isPresetActive(preset)) {
+                    <label class="pill" [class.is-on]="isPresetActive(preset)">
+                      <input
+                        type="checkbox"
+                        [checked]="isPresetActive(preset)"
+                        (change)="togglePreset(preset)"
+                      />
+                      <span class="pill-text">{{ preset.label }}</span>
+                      <span class="pill-count">{{ presetCount(i) }}</span>
+                    </label>
+                  }
+                }
               </div>
 
-            } @else {
+            } @else if (group.swatches) {
 
-              @for (option of visibleOptions(asList(group.key), group.options); track option.value) {
-                <label
-                  class="opt"
-                  [class.is-empty]="products.length > 0 && option.count === 0 && !isSelected(asList(group.key), option.value)"
-                >
-                  <input
-                    type="checkbox"
-                    [checked]="isSelected(asList(group.key), option.value)"
-                    (change)="toggle(asList(group.key), option.value)"
-                  />
-                  @if (group.swatches) {
-                    <span class="swatch" [style.background]="option.swatch" aria-hidden="true"></span>
-                  } @else {
-                    <span class="box" aria-hidden="true"></span>
-                  }
-                  <span class="opt-label" [class.cap]="group.capitalize">{{ option.label }}</span>
-                  <span class="opt-count">({{ option.count }})</span>
-                </label>
-              }
+              <div class="swatches">
+                @for (option of visibleOptions(asList(group.key), group.options); track option.value) {
+                  <label
+                    class="sw"
+                    [class.is-on]="isSelected(asList(group.key), option.value)"
+                    [attr.data-tip]="option.label + ' (' + option.count + ')'"
+                  >
+                    <input
+                      type="checkbox"
+                      [checked]="isSelected(asList(group.key), option.value)"
+                      (change)="toggle(asList(group.key), option.value)"
+                      [attr.aria-label]="option.label + ', ' + option.count + ' rugs'"
+                    />
+                    <span class="dot" [style.background]="option.swatch"></span>
+                  </label>
+                }
+              </div>
 
               @if (hiddenCount(asList(group.key), group.options) > 0) {
                 <button type="button" class="show-more" (click)="toggleExpanded(group.key)">
-                  More
+                  Show {{ hiddenCount(asList(group.key), group.options) }} more
                 </button>
               } @else if (canCollapse(asList(group.key), group.options)) {
                 <button type="button" class="show-more" (click)="toggleExpanded(group.key)">
-                  Less
+                  Show fewer
+                </button>
+              }
+
+            } @else {
+
+              <div class="pills">
+                @for (option of visibleOptions(asList(group.key), group.options); track option.value) {
+                  <label class="pill" [class.is-on]="isSelected(asList(group.key), option.value)">
+                    <input
+                      type="checkbox"
+                      [checked]="isSelected(asList(group.key), option.value)"
+                      (change)="toggle(asList(group.key), option.value)"
+                    />
+                    <span class="pill-text" [class.cap]="group.capitalize">{{ option.label }}</span>
+                    <span class="pill-count">{{ option.count }}</span>
+                  </label>
+                }
+              </div>
+
+              @if (hiddenCount(asList(group.key), group.options) > 0) {
+                <button type="button" class="show-more" (click)="toggleExpanded(group.key)">
+                  Show {{ hiddenCount(asList(group.key), group.options) }} more
+                </button>
+              } @else if (canCollapse(asList(group.key), group.options)) {
+                <button type="button" class="show-more" (click)="toggleExpanded(group.key)">
+                  Show fewer
                 </button>
               }
 

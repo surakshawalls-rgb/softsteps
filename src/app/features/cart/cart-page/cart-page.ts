@@ -45,6 +45,22 @@ export class CartPage {
     return this.cart.subtotal() + this.totalSaving;
   }
 
+  /** Percent saved on the whole cart, rounded (0 when there is no offer). */
+  get savingPercent(): number {
+    const before = this.subtotalBeforeOffers;
+    return before > 0 ? Math.round((this.totalSaving / before) * 100) : 0;
+  }
+
+  /** Names of the offers used in the cart, e.g. "Black Friday Offer". */
+  get offerNames(): string {
+    const names = this.cart
+      .items()
+      .map(item => item.offer?.name)
+      .filter((name): name is string => !!name);
+
+    return Array.from(new Set(names)).join(' & ');
+  }
+
   /** Opens WhatsApp with the whole cart written out, listed by product code. */
   get whatsappUrl(): string {
     const lines = this.cart.items().map(

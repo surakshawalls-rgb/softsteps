@@ -149,7 +149,10 @@ export class CatalogToolbar implements OnChanges {
   /** groups whose full option list is shown (otherwise only the first few) */
   private readonly expandedGroups = new Set<GroupKey>();
 
-  readonly visibleLimit = 5;
+  /** how many options a group shows before "Show more" (colour dots are small, so more fit) */
+  private limitFor(group: ListKey): number {
+    return group === 'colors' ? 14 : 8;
+  }
 
   readonly sortOptions: {
     value: CatalogSort;
@@ -191,12 +194,12 @@ export class CatalogToolbar implements OnChanges {
 
   /** first few options, or all of them once "More" was pressed (selected ones always stay visible) */
   visibleOptions(group: ListKey, options: FilterOption[]): FilterOption[] {
-    if (this.expandedGroups.has(group) || options.length <= this.visibleLimit + 1) {
+    if (this.expandedGroups.has(group) || options.length <= this.limitFor(group) + 1) {
       return options;
     }
 
     return options.filter(
-      (option, index) => index < this.visibleLimit || this.isSelected(group, option.value)
+      (option, index) => index < this.limitFor(group) || this.isSelected(group, option.value)
     );
   }
 
@@ -205,7 +208,7 @@ export class CatalogToolbar implements OnChanges {
   }
 
   canCollapse(group: ListKey, options: FilterOption[]): boolean {
-    return this.expandedGroups.has(group) && options.length > this.visibleLimit + 1;
+    return this.expandedGroups.has(group) && options.length > this.limitFor(group) + 1;
   }
 
   toggleExpanded(group: GroupKey): void {
@@ -274,6 +277,113 @@ export class CatalogToolbar implements OnChanges {
     } else {
       this.emit({ minPrice: preset.min, maxPrice: preset.max });
     }
+  }
+
+  /* ---------- price slider (the "thread" histogram) ---------- */
+
+  priceBounds = { min: 0, max: 0 };
+  readonly priceStep = 500;
+
+  /** one bar per price band: how many rugs fall in it (height in percent) */
+  histogram: { from: number; to: number; pct: number }[] = [];
+
+  get hasSlider(): boolean {
+    return this.priceBounds.max > this.priceBounds.min;
+  }
+
+  get sliderLo(): number {
+    return this.clampPrice(this.filter.minPrice ?? this.priceBounds.min);
+  }
+
+  get sliderHi(): number {
+    return this.clampPrice(this.filter.maxPrice ?? this.priceBounds.max);
+  }
+
+  get fillLeft(): number {
+    return this.percentOf(this.sliderLo);
+  }
+
+  get fillRight(): number {
+    return 100 - this.percentOf(this.sliderHi);
+  }
+
+  /** how much of the catalogue matches right now (drives the thin gold bar under the heading) */
+  get matchPercent(): number {
+    return this.totalCount > 0 ? Math.min(100, (this.resultCount / this.totalCount) * 100) : 100;
+  }
+
+  money(value: number): string {
+    return `₹${Math.round(value).toLocaleString('en-IN')}`;
+  }
+
+  barOn(bar: { from: number; to: number }): boolean {
+    return bar.to > this.sliderLo && bar.from < this.sliderHi;
+  }
+
+  onSlide(which: 'min' | 'max', raw: string | number): void {
+    const value = Number(raw);
+
+    if (!Number.isFinite(value)) {
+      return;
+    }
+
+    const { min, max } = this.priceBounds;
+    let lo = this.sliderLo;
+    let hi = this.sliderHi;
+
+    if (which === 'min') {
+      lo = Math.min(value, hi - this.priceStep);
+    } else {
+      hi = Math.max(value, lo + this.priceStep);
+    }
+
+    // a handle resting at its end means "no limit on this side"
+    this.emit({
+      minPrice: lo <= min ? null : lo,
+      maxPrice: hi >= max ? null : hi
+    });
+  }
+
+  private clampPrice(value: number): number {
+    return Math.min(Math.max(value, this.priceBounds.min), this.priceBounds.max);
+  }
+
+  private percentOf(value: number): number {
+    const { min, max } = this.priceBounds;
+    return max > min ? ((value - min) / (max - min)) * 100 : 0;
+  }
+
+  private buildPriceHistogram(prices: number[]): void {
+    if (!prices.length) {
+      this.priceBounds = { min: 0, max: 0 };
+      this.histogram = [];
+      return;
+    }
+
+    const min = Math.floor(Math.min(...prices) / 1000) * 1000;
+    let max = Math.ceil(Math.max(...prices) / 1000) * 1000;
+
+    if (max <= min) {
+      max = min + 1000;
+    }
+
+    const bands = 18;
+    const width = (max - min) / bands;
+    const counts = new Array<number>(bands).fill(0);
+
+    for (const price of prices) {
+      counts[Math.min(bands - 1, Math.floor((price - min) / width))] += 1;
+    }
+
+    const tallest = Math.max(...counts, 1);
+
+    this.priceBounds = { min, max };
+    this.histogram = counts.map((count, index) => ({
+      from: min + index * width,
+      to: min + (index + 1) * width,
+      // empty bands still show a short thread so the row reads as one woven edge
+      pct: count === 0 ? 5 : 12 + (count / tallest) * 88
+    }));
   }
 
   /* ---------- chips / clearing ---------- */
@@ -388,6 +498,7 @@ export class CatalogToolbar implements OnChanges {
     const discountCounts = DISCOUNT_STEPS.map(() => 0);
 
     this.presetCounts = this.pricePresets.map(() => 0);
+    const prices: number[] = [];
 
     for (const product of products) {
       const categorySlug = product.category?.slug;
@@ -430,6 +541,10 @@ export class CatalogToolbar implements OnChanges {
 
       const price = this.catalogFilter.getPrice(product);
       if (price !== null) {
+        if (price > 0) {
+          prices.push(price);
+        }
+
         this.pricePresets.forEach((preset, index) => {
           const aboveMin = preset.min === null || price >= preset.min;
           const belowMax = preset.max === null || price <= preset.max;
@@ -439,6 +554,8 @@ export class CatalogToolbar implements OnChanges {
         });
       }
     }
+
+    this.buildPriceHistogram(prices);
 
     const categoryOptions: FilterOption[] = (this.categories ?? []).map(category => ({
       value: category.slug,
@@ -492,7 +609,19 @@ export class CatalogToolbar implements OnChanges {
       { key: 'discounts', title: 'Discount', kind: 'list', options: discountOptions }
     ];
 
-    this.groups = allGroups.filter(group => group.kind === 'price' || group.options.length > 0);
+    // An option with 0 rugs is hidden. It comes back by itself as soon as a rug has that value.
+    this.groups = allGroups
+      .map(group =>
+        group.kind === 'list'
+          ? {
+              ...group,
+              options: group.options.filter(
+                option => option.count > 0 || this.isSelected(group.key as ListKey, option.value)
+              )
+            }
+          : group
+      )
+      .filter(group => group.kind === 'price' || group.options.length > 0);
   }
 
   private countInto(

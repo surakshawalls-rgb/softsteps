@@ -11,6 +11,13 @@ import {
 import { CatalogFilterService } from '../../../shared/services/catalog-filter.service';
 import { CatalogQueryService } from '../../../data-access/queries/catalog/catalog-query.service';
 
+/**
+ * The filter the visitor chose. It lives outside the component, so it is still
+ * there when they open a rug and come back. It is only replaced when they change
+ * a filter or press "Clear all".
+ */
+let rememberedFilter: { filter: CatalogFilterState; category: string | null } | null = null;
+
 interface CatalogOption {
   id: string;
   name: string;
@@ -35,7 +42,7 @@ export class ShopPage implements OnInit {
   categories: CatalogOption[] = [];
   materials: CatalogOption[] = [];
 
-  filter: CatalogFilterState = {
+  private currentFilter: CatalogFilterState = {
     ...DEFAULT_CATALOG_FILTER,
     subcategories: [],
     categories: [],
@@ -43,6 +50,18 @@ export class ShopPage implements OnInit {
     styles: [],
     colors: []
   };
+
+  get filter(): CatalogFilterState {
+    return this.currentFilter;
+  }
+
+  set filter(value: CatalogFilterState) {
+    this.currentFilter = value;
+    rememberedFilter = { filter: value, category: this.requestedCategory };
+  }
+
+  /** true while the page shows the filter the visitor had chosen before opening a rug */
+  private restoredFromMemory = false;
 
   private requestedCategory: string | null = null;
 
@@ -59,8 +78,21 @@ export class ShopPage implements OnInit {
       this.scrollToFilters();
     }
 
+    // Coming back from a rug: show the filter exactly as it was left.
+    // (A link that names a different category, e.g. from the home page, still starts fresh.)
+    const urlCategory = this.route.snapshot.queryParamMap.get('category');
+
+    if (rememberedFilter && (urlCategory === null || rememberedFilter.category === urlCategory)) {
+      this.currentFilter = { ...rememberedFilter.filter };
+      this.restoredFromMemory = true;
+    }
+
     this.route.queryParamMap.subscribe(params => {
       this.requestedCategory = params.get('category');
+
+      if (this.restoredFromMemory) {
+        return;
+      }
 
       if (this.products.length && this.requestedCategory) {
         this.applyRequestedCategory();
@@ -119,9 +151,11 @@ export class ShopPage implements OnInit {
       this.loading.set(false);
     }
 
-    if (this.requestedCategory) {
+    if (this.requestedCategory && !this.restoredFromMemory) {
       this.applyRequestedCategory();
     }
+
+    this.restoredFromMemory = false;
 
     // Products are on screen now: line the filters up at the top of the screen
     if (this.landOnFilters) {

@@ -9,7 +9,8 @@
  * - Texts, colours and how many days before the festival the banner starts:
  *   edit THEMES below (leadDays = days before the festival, weight = which
  *   festival wins when two are close together; higher wins).
- * - To use a real photo instead of the drawn artwork, add  image: '/festival-banners/diwali.jpg'
+ * - To use a real photo instead of the drawn artwork, remove the // before the image line of that festival
+ *   (each line is already written below)  image: '/festival-banners/diwali.jpg'
  *   to a theme and put the file in the public/festival-banners folder.
  * - Festival dates come from  features/admin/offers/festival-calendar.ts
  */
@@ -98,6 +99,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop festive rugs',
     stamp: ['FESTIVE', 'EDIT'],
     caption: 'Festive edit. Made by hand.',
+    // image: '/festival-banners/dhanteras.jpg',
   },
   Diwali: {
     motif: 'mandala',
@@ -110,6 +112,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop festive rugs',
     stamp: ['DIWALI', 'EDIT'],
     caption: 'Warm textures for festive homes.',
+    // image: '/festival-banners/diwali.jpg',
   },
   Holi: {
     motif: 'splash',
@@ -122,6 +125,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop colourful rugs',
     stamp: ['COLOUR', 'STORY'],
     caption: 'Colour, woven by hand.',
+    // image: '/festival-banners/holi.jpg',
   },
   'Eid al-Fitr': {
     motif: 'crescent',
@@ -134,6 +138,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop festive rugs',
     stamp: ['EID', 'EDIT'],
     caption: 'Festive edit. Made by hand.',
+    // image: '/festival-banners/eid.jpg',
   },
   'Eid al-Adha': {
     motif: 'crescent',
@@ -146,6 +151,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop festive rugs',
     stamp: ['EID', 'EDIT'],
     caption: 'Festive edit. Made by hand.',
+    // image: '/festival-banners/eid.jpg',
   },
   'Raksha Bandhan': {
     motif: 'mandala',
@@ -158,6 +164,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop gift ideas',
     stamp: ['GIFT', 'EDIT'],
     caption: 'Made by hand, given with love.',
+    // image: '/festival-banners/raksha-bandhan.jpg',
   },
   'Ganesh Chaturthi': {
     motif: 'mandala',
@@ -170,6 +177,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop festive rugs',
     stamp: ['FESTIVE', 'EDIT'],
     caption: 'Festive edit. Made by hand.',
+    // image: '/festival-banners/ganesh-chaturthi.jpg',
   },
   Onam: {
     motif: 'mandala',
@@ -182,6 +190,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop festive rugs',
     stamp: ['FESTIVE', 'EDIT'],
     caption: 'Pattern and craft, woven together.',
+    // image: '/festival-banners/onam.jpg',
   },
   Dussehra: {
     motif: 'burst',
@@ -194,6 +203,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop festive rugs',
     stamp: ['FESTIVE', 'EDIT'],
     caption: 'Festive edit. Made by hand.',
+    // image: '/festival-banners/dussehra.jpg',
   },
   Christmas: {
     motif: 'sparkle',
@@ -206,6 +216,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop gifts for the home',
     stamp: ['SEASON', 'EDIT'],
     caption: 'Warmth for the season.',
+    // image: '/festival-banners/christmas.jpg',
   },
   "New Year's Day": {
     motif: 'sparkle',
@@ -218,6 +229,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop new arrivals',
     stamp: ['NEW YEAR', 'EDIT'],
     caption: 'A fresh start, woven by hand.',
+    // image: '/festival-banners/new-year.jpg',
   },
   'Republic Day': {
     motif: 'chakra',
@@ -230,6 +242,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Explore the collection',
     stamp: ['MADE IN', 'INDIA'],
     caption: 'Proudly made in India.',
+    // image: '/festival-banners/republic-day.jpg',
   },
   'Independence Day': {
     motif: 'chakra',
@@ -242,6 +255,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Explore the collection',
     stamp: ['MADE IN', 'INDIA'],
     caption: 'Proudly made in India.',
+    // image: '/festival-banners/independence-day.jpg',
   },
   "Valentine's Day": {
     motif: 'hearts',
@@ -254,6 +268,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop gifts for the home',
     stamp: ['LOVE', 'EDIT'],
     caption: 'Made by hand, given with love.',
+    // image: '/festival-banners/valentines-day.jpg',
   },
   'Black Friday': {
     motif: 'burst',
@@ -266,6 +281,7 @@ const THEMES: Record<string, FestivalTheme> = {
     primaryCta: 'Shop now',
     stamp: ['BLACK', 'FRIDAY'],
     caption: 'Made by hand. Made to last.',
+    // image: '/festival-banners/black-friday.jpg',
   },
 };
 
@@ -501,12 +517,30 @@ function hearts(p: Palette): string {
 }
 
 function burst(p: Palette): string {
+  let rays = '';
+
+  for (let i = 0; i < 72; i++) {
+    const angle = (Math.PI * 2 * i) / 72;
+    const long = i % 6 === 0;
+    const mid = i % 3 === 0;
+    const from = 146;
+    const to = long ? 236 : mid ? 208 : 188;
+    const colour = long ? p.soft : i % 2 === 0 ? p.accent : p.accent2;
+
+    rays +=
+      `<line x1="${n(CX + from * Math.cos(angle))}" y1="${n(CY + from * Math.sin(angle))}" ` +
+      `x2="${n(CX + to * Math.cos(angle))}" y2="${n(CY + to * Math.sin(angle))}" ` +
+      `stroke="${colour}" stroke-width="${long ? 4 : 3}" stroke-linecap="round" opacity="${long ? 0.95 : 0.8}"/>`;
+  }
+
   return (
-    `<polygon points="${starPoints(16, 218, 160)}" fill="${p.accent}"/>` +
-    `<polygon points="${starPoints(16, 190, 140)}" fill="${p.accent2}" transform="rotate(11.25 ${CX} ${CY})"/>` +
-    `<circle cx="${CX}" cy="${CY}" r="112" fill="${p.from}" stroke="${p.soft}" stroke-width="5"/>` +
-    `<circle cx="${CX}" cy="${CY}" r="88" fill="none" stroke="${p.accent}" stroke-width="3" stroke-dasharray="3 9"/>` +
-    `<polygon points="${starPoints(5, 44, 18)}" fill="${p.soft}"/>`
+    rays +
+    `<circle cx="${CX}" cy="${CY}" r="136" fill="none" stroke="${p.accent}" stroke-width="3"/>` +
+    `<circle cx="${CX}" cy="${CY}" r="122" fill="${p.from}" stroke="${p.soft}" stroke-width="4"/>` +
+    `<circle cx="${CX}" cy="${CY}" r="98" fill="none" stroke="${p.accent}" stroke-width="12" opacity="0.28"/>` +
+    `<circle cx="${CX}" cy="${CY}" r="98" fill="none" stroke="${p.accent}" stroke-width="2" stroke-dasharray="2 9"/>` +
+    `<polygon points="${starPoints(8, 66, 27)}" fill="${p.accent}"/>` +
+    `<polygon points="${starPoints(8, 30, 12)}" fill="${p.from}" transform="rotate(22.5 ${CX} ${CY})"/>`
   );
 }
 
@@ -520,6 +554,42 @@ const MOTIFS: Record<Motif, (p: Palette) => string> = {
   burst,
 };
 
+/**
+ * Where the main medallion sits. It is placed right of centre and a little above it so that
+ * the headline (bottom left) and the corner texts never touch it, on wide screens and on phones.
+ */
+const FX = 740;
+const FY = 630;
+const FS = 0.74;
+
+function atFocus(inner: string): string {
+  const tx = FX - CX * FS;
+  const ty = FY - CY * FS;
+
+  return `<g transform="translate(${n(tx)} ${n(ty)}) scale(${FS})">${inner}</g>`;
+}
+
+/** A ring of tiny diamonds around the medallion, like the knots along a carpet border. */
+function knotRing(p: Palette, radius: number, count: number, size: number): string {
+  let out = '';
+
+  for (let i = 0; i < count; i++) {
+    const deg = (360 / count) * i;
+    const rad = (Math.PI * 2 * i) / count;
+    const x = FX + radius * Math.cos(rad);
+    const y = FY + radius * Math.sin(rad);
+    const big = i % 4 === 0;
+    const s = big ? size * 1.5 : size;
+
+    out +=
+      `<polygon points="${n(-s * 1.7)},0 0,${n(-s)} ${n(s * 1.7)},0 0,${n(s)}" ` +
+      `transform="translate(${n(x)} ${n(y)}) rotate(${n(deg)})" ` +
+      `fill="${big ? p.soft : p.accent}" opacity="${big ? 0.85 : 0.6}"/>`;
+  }
+
+  return out;
+}
+
 export function buildArt(theme: Pick<FestivalTheme, 'motif' | 'palette'>): string {
   const p = theme.palette;
   let scatter = '';
@@ -527,31 +597,35 @@ export function buildArt(theme: Pick<FestivalTheme, 'motif' | 'palette'>): strin
   SCATTER.forEach(([x, y, r], i) => {
     scatter +=
       i % 2 === 0
-        ? `<circle cx="${x}" cy="${y}" r="${r}" fill="${p.accent}" opacity="0.55"/>`
-        : `<polygon points="${x},${y - r * 1.6} ${x + r},${y} ${x},${y + r * 1.6} ${x - r},${y}" fill="${p.soft}" opacity="0.5"/>`;
+        ? `<circle cx="${x}" cy="${y}" r="${r}" fill="${p.accent}" opacity="0.4"/>`
+        : `<polygon points="${x},${y - r * 1.6} ${x + r},${y} ${x},${y + r * 1.6} ${x - r},${y}" fill="${p.soft}" opacity="0.32"/>`;
   });
 
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" preserveAspectRatio="xMidYMid slice">` +
     `<defs>` +
     `<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.from}"/><stop offset="1" stop-color="${p.to}"/></linearGradient>` +
-    `<radialGradient id="glow" cx="50%" cy="47%" r="48%"><stop offset="0" stop-color="${p.accent}" stop-opacity="0.42"/><stop offset="1" stop-color="${p.accent}" stop-opacity="0"/></radialGradient>` +
-    `<pattern id="kilim" width="96" height="64" patternUnits="userSpaceOnUse">` +
-    `<polygon points="48,6 84,32 48,58 12,32" fill="${p.accent}" opacity="0.6"/>` +
-    `<polygon points="48,20 66,32 48,44 30,32" fill="${p.from}"/>` +
-    `<circle cx="0" cy="32" r="5" fill="${p.accent2}"/><circle cx="96" cy="32" r="5" fill="${p.accent2}"/>` +
+    `<radialGradient id="pool" gradientUnits="userSpaceOnUse" cx="${FX}" cy="${FY}" r="560">` +
+    `<stop offset="0" stop-color="${p.accent}" stop-opacity="0.34"/>` +
+    `<stop offset="0.45" stop-color="${p.accent2}" stop-opacity="0.1"/>` +
+    `<stop offset="1" stop-color="${p.accent}" stop-opacity="0"/></radialGradient>` +
+    `<radialGradient id="vignette" cx="50%" cy="50%" r="75%"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.55"/></radialGradient>` +
+    `<pattern id="weave" width="10" height="10" patternUnits="userSpaceOnUse">` +
+    `<path d="M0 5H10M5 0V10" stroke="${p.soft}" stroke-width="1" opacity="0.04"/>` +
+    `<rect x="4" y="4" width="2" height="2" fill="${p.accent}" opacity="0.08"/>` +
     `</pattern>` +
     `</defs>` +
     `<rect width="1200" height="1500" fill="url(#bg)"/>` +
-    `<rect width="1200" height="1500" fill="url(#glow)"/>` +
+    `<rect width="1200" height="1500" fill="url(#weave)"/>` +
+    `<rect width="1200" height="1500" fill="url(#pool)"/>` +
     scatter +
-    MOTIFS[theme.motif](p) +
-    `<rect x="0" y="40" width="1200" height="64" fill="url(#kilim)" opacity="0.8"/>` +
-    `<rect x="0" y="1396" width="1200" height="64" fill="url(#kilim)" opacity="0.8"/>` +
-    `<rect x="0" y="30" width="1200" height="3" fill="${p.accent}" opacity="0.7"/>` +
-    `<rect x="0" y="112" width="1200" height="3" fill="${p.accent}" opacity="0.7"/>` +
-    `<rect x="0" y="1384" width="1200" height="3" fill="${p.accent}" opacity="0.7"/>` +
-    `<rect x="0" y="1466" width="1200" height="3" fill="${p.accent}" opacity="0.7"/>` +
+    `<circle cx="${FX}" cy="${FY}" r="222" fill="none" stroke="${p.accent}" stroke-width="1.5" opacity="0.3"/>` +
+    `<circle cx="${FX}" cy="${FY}" r="208" fill="none" stroke="${p.accent2}" stroke-width="2" stroke-dasharray="2 10" opacity="0.45"/>` +
+    knotRing(p, 190, 48, 4.5) +
+    atFocus(MOTIFS[theme.motif](p)) +
+    `<rect width="1200" height="1500" fill="url(#vignette)"/>` +
+    `<rect x="0" y="46" width="1200" height="2" fill="${p.accent}" opacity="0.45"/>` +
+    `<rect x="0" y="1452" width="1200" height="2" fill="${p.accent}" opacity="0.45"/>` +
     `</svg>`
   );
 }
